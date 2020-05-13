@@ -1,0 +1,172 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/id_station_root"
+    android:orientation="vertical">
+
+    <View
+        android:id="@+id/id_statusbar"
+        android:layout_width="match_parent"
+        android:layout_height="0dp" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <!--内容为一层视图-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/id_station_action_bg"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:paddingLeft="10dp"
+                android:background="@color/app_white_slight"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingRight="10dp">
+
+                <ImageView
+                    android:id="@+id/id_back"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/ic_back2"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/id_web_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="100dp"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:text="WebView"
+                    android:textSize="18sp" />
+            </LinearLayout>
+
+            <!---加载UI-->
+            <LinearLayout
+                android:id="@+id/id_loadingview_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <View
+                        android:id="@+id/id_loading_tip1"
+                        android:layout_width="6dp"
+                        android:layout_height="6dp" />
+
+                    <View
+                        android:id="@+id/id_loading_tip2"
+                        android:layout_width="6dp"
+                        android:layout_height="6dp"
+                        android:layout_marginLeft="5dp" />
+
+                    <View
+                        android:id="@+id/id_loading_tip3"
+                        android:layout_width="6dp"
+                        android:layout_height="6dp"
+                        android:layout_marginLeft="5dp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <com.zhuangfei.adapterlib.activity.view.MyWebView
+                android:id="@+id/id_webview"
+                android:scrollbars="none"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/app_white" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/id_station_float_actionbar"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:paddingLeft="10dp"
+            android:background="@color/app_white_slight"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingRight="10dp">
+
+            <ImageView
+                android:id="@+id/id_back2"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/ic_back2"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/id_web_title2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="100dp"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text="WebView"
+                android:textSize="18sp" />
+        </LinearLayout>
+
+        <!--导航按钮为一层视图-->
+        <LinearLayout
+            android:id="@+id/id_station_buttongroup"
+            android:layout_width="95dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="7dp"
+            android:layout_gravity="right"
+            android:layout_margin="5dp"
+            android:background="@drawable/border_25_gray"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/id_station_more"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center">
+
+                <ImageView
+                    android:id="@+id/iv_station_more"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:src="@drawable/ic_station_about" />
+            </LinearLayout>
+
+            <View
+                android:id="@+id/id_station_diver"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
+                android:background="@color/app_gray" />
+
+            <LinearLayout
+                android:id="@+id/id_station_close"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center">
+
+                <ImageView
+                    android:id="@+id/iv_station_close"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:src="@drawable/ic_station_back" />
+            </LinearLayout>
+        </LinearLayout>
+
+    </FrameLayout>
+</LinearLayout>
