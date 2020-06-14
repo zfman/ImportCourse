@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/id_menu1"
-        android:title="导入同类型教务系统"/>
-    <item android:id="@+id/id_menu2"
-        android:title="URP教务-兼容处理"/>
+        android:title="网址导航器"/>
     <item android:id="@+id/id_menu5"
-        android:title="河南理工-切换账户"/>
+        android:title="教务网址勘误"/>
+    <item android:id="@+id/id_menu6"
+        android:title="导课问题反馈"/>
     <item android:id="@+id/id_menu3"
         android:title="PC UA"/>
     <item android:id="@+id/id_menu4"

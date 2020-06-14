@@ -5,19 +5,10 @@ import java.util.List;
 /**
  * Created by Liu ZhuangFei on 2019/2/15.
  */
-public class AdapterResultV2 {
+public class TemplateJsV2 {
     private List<TemplateModel> template;
     private String base;
-    private List<School> schoolList;
     private int templateVersion = 0;
-
-    public void setTemplateVersion(int templateVersion) {
-        this.templateVersion = templateVersion;
-    }
-
-    public int getTemplateVersion() {
-        return templateVersion;
-    }
 
     public List<TemplateModel> getTemplate() {
         return template;
@@ -35,11 +26,11 @@ public class AdapterResultV2 {
         this.base = base;
     }
 
-    public List<School> getSchoolList() {
-        return schoolList;
+    public int getTemplateVersion() {
+        return templateVersion;
     }
 
-    public void setSchoolList(List<School> schoolList) {
-        this.schoolList = schoolList;
+    public void setTemplateVersion(int templateVersion) {
+        this.templateVersion = templateVersion;
     }
 }

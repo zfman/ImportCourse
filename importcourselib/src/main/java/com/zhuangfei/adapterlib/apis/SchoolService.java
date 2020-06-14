@@ -9,8 +9,10 @@ import com.zhuangfei.adapterlib.apis.model.HtmlDetail;
 import com.zhuangfei.adapterlib.apis.model.HtmlSummary;
 import com.zhuangfei.adapterlib.apis.model.ListResult;
 import com.zhuangfei.adapterlib.apis.model.ObjResult;
+import com.zhuangfei.adapterlib.apis.model.ParseJsModel;
 import com.zhuangfei.adapterlib.apis.model.StationModel;
 import com.zhuangfei.adapterlib.apis.model.StationSpaceModel;
+import com.zhuangfei.adapterlib.apis.model.TemplateJsV2;
 import com.zhuangfei.adapterlib.apis.model.UserDebugModel;
 import com.zhuangfei.adapterlib.apis.model.WxPayResult;
 import com.zhuangfei.adapterlib.station.model.TinyUserInfo;
@@ -125,4 +127,12 @@ public interface SchoolService {
     @FormUrlEncoded
     Call<ObjResult<WxPayResult>> getWxPayOrder(@Field("token") String token,
                                                @Field("goodName") String goodName);
+
+    @POST(UrlContants.URL_GET_TEMPLATE_JS)
+    @FormUrlEncoded
+    Call<ObjResult<TemplateJsV2>> getTemplateJs(@Field("token") String token);
+
+    @POST(UrlContants.URL_GET_ADAPTER_PARSE_JS)
+    @FormUrlEncoded
+    Call<ObjResult<ParseJsModel>> getAdapterParsejs(@Field("aid") String aid);
  }

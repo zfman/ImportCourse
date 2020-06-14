@@ -4,14 +4,20 @@ package com.zhuangfei.adapterlib.apis.model;
  * Created by Liu ZhuangFei on 2018/9/28.
  */
 public class School {
+    private int aid;
     private String schoolName;
     private String url;
     private String type;
-    private String menujs;
-    private String eventjs;
-    private String parsejs;
     private boolean support_once;
     private String once;
+
+    public void setAid(int aid) {
+        this.aid = aid;
+    }
+
+    public int getAid() {
+        return aid;
+    }
 
     public void setOnce(String once) {
         this.once = once;
@@ -51,29 +57,5 @@ public class School {
 
     public void setType(String type) {
         this.type = type;
-    }
-
-    public String getMenujs() {
-        return menujs;
-    }
-
-    public void setMenujs(String menujs) {
-        this.menujs = menujs;
-    }
-
-    public String getEventjs() {
-        return eventjs;
-    }
-
-    public void setEventjs(String eventjs) {
-        this.eventjs = eventjs;
-    }
-
-    public String getParsejs() {
-        return parsejs;
-    }
-
-    public void setParsejs(String parsejs) {
-        this.parsejs = parsejs;
     }
 }

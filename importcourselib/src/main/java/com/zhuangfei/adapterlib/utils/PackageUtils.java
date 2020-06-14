@@ -1,6 +1,7 @@
 package com.zhuangfei.adapterlib.utils;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
@@ -27,5 +28,13 @@ public class PackageUtils {
         String packageName=getPackageName(context);
         if(packageName==null) return null;
         return Md5Security.encrypBy(packageName+context.getResources().getString(R.string.md5_key));
+    }
+
+    public static boolean isInstallApk(Context context,String packageName){
+        Intent intent=context.getPackageManager().getLaunchIntentForPackage(packageName);
+        if(intent==null){
+            return false;
+        }
+        return true;
     }
 }

@@ -6,16 +6,22 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.zhuangfei.adapterlib.R;
+import com.zhuangfei.adapterlib.activity.OnCommonFunctionClickListener;
+import com.zhuangfei.adapterlib.activity.StationWebViewActivity;
+import com.zhuangfei.adapterlib.activity.custom.CustomPopWindow;
+import com.zhuangfei.adapterlib.activity.custom.TokenImportPopWindow;
 import com.zhuangfei.adapterlib.station.model.GreenFruitSchool;
 import com.zhuangfei.adapterlib.station.model.TinyConfig;
 import com.zhuangfei.adapterlib.utils.GsonUtils;
@@ -36,6 +42,7 @@ import java.util.Map;
 
 public class SearchSchoolAdapter extends BaseAdapter {
 
+    private static final int TYPE_COMMON_PARSE =-1;
     private static final int TYPE_STATION = 0;
     private static final int TYPE_SCHOOL = 3;
     private static final int TYPE_XIQUER = 2;
@@ -51,12 +58,15 @@ public class SearchSchoolAdapter extends BaseAdapter {
     String schoolName="unknow";
     SharedPreferences sp;
 
-    public SearchSchoolAdapter(Activity context, List<SearchResultModel> allData, List<SearchResultModel> list) {
+    OnCommonFunctionClickListener commonFunctionClickListener;
+
+    public SearchSchoolAdapter(Activity context, List<SearchResultModel> allData, List<SearchResultModel> list, OnCommonFunctionClickListener commonFunctionClickListener) {
         this.mInflater = LayoutInflater.from(context);
         this.context = context;
         this.list=list;
         this.allData=allData;
         sp=context.getSharedPreferences("station_space_all", Context.MODE_PRIVATE);
+        this.commonFunctionClickListener=commonFunctionClickListener;
     }
 
     @Override
@@ -173,38 +183,58 @@ public class SearchSchoolAdapter extends BaseAdapter {
             case TYPE_COMMON:
                 if (convertView == null) {
                     schoolViewHolder = new SchoolViewHolder();
-                    convertView = mInflater.inflate(R.layout.item_search_school, null);
+                    convertView = mInflater.inflate(R.layout.header_search_school_common, null);
                     schoolViewHolder.searchTitleView=convertView.findViewById(R.id.id_search_title);
                     schoolViewHolder.lineTextView2=convertView.findViewById(R.id.item_search_line2);
-                    schoolViewHolder.schoolLayout=convertView.findViewById(R.id.id_search_school_layout);
-                    schoolViewHolder.schoolTextView=convertView.findViewById(R.id.item_school_val);
-                    schoolViewHolder.schoolTypeTextView=convertView.findViewById(R.id.id_search_school_type);
+                    schoolViewHolder.tokenImportLayout=convertView.findViewById(R.id.ll_token_import);
+                    schoolViewHolder.commonImportLayout=convertView.findViewById(R.id.ll_common_import);
+                    schoolViewHolder.cameraImportLayout=convertView.findViewById(R.id.ll_camera_import);
+                    schoolViewHolder.scanImportLayout=convertView.findViewById(R.id.ll_scan_import);
                     convertView.setTag(schoolViewHolder);
                 } else {
                     schoolViewHolder = (SchoolViewHolder) convertView.getTag();
                 }
 
-                if (model != null) {
-                    if(model.getObject() instanceof List){
-                        schoolViewHolder.searchTitleView.setText("通用功能");
-                        schoolViewHolder.schoolLayout.setVisibility(View.VISIBLE);
-                        schoolViewHolder.schoolTextView.setText("通用教务解析");
-                        schoolViewHolder.schoolTypeTextView.setText("通用");
-                    }else{
-                        TemplateModel templateModel= (TemplateModel) model.getObject();
-                        if(templateModel.getTemplateTag().equals("custom/upload")){
-                            schoolViewHolder.searchTitleView.setText("通用功能");
-                            schoolViewHolder.schoolLayout.setVisibility(View.VISIBLE);
-                            schoolViewHolder.schoolTextView.setText("申请学校适配");
-                            schoolViewHolder.schoolTypeTextView.setText("上传");
-                        }
-                        if(templateModel.getTemplateTag().startsWith("custom/feedback")){
-                            schoolViewHolder.searchTitleView.setText("通用功能");
-                            schoolViewHolder.schoolLayout.setVisibility(View.VISIBLE);
-                            schoolViewHolder.schoolTextView.setText("官方反馈通道");
-                            schoolViewHolder.schoolTypeTextView.setText("反馈");
+                schoolViewHolder.commonImportLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if(commonFunctionClickListener!=null){
+                            commonFunctionClickListener.onCommonFunctionClicked("common_import");
                         }
                     }
+                });
+                schoolViewHolder.cameraImportLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if(commonFunctionClickListener!=null){
+                            commonFunctionClickListener.onCommonFunctionClicked("camera_import");
+                        }
+                    }
+                });
+                schoolViewHolder.scanImportLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if(commonFunctionClickListener!=null){
+                            commonFunctionClickListener.onCommonFunctionClicked("scan_import");
+                        }
+                    }
+                });
+                schoolViewHolder.tokenImportLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        final TokenImportPopWindow popupWindow = new TokenImportPopWindow(context, null);
+                        popupWindow.showAtLocation(view,
+                                Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
+                        popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+                            @Override
+                            public void onDismiss() {
+                                popupWindow.backgroundAlpha(context, 1f);
+                            }
+                        });
+                    }
+                });
+                if (model != null) {
+                    schoolViewHolder.searchTitleView.setText("通用功能");
 
                     if(position==0||model.getType()!=list.get(position-1).getType()){
                         schoolViewHolder.searchTitleView.setVisibility(View.VISIBLE);
@@ -314,7 +344,9 @@ public class SearchSchoolAdapter extends BaseAdapter {
             return TYPE_SCHOOL;
         }else if(list.get(position).getType()==SearchResultModel.TYPE_XIQUER){
             return TYPE_XIQUER;
-        }else {
+        }else if(list.get(position).getType()==SearchResultModel.TYPE_COMMON_PARSE){
+            return TYPE_COMMON_PARSE;
+        } else {
             return TYPE_COMMON;
         }
     }
@@ -341,6 +373,10 @@ public class SearchSchoolAdapter extends BaseAdapter {
         public TextView searchTitleView;
         public View lineTextView2;
         public LinearLayout schoolLayout;
+        public LinearLayout tokenImportLayout;
+        public LinearLayout cameraImportLayout;
+        public LinearLayout scanImportLayout;
+        public LinearLayout commonImportLayout;
         public TextView schoolTextView;
         public TextView schoolTypeTextView;
     }

@@ -14,13 +14,15 @@ public class AdapterLibManager {
     private static final String TAG = "AdapterLibManager";
 
     //核心库版本号
-    private static int libVersionNumber=6;
-    private static String libVersionName="lib-1.1.0";
+    private static int libVersionNumber=10;
+    private static String libVersionName="lib-2.0.0";
 
     public static int appVersionNumber=1;
 
     //包名和appkey
     private static String appKey;
+
+    private static String appToken;
 
     public static String getLibVersionName() {
         return libVersionName;
@@ -34,11 +36,9 @@ public class AdapterLibManager {
         return libVersionNumber;
     }
 
-    public static void init(String appkey,int v){
-        if(!TextUtils.isEmpty(appkey)){
-            AdapterLibManager.appKey=appkey;
-        }
-        appVersionNumber=v;
+    public static void register(String appkey,String appToken){
+        AdapterLibManager.appKey=appkey;
+        AdapterLibManager.appToken=appToken;
     }
 
     public static void checkUpdate(final Context context,String updateId, final OnVersionFindCallback callback){

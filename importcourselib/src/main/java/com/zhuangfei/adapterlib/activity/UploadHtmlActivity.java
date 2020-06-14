@@ -52,9 +52,6 @@ public class UploadHtmlActivity extends AppCompatActivity {
 
     boolean isNeedLoad = false;
 
-    //选课结果
-    public static final String URL_COURSE_RESULT="https://vpn.hpu.edu.cn/web/1/http/2/218.196.240.97/xkAction.do?actionType=6";
-
     //传入的参数
     public static final String EXTRA_URL="url";
     public static final String EXTRA_SCHOOL="school";
@@ -141,9 +138,6 @@ public class UploadHtmlActivity extends AppCompatActivity {
         jsSupport=new JsSupport(webView);
         jsSupport.applyConfig(this,new MyWebViewCallback());
         webView.addJavascriptInterface(new ShowSourceJs(), "source");
-        if(school.equals("南京艺术学院")){
-            webView.getSettings().setUserAgentString("Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko");
-        }
         String ua=webView.getSettings().getUserAgentString();
         ua=ua.replace("Mobile","eliboM");
         ua=ua.replace("Android","ndroidA");
@@ -161,15 +155,6 @@ public class UploadHtmlActivity extends AppCompatActivity {
             }
             if (newProgress == 100) {
                 jsSupport.getPageHtmlForAdjust("source");
-            }
-
-            //河南理工大学教务兼容性处理
-            if (webView.getUrl()!=null&&webView.getUrl().startsWith("https://vpn.hpu.edu.cn/web/1/http/1/218.196.240.97/loginAction.do")) {
-                webView.loadUrl("https://vpn.hpu.edu.cn/web/1/http/2/218.196.240.97/xkAction.do?actionType=6");
-            }
-
-            if(webView.getUrl()!=null&&webView.getUrl().equals("http://210.28.48.52/student2/studentWeb.asp")){
-                webView.loadUrl("http://210.28.48.52/student2/student_kbtemp.asp");
             }
         }
     }
@@ -278,7 +263,7 @@ public class UploadHtmlActivity extends AppCompatActivity {
                 BaseResult result=response.body();
                 if(result!=null){
                     if(result.getCode()==200){
-                        Toast.makeText(UploadHtmlActivity.this,"上传源码成功，请等待开发者适配，适配完成后你会收到一条消息",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(UploadHtmlActivity.this,"上传源码成功，请等待开发者适配!",Toast.LENGTH_SHORT).show();
                     }else{
                         Toast.makeText(UploadHtmlActivity.this,result.getMsg(),Toast.LENGTH_SHORT).show();
                     }
@@ -299,7 +284,7 @@ public class UploadHtmlActivity extends AppCompatActivity {
     public void onBtnClicked() {
         AlertDialog.Builder builder=new AlertDialog.Builder(this)
                 .setTitle("重要内容!")
-                .setMessage("1.请在你看到课表后再点击此按钮\n\n2.URP教务登陆后可能会出现点击无反应的问题，在右上角选择URP-兼容模式\n\n3.上传失败请加qq群反馈:684993074")
+                .setMessage("1.请在你看到课表后再点击此按钮\n\n2.URP教务登陆后可能会出现点击无反应的问题，在右上角选择URP-兼容模式")
                 .setPositiveButton("上传课表", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {

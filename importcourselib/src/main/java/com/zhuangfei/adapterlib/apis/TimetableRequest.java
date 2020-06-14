@@ -6,6 +6,7 @@ import android.widget.Toast;
 
 import com.zhuangfei.adapterlib.AdapterLibManager;
 import com.zhuangfei.adapterlib.R;
+import com.zhuangfei.adapterlib.apis.model.ParseJsModel;
 import com.zhuangfei.adapterlib.apis.model.School;
 import com.zhuangfei.adapterlib.apis.model.StationModel;
 import com.zhuangfei.adapterlib.apis.model.AdapterInfo;
@@ -17,6 +18,7 @@ import com.zhuangfei.adapterlib.apis.model.HtmlSummary;
 import com.zhuangfei.adapterlib.apis.model.ListResult;
 import com.zhuangfei.adapterlib.apis.model.ObjResult;
 import com.zhuangfei.adapterlib.apis.model.StationSpaceModel;
+import com.zhuangfei.adapterlib.apis.model.TemplateJsV2;
 import com.zhuangfei.adapterlib.apis.model.UserDebugModel;
 import com.zhuangfei.adapterlib.apis.model.ValuePair;
 import com.zhuangfei.adapterlib.apis.model.WxPayResult;
@@ -194,6 +196,18 @@ public class TimetableRequest {
                 .create(SchoolService.class);
         String token= TinyUserManager.get(context).getToken();
         Call<ObjResult<WxPayResult>> call=service.getWxPayOrder(token,goodName);
+        call.enqueue(callback);
+    }
+
+    public static void getTemplateJs(Context context,Callback<ObjResult<TemplateJsV2>> callback) {
+        SchoolService schoolService=ApiUtils.getRetrofitForSchool(context).create(SchoolService.class);
+        Call<ObjResult<TemplateJsV2>> call=schoolService.getTemplateJs("");
+        call.enqueue(callback);
+    }
+
+    public static void getAdapterParseJs(Context context,int aid,Callback<ObjResult<ParseJsModel>> callback) {
+        SchoolService schoolService=ApiUtils.getRetrofitForSchool(context).create(SchoolService.class);
+        Call<ObjResult<ParseJsModel>> call=schoolService.getAdapterParsejs(""+aid);
         call.enqueue(callback);
     }
 }

@@ -77,21 +77,11 @@ public class AdapterSameTypeActivity extends AppCompatActivity {
     }
 
     public void save() {
-        final String name = nameEdit.getText().toString();
-        if (TextUtils.isEmpty(name)) {
-            Toast.makeText(this, "不可为空", Toast.LENGTH_SHORT).show();
+        final String url = nameEdit.getText().toString();
+        if (TextUtils.isEmpty(url)||(!url.startsWith("http")&&!url.startsWith("https"))) {
+            Toast.makeText(this, "请输入有效的网址", Toast.LENGTH_SHORT).show();
         } else {
-            AlertDialog.Builder builder=new AlertDialog.Builder(this)
-                    .setTitle("前往"+titleTextView.getText())
-                    .setMessage("将前往百度查找该校的教务处，请登录自己学校的教务处，看到课表后点击解析按钮即可!")
-                    .setPositiveButton("前往教务处", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            toAdapterActivity(name,"https://www.baidu.com/s?ie=UTF-8&wd="+name+" 教务处",js);
-                            if(dialogInterface!=null) dialogInterface.dismiss();
-                        }
-                    }).setNegativeButton("取消",null);
-            builder.create().show();
+            toAdapterActivity("自定义网址",url,js);
         }
     }
 

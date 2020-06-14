@@ -28,13 +28,11 @@ import android.widget.Toast;
 
 import com.zhuangfei.adapterlib.ParseManager;
 import com.zhuangfei.adapterlib.R;
-import com.zhuangfei.adapterlib.RecordEventManager;
 import com.zhuangfei.adapterlib.ShareManager;
 import com.zhuangfei.adapterlib.apis.model.ValuePair;
 import com.zhuangfei.adapterlib.callback.IAdapterOperator;
 import com.zhuangfei.adapterlib.callback.OnValueCallback;
 import com.zhuangfei.adapterlib.recodeevent.MessageRecordData;
-import com.zhuangfei.adapterlib.station.StationSdk;
 import com.zhuangfei.adapterlib.utils.GsonUtils;
 import com.zhuangfei.adapterlib.utils.ViewUtils;
 import com.zhuangfei.adapterlib.core.IArea;
@@ -55,9 +53,6 @@ public class AdapterSchoolActivity extends AppCompatActivity {
     // wenview与加载条
     WebView webView;
 
-    // 关闭
-    private LinearLayout closeLayout;
-
     // 标题
     TextView titleTextView;
     TextView displayTextView;
@@ -67,6 +62,8 @@ public class AdapterSchoolActivity extends AppCompatActivity {
 
     //加载进度
     ContentLoadingProgressBar loadingProgressBar;
+    LinearLayout noMatchesLayout;
+    LinearLayout btnGroupLayout;
 
     // 解析课程相关
     JsSupport jsSupport;
@@ -78,21 +75,13 @@ public class AdapterSchoolActivity extends AppCompatActivity {
     //解析按钮如果点击一次，就不需要再去获取html了，直接解析
     boolean isButtonClicked=false;
 
-    //选课结果
-    public static final String URL_COURSE_RESULT="https://vpn.hpu.edu.cn/web/1/http/2/218.196.240.97/xkAction.do?actionType=6";
-
     public static final String EXTRA_URL="url";
     public static final String EXTRA_SCHOOL="school";
     public static final String EXTRA_PARSEJS="parsejs";
     public static final String EXTRA_TYPE="type";
 
     public int nowIndex=0;
-    public boolean isNanjingArtSchool=false;
-    int step=0;
-
     TextView tv;
-    boolean loadStep1=false;
-    boolean loadStep2=false;
 
     List<MessageRecordData> recordDataList;
     private IAdapterOperator operator;
@@ -102,7 +91,7 @@ public class AdapterSchoolActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_adapter_school);
+        setContentView(R.layout.fragment_adapter_school);
         ViewUtils.setStatusTextGrayColor(this);
         //init area
         initView();
@@ -133,6 +122,8 @@ public class AdapterSchoolActivity extends AppCompatActivity {
         popmenuImageView=findViewById(R.id.id_webview_help);
         loadingProgressBar=findViewById(R.id.id_loadingbar);
         displayTextView=findViewById(R.id.tv_display);
+        noMatchesLayout=findViewById(R.id.ll_no_matches);
+        btnGroupLayout=findViewById(R.id.ll_btn_group);
 
         findViewById(R.id.id_close).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -173,11 +164,6 @@ public class AdapterSchoolActivity extends AppCompatActivity {
         if(TextUtils.isEmpty(js)){
             Toast.makeText(this,"js is null,结果不可预期",Toast.LENGTH_SHORT).show();
             finish();
-        }
-
-        if(school.equals("南京艺术学院")){
-            isNanjingArtSchool=true;
-            tv.setText("自动获取");
         }
 
         titleTextView.setText(school);
@@ -241,17 +227,11 @@ public class AdapterSchoolActivity extends AppCompatActivity {
         ua=ua.replace("Android","ndroidA");
 
         webView.getSettings().setUserAgentString(ua);
-        if(isNanjingArtSchool){
-            webView.getSettings().setUserAgentString("Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko");
-        }
+//        if(isNanjingArtSchool){
+//            webView.getSettings().setUserAgentString("Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko");
+//        }
         webView.addJavascriptInterface(specialArea, "sa");
         webView.loadUrl(url);
-        recordDataList.add(new MessageRecordData()
-                .put("op","start")
-                .put("url",url)
-                .put("school",school)
-                .put("type",type)
-                .put("ua",webView.getSettings().getUserAgentString()));
     }
 
 
@@ -292,18 +272,6 @@ public class AdapterSchoolActivity extends AppCompatActivity {
                     ToastTools.show(AdapterSchoolActivity.this,"开始前往课表页面,如果无反应请反馈至1193600556@qq.com");
                     webView.loadUrl("http://210.28.48.52/student2/student_kbtemp.asp");
                 }
-                if(newProgress==100&&webView.getUrl().startsWith("http://210.28.48.52/student2/student_kb2.asp?studentCode=")){
-                    displayTextView.setText("预测:解析教室 "+newProgress+"%...");
-                    step=1;
-                    ToastTools.show(AdapterSchoolActivity.this,"开始解析教室信息,如果无反应请反馈至1193600556@qq.com");
-                    jsSupport.getPageHtml("sa");
-                }
-                if(newProgress==100&&webView.getUrl().startsWith("210.28.48.52/student2/save_xkdNew.asp")){
-                    ToastTools.show(AdapterSchoolActivity.this,"开始解析课程信息,如果无反应请反馈至1193600556@qq.com");
-                    displayTextView.setText("预测:解析课程 "+newProgress+"%...");
-                    step=2;
-                    jsSupport.getPageHtml("sa");
-                }
             }
         }
     }
@@ -325,43 +293,29 @@ public class AdapterSchoolActivity extends AppCompatActivity {
                     .put("tags",tags.toString()));
 
             displayTextView.setText("预测:选择解析标签");
-            if(isNanjingArtSchool){
-                if(step>0){
+            AlertDialog.Builder builder = new AlertDialog.Builder(context());
+            builder.setTitle("请选择解析标签");
+            builder.setCancelable(false);
+            builder.setItems(tags, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
                     recordDataList.add(new MessageRecordData()
                             .put("op","parse tag")
-                            .put("tag",tags[step-1])
-                            .put("step",""+step));
-                    jsSupport.callJs("parse('" + tags[step-1] + "')");
-                    displayTextView.setText("预测:解析 "+tags[step-1]);
+                            .put("tag",tags[i]));
+                    jsSupport.callJs("parse('" + tags[i] + "')");
+                    displayTextView.setText("预测:解析 "+tags[i]);
                 }
-            }else{
-                AlertDialog.Builder builder = new AlertDialog.Builder(context());
-                builder.setTitle("请选择解析标签");
-                builder.setCancelable(false);
-                builder.setItems(tags, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        recordDataList.add(new MessageRecordData()
-                                .put("op","parse tag")
-                                .put("tag",tags[i]));
-                        jsSupport.callJs("parse('" + tags[i] + "')");
-                        displayTextView.setText("预测:解析 "+tags[i]);
-                    }
-                });
-                builder.create().show();
-            }
+            });
+            builder.create().show();
         }
 
         @Override
         public void onNotFindResult() {
-            if(isNanjingArtSchool&&step==1){
-                webView.loadUrl("http://210.28.48.52/student2/save_xkdNew.asp");
-            }else{
-                recordDataList.add(new MessageRecordData()
-                        .put("op","onNotFindResult"));
-                onError("未发现匹配");
-                finish();
-            }
+            recordDataList.add(new MessageRecordData()
+                    .put("op","onNotFindResult"));
+            onError("未发现匹配");
+            noMatchesLayout.setVisibility(View.VISIBLE);
+            btnGroupLayout.setVisibility(View.GONE);
         }
 
         @Override
@@ -511,12 +465,8 @@ public class AdapterSchoolActivity extends AppCompatActivity {
                             recordDataList.add(new MessageRecordData()
                                     .put("op","onBtnClicked0")
                                     .put("html",html));
-                            if(isNanjingArtSchool){
-                                webView.loadUrl("http://210.28.48.52/student2/student_kbtemp.asp");
-                            }else{
-                                isButtonClicked=true;
-                                jsSupport.getPageHtml("sa");
-                            }
+                            isButtonClicked=true;
+                            jsSupport.getPageHtml("sa");
                         }
                     })
                     .setNegativeButton("稍后解析", null);
@@ -545,17 +495,6 @@ public class AdapterSchoolActivity extends AppCompatActivity {
                     startActivity(intent);
                     finish();
                 }
-                if(item.getItemId()==R.id.id_menu2){
-                    String now=webView.getUrl();
-                    if(!TextUtils.isEmpty(now)){
-                        if(now.indexOf("/")!=-1){
-                            int index=now.lastIndexOf("/");
-                            webView.loadUrl(now.substring(0,index)+"/xkAction.do?actionType=6");
-                        }else{
-                            webView.loadUrl(now+"/xkAction.do?actionType=6");
-                        }
-                    }
-                }
                 if(item.getItemId()==R.id.id_menu3){
                     setUA(false);
                     webView.reload();
@@ -564,9 +503,6 @@ public class AdapterSchoolActivity extends AppCompatActivity {
                 if(item.getItemId()==R.id.id_menu4){
                     setUA(true);
                     webView.reload();
-                }
-                if(item.getItemId()==R.id.id_menu5){
-                    webView.loadUrl("https://vpn.hpu.edu.cn/por/logout.csp?rnd=7456390069064507");
                 }
                 return false;
             }
@@ -594,11 +530,6 @@ public class AdapterSchoolActivity extends AppCompatActivity {
 
     @Override
     public void finish() {
-        RecordEventManager.recordUserEvent(getApplicationContext(),RecordEventManager.TYPE_IMPORT,
-                new MessageRecordData()
-                    .put("school",school)
-                    .put("type",type)
-                    .put("events",GsonUtils.getGson().toJson(recordDataList)));
         super.finish();
     }
 }

@@ -25,7 +25,7 @@
             android:id="@+id/id_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="其他学校"
+            android:text="网址导航器"
             android:textSize="18sp" />
 
     </LinearLayout>
@@ -37,8 +37,7 @@
         android:layout_marginTop="20dp"
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp"
-        android:hint="输入学校名称"/>
-
+        android:hint="输入学校教务url"/>
 
     <TextView
         android:id="@+id/tv_other"
@@ -53,5 +52,13 @@
         android:layout_marginBottom="20dp"
         android:textColor="@color/app_white" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:textColor="@color/app_gray"
+        android:lineSpacingExtra="3dp"
+        android:text="ps:由于学校的教务网址均为用户上传，我们并不能保证它是正确的，如果有误，你可以在此处前往正确的地址！"/>
 
 </LinearLayout>

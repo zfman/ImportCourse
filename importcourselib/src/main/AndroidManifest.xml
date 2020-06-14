@@ -22,30 +22,23 @@
             android:theme="@style/NoActionBarTheme"
             android:windowSoftInputMode="stateHidden" />
         <activity
-            android:label="一键"
             android:name=".activity.OnceActivity"
+            android:label="一键"
             android:theme="@style/NoActionBarTheme" />
-        <activity android:name=".activity.OnceNumberActivity" android:label="账号管理" />
-        <activity android:name=".activity.AddUserActivity" android:label="添加账号"></activity>
-        <activity android:name=".activity.StationWebViewActivity"
-            android:theme="@style/NoActionBarTheme"></activity>
-        <activity android:name=".activity.TinyAuthActivity"
-            android:theme="@style/NoActionBarTheme"
-            android:launchMode="singleTask"></activity>
-
         <activity
-            android:name="com.zhuangfei.hputimetable.wxapi.WXEntryActivity"
-            android:label="@string/app_name"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"
-            android:exported="true"
-            android:taskAffinity="com.zhuangfei.hputimetable"
-            android:launchMode="singleTask">
-        </activity>
-
+            android:name=".activity.OnceNumberActivity"
+            android:label="账号管理" />
         <activity
-            android:name="com.zhuangfei.hputimetable.wxapi.WXPayEntryActivity"
-            android:exported="true"
-            android:launchMode="singleTop"/>
+            android:name=".activity.AddUserActivity"
+            android:label="添加账号" />
+        <activity
+            android:name=".activity.StationWebViewActivity"
+            android:theme="@style/NoActionBarTheme" />
+        <activity
+            android:name=".activity.TinyAuthActivity"
+            android:launchMode="singleTask"
+            android:theme="@style/NoActionBarTheme" />
+        <activity android:name=".activity.AdapterHomeActivity" android:theme="@style/NoActionBarTheme"></activity>
     </application>
 
 </manifest>

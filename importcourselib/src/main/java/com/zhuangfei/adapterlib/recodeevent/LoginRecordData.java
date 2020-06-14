@@ -3,7 +3,9 @@ package com.zhuangfei.adapterlib.recodeevent;
 /**
  * Created by Liu ZhuangFei on 2019/9/27.
  */
-public class LoginRecordData {
+public class
+
+LoginRecordData {
     protected String version;
     protected String deviceId;
     protected String packageName;
