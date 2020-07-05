@@ -1,12 +1,12 @@
-package com.zhuangfei.qingguo;
+package com.zhuangfei.adapterlib.qingguo;
 
 import android.content.Context;
 import android.os.Build;
 
-import com.zhuangfei.qingguo.newversion.Api;
-import com.zhuangfei.qingguo.utils.EncryptMethod;
-import com.zhuangfei.qingguo.utils.GreenFruitParams;
-import com.zhuangfei.qingguo.utils.PhoneMessageTools;
+import com.zhuangfei.adapterlib.qingguo.newversion.Api;
+import com.zhuangfei.adapterlib.qingguo.utils.EncryptMethod;
+import com.zhuangfei.adapterlib.qingguo.utils.GreenFruitParams;
+import com.zhuangfei.adapterlib.qingguo.utils.PhoneMessageTools;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,7 +41,7 @@ public class ParamsManager {
         return s;
     }
 
-    public GreenFruitParams getLoginParams(String schoolId,String loginId,String password){
+    public GreenFruitParams getLoginParams(String schoolId, String loginId, String password){
         Map<String,String> hashMap=new HashMap<>();
         hashMap.put("loginId",loginId);
         hashMap.put("xxdm", schoolId);
@@ -63,18 +63,18 @@ public class ParamsManager {
      * 获取学期的参数
      * @return
      */
-    public GreenFruitParams getTermParams(String userId,String userType,String token){
+    public GreenFruitParams getTermParams(String userId, String userType, String token){
         Map hashMap = new HashMap();
         hashMap.put("userId", userId);
         hashMap.put("usertype", userType);
         hashMap.put("action", "getXtgn");
         hashMap.put("step", "xnxq");
-        Map<String,String> resultMap=Api.encodeing(hashMap,false,"","","");
+        Map<String,String> resultMap= Api.encodeing(hashMap,false,"","","");
         return new GreenFruitParams(resultMap);
     }
 
     //WeekCourseFragment#1047L
-    public GreenFruitParams getCourseParams(String userId,String userType,String termId,String week,String token){
+    public GreenFruitParams getCourseParams(String userId, String userType, String termId, String week, String token){
         Map hashMap = new HashMap();
         hashMap.put("userId", userId);
         hashMap.put("usertype", userType);
@@ -85,7 +85,7 @@ public class ParamsManager {
         hashMap.put("xnxq", termId);
         hashMap.put("week",week);
         hashMap.put("channel", "jrkb");
-        Map<String,String> resultMap=Api.encodeing(hashMap,false,"","","");
+        Map<String,String> resultMap= Api.encodeing(hashMap,false,"","","");
         return new GreenFruitParams(resultMap);
     }
 }

@@ -29,10 +29,10 @@ import android.widget.Toast;
 import com.zhuangfei.adapterlib.ParseManager;
 import com.zhuangfei.adapterlib.R;
 import com.zhuangfei.adapterlib.ShareManager;
+import com.zhuangfei.adapterlib.StatManager;
 import com.zhuangfei.adapterlib.apis.model.ValuePair;
 import com.zhuangfei.adapterlib.callback.IAdapterOperator;
 import com.zhuangfei.adapterlib.callback.OnValueCallback;
-import com.zhuangfei.adapterlib.recodeevent.MessageRecordData;
 import com.zhuangfei.adapterlib.utils.GsonUtils;
 import com.zhuangfei.adapterlib.utils.ViewUtils;
 import com.zhuangfei.adapterlib.core.IArea;
@@ -42,7 +42,9 @@ import com.zhuangfei.adapterlib.core.SpecialArea;
 import com.zhuangfei.toolkit.tools.ToastTools;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 适配学校页面
@@ -83,7 +85,6 @@ public class AdapterSchoolActivity extends AppCompatActivity {
     public int nowIndex=0;
     TextView tv;
 
-    List<MessageRecordData> recordDataList;
     private IAdapterOperator operator;
 
     public static String htmlCode=null;
@@ -173,7 +174,6 @@ public class AdapterSchoolActivity extends AppCompatActivity {
             setUA(false);
         }
 
-        recordDataList=new ArrayList<>();
 
         if(school.equals("河南理工大学")){
             AlertDialog.Builder builder=new AlertDialog.Builder(this)
@@ -211,9 +211,6 @@ public class AdapterSchoolActivity extends AppCompatActivity {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 webView.loadUrl(url);
-                recordDataList.add(new MessageRecordData()
-                        .put("op","shouldOverrideUrlLoading")
-                        .put("url",url));
                 return true;
             }
 
@@ -232,8 +229,15 @@ public class AdapterSchoolActivity extends AppCompatActivity {
 //        }
         webView.addJavascriptInterface(specialArea, "sa");
         webView.loadUrl(url);
+
+        Map<String,String> params=new HashMap<>();
+        params.put("url",url);
+        StatManager.sendKVEvent(getContext(),"pf_jwdr_jzwy",params);
     }
 
+    public Context getContext(){
+        return this;
+    }
 
     @Override
     public void onBackPressed() {
@@ -255,24 +259,6 @@ public class AdapterSchoolActivity extends AppCompatActivity {
                 loadingProgressBar.hide();
             }
             else loadingProgressBar.show();
-
-            //河南理工大学教务兼容性处理
-            if(webView.getUrl()!=null){
-                if (webView.getUrl().startsWith("https://vpn.hpu.edu.cn/web/1/http/1/218.196.240.97/loginAction.do")) {
-                    webView.loadUrl("https://vpn.hpu.edu.cn/web/1/http/2/218.196.240.97/xkAction.do?actionType=6");
-                }
-
-                if(webView.getUrl().startsWith("https://vpn.hpu.edu.cn/por/service.csp?")){
-                    setUA(false);
-                    webView.loadUrl("https://vpn.hpu.edu.cn/web/1/http/0/218.196.240.97/");
-                }
-
-                if(webView.getUrl().startsWith("http://210.28.48.52/student2/studentWeb.asp")){
-                    displayTextView.setText("预测:前往课表页面 "+newProgress+"%...");
-                    ToastTools.show(AdapterSchoolActivity.this,"开始前往课表页面,如果无反应请反馈至1193600556@qq.com");
-                    webView.loadUrl("http://210.28.48.52/student2/student_kbtemp.asp");
-                }
-            }
         }
     }
 
@@ -280,17 +266,13 @@ public class AdapterSchoolActivity extends AppCompatActivity {
 
         @Override
         public void onNotFindTag() {
+            recordFailImport();
             onError("Tag标签未设置");
-            recordDataList.add(new MessageRecordData()
-                    .put("op","onNotFindTag"));
             finish();
         }
 
         @Override
         public void onFindTags(final String[] tags) {
-            recordDataList.add(new MessageRecordData()
-                    .put("op","onNotFindTag")
-                    .put("tags",tags.toString()));
 
             displayTextView.setText("预测:选择解析标签");
             AlertDialog.Builder builder = new AlertDialog.Builder(context());
@@ -299,9 +281,6 @@ public class AdapterSchoolActivity extends AppCompatActivity {
             builder.setItems(tags, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    recordDataList.add(new MessageRecordData()
-                            .put("op","parse tag")
-                            .put("tag",tags[i]));
                     jsSupport.callJs("parse('" + tags[i] + "')");
                     displayTextView.setText("预测:解析 "+tags[i]);
                 }
@@ -311,8 +290,6 @@ public class AdapterSchoolActivity extends AppCompatActivity {
 
         @Override
         public void onNotFindResult() {
-            recordDataList.add(new MessageRecordData()
-                    .put("op","onNotFindResult"));
             onError("未发现匹配");
             noMatchesLayout.setVisibility(View.VISIBLE);
             btnGroupLayout.setVisibility(View.GONE);
@@ -321,9 +298,6 @@ public class AdapterSchoolActivity extends AppCompatActivity {
         @Override
         public void onFindResult(List<ParseResult> result) {
             saveSchedule(result);
-            recordDataList.add(new MessageRecordData()
-                    .put("op","onFindResult")
-                    .put("data", GsonUtils.getGson().toJson(result)));
         }
 
         @Override
@@ -353,9 +327,6 @@ public class AdapterSchoolActivity extends AppCompatActivity {
             }
             html = content;
             jsSupport.parseHtml(context(),js);
-            recordDataList.add(new MessageRecordData()
-                    .put("op","showHtml")
-                    .put("html",html));
         }
 
         @Override
@@ -411,7 +382,12 @@ public class AdapterSchoolActivity extends AppCompatActivity {
                         handler.sendMessage(message);
                         return;
                     }
-                    if(html.indexOf("上课")!=-1&&html.indexOf("星期一")!=-1&&html.indexOf("星期二")!=-1&&html.indexOf("星期三")!=-1){
+                    if(html.indexOf("星期一")!=-1&&html.indexOf("星期二")!=-1){
+                        message.obj="预测:教务类型未知";
+                        handler.sendMessage(message);
+                        return;
+                    }
+                    if(html.indexOf("周一")!=-1&&html.indexOf("周二")!=-1){
                         message.obj="预测:教务类型未知";
                         handler.sendMessage(message);
                         return;
@@ -424,6 +400,8 @@ public class AdapterSchoolActivity extends AppCompatActivity {
         }
     }
 
+    private StringBuilder ycStringBuilder=new StringBuilder();
+
     Handler handler=new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -431,6 +409,7 @@ public class AdapterSchoolActivity extends AppCompatActivity {
             int what=msg.what;
             String content=msg.obj.toString();
             if(what>=nowIndex&&!TextUtils.isEmpty(content)){
+                ycStringBuilder.append(content);
                 displayTextView.setText(content);
                 nowIndex=what;
             }
@@ -443,9 +422,15 @@ public class AdapterSchoolActivity extends AppCompatActivity {
 
     public void saveSchedule(List<ParseResult> data) {
         if (data == null) {
+            recordFailImport();
             finish();
             return;
         }
+        Map<String,String> params=new HashMap<>();
+        params.put("size",""+data.size());
+        params.put("school",school);
+        params.put("success","1");
+        StatManager.sendKVEvent(getContext(),"pf_jwdr_success",params);
 
         //todo save
         ParseManager.setSuccess(true);
@@ -454,7 +439,18 @@ public class AdapterSchoolActivity extends AppCompatActivity {
         finish();
     }
 
+    private void recordFailImport(){
+        String yc=ycStringBuilder.toString();
+        Map<String,String> params=new HashMap<>();
+        params.put("size","0");
+        params.put("school",school);
+        params.put("success","0");
+        params.put("yc",yc);
+        StatManager.sendKVEvent(getContext(),"pf_jwdr_success",params);
+    }
+
     public void onBtnClicked() {
+        StatManager.sendKVEvent(getContext(),"pf_jwdr_jxkc",null);
         if(!isButtonClicked){
             AlertDialog.Builder builder = new AlertDialog.Builder(this)
                     .setTitle("重要内容!")
@@ -462,9 +458,6 @@ public class AdapterSchoolActivity extends AppCompatActivity {
                     .setPositiveButton("解析课表", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            recordDataList.add(new MessageRecordData()
-                                    .put("op","onBtnClicked0")
-                                    .put("html",html));
                             isButtonClicked=true;
                             jsSupport.getPageHtml("sa");
                         }
@@ -472,10 +465,8 @@ public class AdapterSchoolActivity extends AppCompatActivity {
                     .setNegativeButton("稍后解析", null);
             builder.create().show();
         }else{
+
             jsSupport.parseHtml(context(),js);
-            recordDataList.add(new MessageRecordData()
-                    .put("op","onBtnClicked")
-                    .put("html",html));
         }
     }
 
@@ -489,6 +480,7 @@ public class AdapterSchoolActivity extends AppCompatActivity {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 if(item.getItemId()==R.id.id_menu1){
+                    StatManager.sendKVEvent(getContext(),"pf_jwdr_wzdhq",null);
                     Intent intent=new Intent(AdapterSchoolActivity.this,AdapterSameTypeActivity.class);
                     intent.putExtra(AdapterSameTypeActivity.EXTRA_TYPE,type);
                     intent.putExtra(AdapterSameTypeActivity.EXTRA_JS,js);
@@ -504,6 +496,9 @@ public class AdapterSchoolActivity extends AppCompatActivity {
                     setUA(true);
                     webView.reload();
                 }
+                if(item.getItemId()==R.id.id_menu6){
+                    StatManager.sendKVEvent(getContext(),"pf_jwdr_fk",null);
+                }
                 return false;
             }
         });
@@ -512,8 +507,10 @@ public class AdapterSchoolActivity extends AppCompatActivity {
 
     public void setUA(boolean mobile){
         if(mobile){
+            StatManager.sendKVEvent(getContext(),"pf_jwdr_mobileua",null);
             webView.getSettings().setUserAgentString("Mozilla/5.0 (Linux; Android 7.1.1; Mi Note 3 Build/NMF26X; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/61.0.3163.98 Mobile Safari/537.36");
         }else{
+            StatManager.sendKVEvent(getContext(),"pf_jwdr_pcua",null);
             webView.getSettings().setUserAgentString("Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.80 Safari/537.36");
         }
     }

@@ -30,7 +30,6 @@ import com.zhuangfei.adapterlib.RecordEventManager;
 import com.zhuangfei.adapterlib.apis.TimetableRequest;
 import com.zhuangfei.adapterlib.apis.model.BaseResult;
 import com.zhuangfei.adapterlib.apis.model.ObjResult;
-import com.zhuangfei.adapterlib.recodeevent.LoginRecordData;
 import com.zhuangfei.adapterlib.station.TinyUserManager;
 import com.zhuangfei.adapterlib.station.UserManager;
 import com.zhuangfei.adapterlib.station.model.TinyUserInfo;

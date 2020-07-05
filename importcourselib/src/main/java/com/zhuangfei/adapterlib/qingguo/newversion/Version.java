@@ -1,4 +1,4 @@
-package com.zhuangfei.qingguo.newversion;
+package com.zhuangfei.adapterlib.qingguo.newversion;
 
 public class Version {
 

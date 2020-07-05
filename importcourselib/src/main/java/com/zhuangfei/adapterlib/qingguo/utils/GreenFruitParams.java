@@ -1,4 +1,4 @@
-package com.zhuangfei.qingguo.utils;
+package com.zhuangfei.adapterlib.qingguo.utils;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package com.zhuangfei.qingguo.utils;
+package com.zhuangfei.adapterlib.qingguo.utils;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

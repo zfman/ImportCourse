@@ -1,5 +1,6 @@
 package com.zhuangfei.adapterlib.activity;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -40,7 +41,6 @@ import com.zhuangfei.adapterlib.R;
 import com.zhuangfei.adapterlib.apis.model.SearchResultModel;
 import com.zhuangfei.adapterlib.activity.adapter.SearchSchoolAdapter;
 import com.zhuangfei.adapterlib.core.AssetTools;
-import com.zhuangfei.adapterlib.recodeevent.MessageRecordData;
 import com.zhuangfei.adapterlib.station.IStationOperator;
 import com.zhuangfei.adapterlib.station.IStationSearchOperator;
 import com.zhuangfei.adapterlib.station.StationManager;
@@ -135,6 +135,7 @@ public class SearchSchoolActivity extends AppCompatActivity implements OnCommonF
         }).start();
     }
 
+    @SuppressLint("HandlerLeak")
     Handler handler=new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -252,10 +253,6 @@ public class SearchSchoolActivity extends AppCompatActivity implements OnCommonF
         });
     }
 
-    public void onTagItemClick(String templateTag){
-        
-    }
-
     public void onItemClicked(int i) {
         final SearchResultModel model=models.get(i);
         if(model==null) return;
@@ -274,19 +271,6 @@ public class SearchSchoolActivity extends AppCompatActivity implements OnCommonF
         }
         else if(model.getType()==SearchResultModel.TYPE_XIQUER){
             onXuqerItemClicked(model);
-        }
-        //服务站
-        else{
-            handleItemClickedForStation(model);
-        }
-    }
-
-    private void handleItemClickedForCommon(SearchResultModel model){
-        Object templateObject=model.getObject();
-        if(templateObject instanceof List){
-            handleCommonParse((List<TemplateModel>) templateObject);
-        }else{
-            handleCommonCustomFunc(model);
         }
     }
 
@@ -316,43 +300,11 @@ public class SearchSchoolActivity extends AppCompatActivity implements OnCommonF
         if(baseJs==null){
             Toast.makeText(getContext(),"基础函数库发生异常，请联系qq:1193600556",Toast.LENGTH_SHORT).show();
         }
-        else if(templateModel.getTemplateTag().startsWith("custom/")){
-            if(templateModel.getTemplateTag().equals("custom/feedback")){
-                Intent intent= new Intent();
-                intent.setAction("android.intent.action.VIEW");
-                Uri content_url = Uri.parse("https://support.qq.com/products/162992");
-                intent.setData(content_url);
-                startActivity(intent);
-            }else if(templateModel.getTemplateTag().equals("custom/hezuo")){
-                Intent intent= new Intent();
-                intent.setAction("android.intent.action.VIEW");
-                Uri content_url = Uri.parse("https://support.qq.com/products/162992/blog/13478");
-                intent.setData(content_url);
-                startActivity(intent);
-            }
-            else{
-                Intent intent=new Intent(getContext(),AdapterTipActivity.class);
-                startActivity(intent);
-            }
-        }
         else {
-            toAdapterSameTypeActivity(templateModel.getTemplateName(),baseJs+templateModel.getTemplateJs());
-        }
-    }
-
-    private void handleCommonCustomFunc(SearchResultModel model){
-        TemplateModel templateModel = (TemplateModel) model.getObject();
-        if(baseJs==null){
-            Toast.makeText(this,"基础函数库发生异常，请联系qq:1193600556",Toast.LENGTH_SHORT).show();
-        }else if(templateModel.getTemplateTag().startsWith("custom/")){
-            if(templateModel.getTemplateTag().equals("custom/feedback")){
-                onTagItemClick(templateModel.getTemplateTag());
-            }else{
-                Intent intent=new Intent(this,AdapterTipActivity.class);
-                startActivity(intent);
+            if(templateModel.getStat() != null){
+                StatManager.sendKVEvent(getContext(),templateModel.getStat(),null);
             }
-        }else{
-            Toast.makeText(this,"TemplateModel:"+templateModel.getTemplateTag(),Toast.LENGTH_SHORT).show();
+            toAdapterSameTypeActivity(templateModel.getTemplateName(),baseJs+templateModel.getTemplateJs());
         }
     }
 
@@ -376,6 +328,10 @@ public class SearchSchoolActivity extends AppCompatActivity implements OnCommonF
         School school = (School) model.getObject();
         if(school!=null&&parseJsModel!=null){
             ShareTools.putString(this,"lastCLicked",school.getSchoolName());
+
+            Map<String,String> params=new HashMap<>();
+            params.put("school",school.getSchoolName());
+            StatManager.sendKVEvent(getContext(),"pf_jwdr",null);
             if(parseJsModel.getParsejs().startsWith("template/")){
                 TemplateModel searchModel=searchInTemplate(templateModels,parseJsModel.getParsejs());
                 if(baseJs==null){
@@ -398,11 +354,6 @@ public class SearchSchoolActivity extends AppCompatActivity implements OnCommonF
 
     private void handleItemClickedForStation(SearchResultModel model){
         StationModel stationModel=(StationModel) model.getObject();
-        if(stationModel!=null){
-            RecordEventManager.recordUserEvent(getContext(),RecordEventManager.TYPE_IMPORT,
-                    "goto tinyApp:"+stationModel.getName(),new MessageRecordData()
-                            .put("name",stationModel.getName()));
-        }
         getStationConfig((StationModel) model.getObject());
     }
 
@@ -411,6 +362,7 @@ public class SearchSchoolActivity extends AppCompatActivity implements OnCommonF
     }
 
     public void onXuqerItemClicked(SearchResultModel model){
+
         ActivityTools.toActivityWithout(this, XiquerLoginActivity.class,
                 new BundleModel()
                         .put("selectSchool",model.getObject()));
@@ -529,6 +481,10 @@ public class SearchSchoolActivity extends AppCompatActivity implements OnCommonF
         if(TextUtils.isEmpty(key)) {
             return;
         }
+
+        Map<String,String> statMap=new HashMap<>();
+        statMap.put("key",key);
+        StatManager.sendKVEvent(getContext(),"pf_ssxx",statMap);
 
         models.clear();
         allDatas.clear();
@@ -669,6 +625,12 @@ public class SearchSchoolActivity extends AppCompatActivity implements OnCommonF
             }
         }
         if(result==null) return;
+
+        Map<String,String> params=new HashMap<>();
+        params.put("oldv",""+nowTemplateVersion);
+        params.put("nowv",""+result.getTemplateVersion());
+        StatManager.sendKVEvent(getContext(),"pf_tyjx_qq",params);
+
         nowTemplateVersion=result.getTemplateVersion();
         List<School> list=result.getSchoolList();
         if (list == null) {
@@ -767,6 +729,7 @@ public class SearchSchoolActivity extends AppCompatActivity implements OnCommonF
 
     @Override
     public void onBackPressed() {
+        StatManager.sendKVEvent(getContext(),"pf_jwdr_fh",null);
         finish();
     }
 
@@ -776,6 +739,7 @@ public class SearchSchoolActivity extends AppCompatActivity implements OnCommonF
             return;
         }
         if(key.equals("common_import")){
+            StatManager.sendKVEvent(getContext(),"pf_tyjx",null);
             if(!checkTemplateJs()){
                 requestTemplateJs(new OnDoActionListener() {
                     @Override
@@ -791,21 +755,20 @@ public class SearchSchoolActivity extends AppCompatActivity implements OnCommonF
 
         }
         if(key.equals("scan_import")){
-
+            StatManager.sendKVEvent(getContext(),"pf_smdr",null);
         }
         if(key.equals("feedback")){
+            StatManager.sendKVEvent(getContext(),"pf_wtfk",null);
             Intent intent= new Intent();
             intent.setAction("android.intent.action.VIEW");
             Uri content_url = Uri.parse("https://support.qq.com/product/162820");
             intent.setData(content_url);
             startActivity(intent);
         }
-        if(key.equals("hezuo")){
-            AlertDialog.Builder builder=new AlertDialog.Builder(this)
-                    .setTitle("商务合作")
-                    .setMessage("目前适配平台提供数据接口等商务合作，具体事宜可联系邮箱：1193600556@qq.com 进行咨询")
-                    .setPositiveButton("确定",null);
-            builder.create().show();
+        if(key.equals("upload")){
+            StatManager.sendKVEvent(getContext(),"pf_sqsp",null);
+            Intent intent=new Intent(getContext(),AdapterTipActivity.class);
+            startActivity(intent);
         }
     }
 

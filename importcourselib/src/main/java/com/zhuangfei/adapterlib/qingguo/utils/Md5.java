@@ -1,4 +1,4 @@
-package com.zhuangfei.qingguo.utils;
+package com.zhuangfei.adapterlib.qingguo.utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

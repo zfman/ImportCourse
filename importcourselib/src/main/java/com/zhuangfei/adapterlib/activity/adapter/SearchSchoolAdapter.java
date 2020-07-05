@@ -16,7 +16,6 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.zhuangfei.adapterlib.R;
 import com.zhuangfei.adapterlib.activity.OnCommonFunctionClickListener;
 import com.zhuangfei.adapterlib.activity.StationWebViewActivity;
@@ -140,10 +139,10 @@ public class SearchSchoolAdapter extends BaseAdapter {
 //
 //                        }
 
-                        Glide.with(context).load(stationModel.getImg())
-                                .placeholder(R.drawable.ic_station_placeholder)
-                                .error(R.drawable.ic_station_placeholder)
-                                .into(holder.stationImageView);
+//                        Glide.with(context).load(stationModel.getImg())
+//                                .placeholder(R.drawable.ic_station_placeholder)
+//                                .error(R.drawable.ic_station_placeholder)
+//                                .into(holder.stationImageView);
                         holder.stationNameView.setText(stationModel.getName());
                         String tags=stationModel.getTag();
                         if(!TextUtils.isEmpty(tags)){
@@ -191,7 +190,7 @@ public class SearchSchoolAdapter extends BaseAdapter {
                     schoolViewHolder.cameraImportLayout=convertView.findViewById(R.id.ll_camera_import);
                     schoolViewHolder.scanImportLayout=convertView.findViewById(R.id.ll_scan_import);
                     schoolViewHolder.feedbackLayout=convertView.findViewById(R.id.ll_feedback);
-                    schoolViewHolder.hezuoLayout=convertView.findViewById(R.id.ll_hezuo);
+                    schoolViewHolder.uploadLayout=convertView.findViewById(R.id.ll_upload_html);
                     convertView.setTag(schoolViewHolder);
                 } else {
                     schoolViewHolder = (SchoolViewHolder) convertView.getTag();
@@ -202,14 +201,6 @@ public class SearchSchoolAdapter extends BaseAdapter {
                     public void onClick(View view) {
                         if(commonFunctionClickListener!=null){
                             commonFunctionClickListener.onCommonFunctionClicked("feedback");
-                        }
-                    }
-                });
-                schoolViewHolder.hezuoLayout.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if(commonFunctionClickListener!=null){
-                            commonFunctionClickListener.onCommonFunctionClicked("hezuo");
                         }
                     }
                 });
@@ -234,6 +225,14 @@ public class SearchSchoolAdapter extends BaseAdapter {
                     public void onClick(View view) {
                         if(commonFunctionClickListener!=null){
                             commonFunctionClickListener.onCommonFunctionClicked("scan_import");
+                        }
+                    }
+                });
+                schoolViewHolder.uploadLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if(commonFunctionClickListener!=null){
+                            commonFunctionClickListener.onCommonFunctionClicked("upload");
                         }
                     }
                 });
@@ -396,7 +395,7 @@ public class SearchSchoolAdapter extends BaseAdapter {
         public LinearLayout scanImportLayout;
         public LinearLayout commonImportLayout;
         public LinearLayout feedbackLayout;
-        public LinearLayout hezuoLayout;
+        public LinearLayout uploadLayout;
 
         public TextView schoolTextView;
         public TextView schoolTypeTextView;

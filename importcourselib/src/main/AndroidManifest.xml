@@ -4,8 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <application
-        android:name=".activity.MyApp">
+    <application>
 
         <activity
             android:name=".activity.UploadHtmlActivity"
@@ -30,13 +29,6 @@
             android:name=".activity.TinyAuthActivity"
             android:launchMode="singleTask"
             android:theme="@style/NoActionBarTheme" />
-        <activity
-            android:name=".activity.AdapterHomeActivity"
-            android:theme="@style/NoActionBarTheme" />
-        <activity android:name=".activity.video.VideoActivity"
-            android:theme="@style/NoActionBarTheme"
-            android:configChanges="orientation|screenSize|keyboardHidden"
-            android:screenOrientation="portrait"/>
 
         <activity android:name=".activity.qingguo.XiquerLoginActivity"
             android:theme="@style/NoActionBarTheme"/>

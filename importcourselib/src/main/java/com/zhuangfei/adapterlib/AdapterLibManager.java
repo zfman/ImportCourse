@@ -21,8 +21,7 @@ public class AdapterLibManager {
 
     //包名和appkey
     private static String appKey;
-
-    private static String appToken;
+    private static String stat;
 
     public static String getLibVersionName() {
         return libVersionName;
@@ -36,9 +35,13 @@ public class AdapterLibManager {
         return libVersionNumber;
     }
 
-    public static void register(String appkey,String appToken){
+    public static String getStat() {
+        return stat;
+    }
+
+    public static void register(String appkey, String stat){
         AdapterLibManager.appKey=appkey;
-        AdapterLibManager.appToken=appToken;
+
     }
 
     public static void checkUpdate(final Context context,String updateId, final OnVersionFindCallback callback){

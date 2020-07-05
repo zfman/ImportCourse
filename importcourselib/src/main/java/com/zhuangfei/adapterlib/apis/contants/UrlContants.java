@@ -55,6 +55,8 @@ public class UrlContants {
 
     public final static String URL_GET_PAY_ORDER="index.php?c=Adapter&a=getPayOrder";
 
+    public final static String URL_GET_SEARCH_FIX_TOP_CONFIG="searchFixTop.json";
+
 
     //新的接口
     public final static String URL_GET_ADAPTER_SCHOOLS_V2="index.php?c=AdapterV2&a=getAdapterListV2";

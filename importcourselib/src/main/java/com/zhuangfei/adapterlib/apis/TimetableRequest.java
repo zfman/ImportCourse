@@ -25,14 +25,14 @@ import com.zhuangfei.adapterlib.apis.model.TemplateJsV2;
 import com.zhuangfei.adapterlib.apis.model.UserDebugModel;
 import com.zhuangfei.adapterlib.apis.model.ValuePair;
 import com.zhuangfei.adapterlib.apis.model.WxPayResult;
+import com.zhuangfei.adapterlib.qingguo.ParamsManager;
+import com.zhuangfei.adapterlib.qingguo.utils.GreenFruitParams;
 import com.zhuangfei.adapterlib.station.TinyUserManager;
 import com.zhuangfei.adapterlib.station.model.TinyConfig;
 import com.zhuangfei.adapterlib.station.model.TinyUserInfo;
 import com.zhuangfei.adapterlib.utils.DeviceTools;
 import com.zhuangfei.adapterlib.utils.Md5Security;
 import com.zhuangfei.adapterlib.utils.PackageUtils;
-import com.zhuangfei.qingguo.ParamsManager;
-import com.zhuangfei.qingguo.utils.GreenFruitParams;
 import com.zhuangfei.toolkit.tools.ShareTools;
 
 import retrofit2.Call;
@@ -213,6 +213,12 @@ public class TimetableRequest {
     public static void getAdapterParseJs(Context context,int aid,Callback<ObjResult<ParseJsModel>> callback) {
         SchoolService schoolService=ApiUtils.getRetrofitForSchool(context).create(SchoolService.class);
         Call<ObjResult<ParseJsModel>> call=schoolService.getAdapterParsejs(""+aid);
+        call.enqueue(callback);
+    }
+
+    public static void getSearchFixTopConifg(Context context,Callback<ObjResult<TemplateJsV2>> callback) {
+        SchoolService schoolService=ApiUtils.getRetrofitForSchool(context).create(SchoolService.class);
+        Call<ObjResult<TemplateJsV2>> call=schoolService.getTemplateJs("");
         call.enqueue(callback);
     }
 

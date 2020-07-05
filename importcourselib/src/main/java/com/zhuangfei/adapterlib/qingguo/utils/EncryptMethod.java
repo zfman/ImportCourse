@@ -1,8 +1,7 @@
-package com.zhuangfei.qingguo.utils;
+package com.zhuangfei.adapterlib.qingguo.utils;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.widget.Toast;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;

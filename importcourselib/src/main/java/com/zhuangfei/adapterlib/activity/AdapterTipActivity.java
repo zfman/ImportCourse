@@ -14,10 +14,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.zhuangfei.adapterlib.R;
+import com.zhuangfei.adapterlib.StatManager;
 import com.zhuangfei.adapterlib.utils.ViewUtils;
 import com.zhuangfei.adapterlib.apis.TimetableRequest;
 import com.zhuangfei.adapterlib.apis.model.CheckModel;
 import com.zhuangfei.adapterlib.apis.model.ObjResult;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -110,6 +115,10 @@ public class AdapterTipActivity extends AppCompatActivity {
     }
 
     public void toUploadHtmlActivity(String url,String school){
+        Map<String,String> params=new HashMap<>();
+        params.put("url",url);
+        params.put("school",school);
+        StatManager.sendKVEvent(this,"pf_sqsp_goto",params);
         Intent intent=new Intent(this,UploadHtmlActivity.class);
         intent.putExtra(UploadHtmlActivity.EXTRA_URL,url);
         intent.putExtra(UploadHtmlActivity.EXTRA_SCHOOL,school);

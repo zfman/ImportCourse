@@ -1,1 +1,1 @@
-include ':app', ':importcourselib', ':toolkit', ':qingguo'
+include ':app', ':importcourselib', ':toolkit'

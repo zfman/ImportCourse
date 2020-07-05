@@ -15,12 +15,15 @@ import com.zhuangfei.adapterlib.apis.model.StationSpaceModel;
 import com.zhuangfei.adapterlib.apis.model.TemplateJsV2;
 import com.zhuangfei.adapterlib.apis.model.UserDebugModel;
 import com.zhuangfei.adapterlib.apis.model.WxPayResult;
+import com.zhuangfei.adapterlib.station.model.TinyConfig;
 import com.zhuangfei.adapterlib.station.model.TinyUserInfo;
 
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 
 /**
  * Created by Liu ZhuangFei on 2018/2/23.
@@ -135,4 +138,7 @@ public interface SchoolService {
     @POST(UrlContants.URL_GET_ADAPTER_PARSE_JS)
     @FormUrlEncoded
     Call<ObjResult<ParseJsModel>> getAdapterParsejs(@Field("aid") String aid);
+
+    @GET(UrlContants.URL_GET_SEARCH_FIX_TOP_CONFIG)
+    Call<TinyConfig> getSearchFixTopConfig(@Field("v") String v);
  }

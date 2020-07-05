@@ -10,6 +10,10 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
+        manifestPlaceholders = [
+                MTA_APPKEY:"AN99WT9QY7PC",
+                MTA_CHANNEL:"default"
+        ]
     }
     buildTypes {
         release {
@@ -31,4 +35,6 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation project(':importcourselib')
+    implementation 'com.qq.mta:mta:3.6.0-release'
+    implementation 'com.tencent.mid:mid:4.1.5-release'
 }

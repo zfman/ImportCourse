@@ -14,7 +14,11 @@ import android.widget.Toast;
 
 import com.zhuangfei.adapterlib.ParseManager;
 import com.zhuangfei.adapterlib.R;
+import com.zhuangfei.adapterlib.StatManager;
 import com.zhuangfei.adapterlib.utils.ViewUtils;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class AdapterSameTypeActivity extends AppCompatActivity {
 
@@ -70,6 +74,7 @@ public class AdapterSameTypeActivity extends AppCompatActivity {
         backImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                StatManager.sendKVEvent(AdapterSameTypeActivity.this,"pf_jwdr_wzdhq_fh",null);
                 finish();
             }
         });
@@ -81,6 +86,7 @@ public class AdapterSameTypeActivity extends AppCompatActivity {
         if (TextUtils.isEmpty(url)||(!url.startsWith("http")&&!url.startsWith("https"))) {
             Toast.makeText(this, "请输入有效的网址", Toast.LENGTH_SHORT).show();
         } else {
+            StatManager.sendKVEvent(this,"pf_jwdr_wzdhq_goto",null);
             toAdapterActivity("自定义网址",url,js);
         }
     }
@@ -98,6 +104,7 @@ public class AdapterSameTypeActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        StatManager.sendKVEvent(this,"pf_jwdr_wzdhq_fh",null);
         finish();
     }
 }

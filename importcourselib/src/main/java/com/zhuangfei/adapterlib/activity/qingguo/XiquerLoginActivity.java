@@ -13,14 +13,15 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.zhuangfei.adapterlib.ParseManager;
 import com.zhuangfei.adapterlib.R;
 import com.zhuangfei.adapterlib.RecordEventManager;
+import com.zhuangfei.adapterlib.StatManager;
 import com.zhuangfei.adapterlib.apis.TimetableRequest;
 import com.zhuangfei.adapterlib.apis.model.GreenFruitCourse;
 import com.zhuangfei.adapterlib.apis.model.GreenFruitProfile;
 import com.zhuangfei.adapterlib.apis.model.GreenFruitTerm;
 import com.zhuangfei.adapterlib.core.ParseResult;
-import com.zhuangfei.adapterlib.recodeevent.MessageRecordData;
 import com.zhuangfei.adapterlib.station.model.GreenFruitSchool;
 import com.zhuangfei.adapterlib.utils.GsonUtils;
 import com.zhuangfei.adapterlib.utils.TimetableUtils;
@@ -70,8 +71,6 @@ public class XiquerLoginActivity extends AppCompatActivity implements View.OnCli
     int number2=0;
     List<GreenFruitCourse> courseList;
     Map<String,String> courseMap;
-
-    List<MessageRecordData> recordDataList=new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,6 +122,9 @@ public class XiquerLoginActivity extends AppCompatActivity implements View.OnCli
         if(obj!=null&&obj instanceof GreenFruitSchool){
             selectSchool= (GreenFruitSchool) obj;
             userSchool.setText(selectSchool.getXxmc());
+            Map<String,String> params=new HashMap<>();
+            params.put("school",selectSchool.getXxmc());
+            StatManager.sendKVEvent(this,"pf_xiquer",params);
         }
     }
 
@@ -254,10 +256,6 @@ public class XiquerLoginActivity extends AppCompatActivity implements View.OnCli
                             userName.setText("");
                             userPassword.setText("");
                             userSchool.setText("请选择学校");
-                            RecordEventManager.recordUserEvent(getApplicationContext(), RecordEventManager.TYPE_IMPORT,
-                                    new MessageRecordData()
-                                            .put("school",selectSchool.getXxmc())
-                                            .put("events", GsonUtils.getGson().toJson(recordDataList)));
                             selectSchool=null;
                             if(number2>=26){
                                 ToastTools.show(getContext(),"该学期没有课程,请选择其他学期");
@@ -270,9 +268,6 @@ public class XiquerLoginActivity extends AppCompatActivity implements View.OnCli
                         loadingLayout.setVisibility(View.GONE);
                         addNumber();
                         ToastTools.show(getContext(),"Errot:"+t.getMessage());
-                        recordDataList.add(new MessageRecordData()
-                                .put("exception",t.getMessage())
-                                .put("when","get_qingguo_course_week:"+week));
                     }
                 });
     }
@@ -303,6 +298,14 @@ public class XiquerLoginActivity extends AppCompatActivity implements View.OnCli
         saveCourses(models,weekList5,5);
         saveCourses(models,weekList6,6);
         saveCourses(models,weekList7,7);
+
+        if(models.size()>0){
+            StatManager.sendKVEvent(getContext(),"pf_xiquer_success",null);
+            ParseManager.setSuccess(true);
+            ParseManager.setTimestamp(System.currentTimeMillis());
+            ParseManager.setData(models);
+        }
+        finish();
     }
 
     private void saveCourses(List<ParseResult> models, List<GreenFruitCourse.WeekBean> weekList1,int day) {
