@@ -9,11 +9,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 import com.zhuangfei.adapterlib.AdapterLibManager;
 import com.zhuangfei.adapterlib.activity.AdapterHomeActivity;
 import com.zhuangfei.adapterlib.activity.SearchSchoolActivity;
-import com.zhuangfei.adapterlib.cppinterface.CppInterface;
 
 public class MainActivity extends Activity {
 

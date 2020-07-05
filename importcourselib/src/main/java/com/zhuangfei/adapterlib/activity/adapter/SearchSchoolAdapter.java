@@ -190,11 +190,29 @@ public class SearchSchoolAdapter extends BaseAdapter {
                     schoolViewHolder.commonImportLayout=convertView.findViewById(R.id.ll_common_import);
                     schoolViewHolder.cameraImportLayout=convertView.findViewById(R.id.ll_camera_import);
                     schoolViewHolder.scanImportLayout=convertView.findViewById(R.id.ll_scan_import);
+                    schoolViewHolder.feedbackLayout=convertView.findViewById(R.id.ll_feedback);
+                    schoolViewHolder.hezuoLayout=convertView.findViewById(R.id.ll_hezuo);
                     convertView.setTag(schoolViewHolder);
                 } else {
                     schoolViewHolder = (SchoolViewHolder) convertView.getTag();
                 }
 
+                schoolViewHolder.feedbackLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if(commonFunctionClickListener!=null){
+                            commonFunctionClickListener.onCommonFunctionClicked("feedback");
+                        }
+                    }
+                });
+                schoolViewHolder.hezuoLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if(commonFunctionClickListener!=null){
+                            commonFunctionClickListener.onCommonFunctionClicked("hezuo");
+                        }
+                    }
+                });
                 schoolViewHolder.commonImportLayout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -377,6 +395,9 @@ public class SearchSchoolAdapter extends BaseAdapter {
         public LinearLayout cameraImportLayout;
         public LinearLayout scanImportLayout;
         public LinearLayout commonImportLayout;
+        public LinearLayout feedbackLayout;
+        public LinearLayout hezuoLayout;
+
         public TextView schoolTextView;
         public TextView schoolTypeTextView;
     }

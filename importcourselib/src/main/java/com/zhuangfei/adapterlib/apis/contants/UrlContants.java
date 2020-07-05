@@ -10,6 +10,10 @@ public class UrlContants {
 
     public final static String URL_TINY_BASE="http://www.liuzhuangfei.com/apis/area/station/";
 
+    //青果URL
+    public final static String URL_QINGGUO="wap/wapController.jsp";
+    public final static String URL_BASE_QINGGUO="http://www.xiqueer.com:8080/manager/";
+
     //保存数据
     public final static String URL_PUT_VALUE="index.php?c=Timetable&a=putValue";
 

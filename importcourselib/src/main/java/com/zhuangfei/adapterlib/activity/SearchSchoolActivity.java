@@ -28,6 +28,8 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.zhuangfei.adapterlib.AdapterLibManager;
 import com.zhuangfei.adapterlib.RecordEventManager;
+import com.zhuangfei.adapterlib.StatManager;
+import com.zhuangfei.adapterlib.activity.qingguo.XiquerLoginActivity;
 import com.zhuangfei.adapterlib.apis.model.ParseJsModel;
 import com.zhuangfei.adapterlib.apis.model.TemplateJsV2;
 import com.zhuangfei.adapterlib.callback.DefaultAdapterOperator;
@@ -57,11 +59,16 @@ import com.zhuangfei.adapterlib.apis.model.ObjResult;
 import com.zhuangfei.adapterlib.apis.model.School;
 import com.zhuangfei.adapterlib.apis.model.StationModel;
 import com.zhuangfei.adapterlib.apis.model.TemplateModel;
+import com.zhuangfei.toolkit.model.BundleModel;
+import com.zhuangfei.toolkit.tools.ActivityTools;
 import com.zhuangfei.toolkit.tools.ShareTools;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -105,6 +112,8 @@ public class SearchSchoolActivity extends AppCompatActivity implements OnCommonF
         initView();
         inits();
         loadSchools();
+        StatManager.sendKVEvent(this,"pf_search_enter",null);
+
     }
 
     protected StationSdk getStationSdk(){
@@ -402,7 +411,9 @@ public class SearchSchoolActivity extends AppCompatActivity implements OnCommonF
     }
 
     public void onXuqerItemClicked(SearchResultModel model){
-        Toast.makeText(getContext(),"请子类重写该方法",Toast.LENGTH_SHORT).show();
+        ActivityTools.toActivityWithout(this, XiquerLoginActivity.class,
+                new BundleModel()
+                        .put("selectSchool",model.getObject()));
     }
 
     public void getStationConfig(final StationModel stationModel){
@@ -536,6 +547,9 @@ public class SearchSchoolActivity extends AppCompatActivity implements OnCommonF
 //        searchStation(key);
         if (!TextUtils.isEmpty(key)) {
             setLoadLayout(true);
+            Map<String,String> params=new HashMap<>();
+            params.put("key",key);
+            StatManager.sendKVEvent(this,"pf_search_key",params);
             TimetableRequest.getAdapterSchoolsV2(this, key,packageMd5,appkey, time,sign,new Callback<ObjResult<AdapterResultV2>>() {
                 @Override
                 public void onResponse(Call<ObjResult<AdapterResultV2>> call, Response<ObjResult<AdapterResultV2>> response) {
@@ -778,6 +792,20 @@ public class SearchSchoolActivity extends AppCompatActivity implements OnCommonF
         }
         if(key.equals("scan_import")){
 
+        }
+        if(key.equals("feedback")){
+            Intent intent= new Intent();
+            intent.setAction("android.intent.action.VIEW");
+            Uri content_url = Uri.parse("https://support.qq.com/product/162820");
+            intent.setData(content_url);
+            startActivity(intent);
+        }
+        if(key.equals("hezuo")){
+            AlertDialog.Builder builder=new AlertDialog.Builder(this)
+                    .setTitle("商务合作")
+                    .setMessage("目前适配平台提供数据接口等商务合作，具体事宜可联系邮箱：1193600556@qq.com 进行咨询")
+                    .setPositiveButton("确定",null);
+            builder.create().show();
         }
     }
 
