@@ -32,44 +32,6 @@ public class MainActivity extends Activity {
         // Example of a call to a native method
         Button btn = (Button) findViewById(R.id.btn_goto_searchschool);
 
-        StatService.registerActivityLifecycleCallbacks(this.getApplication());
-        StatManager.register(new IStatSendCallback() {
-            @Override
-            public void sendKVEvent(Context context, String eventId, Map<String, String> params) {
-                Properties properties=new Properties();
-                if(params!=null){
-                    for(Map.Entry<String,String> entry:params.entrySet()){
-                        if(entry!=null){
-                            properties.setProperty(entry.getKey(),entry.getValue());
-                        }
-                    }
-                }
-                StatService.trackCustomKVEvent(getApplicationContext(),eventId,properties);
-            }
-
-            @Override
-            public void reportMultiAccount(Context context, StatManager.AccountType type, String v) {
-                StatMultiAccount.AccountType thisType=null;
-                if(type==StatManager.AccountType.OPEN_QQ){
-                    thisType=StatMultiAccount.AccountType.OPEN_QQ;
-                }else if(type==StatManager.AccountType.OPEN_WEIXIN){
-                    thisType=StatMultiAccount.AccountType.OPEN_WEIXIN;
-                }else if(type==StatManager.AccountType.GUEST_MODE){
-                    thisType=StatMultiAccount.AccountType.GUEST_MODE;
-                }else if(type==StatManager.AccountType.CUSTOM){
-                    thisType=StatMultiAccount.AccountType.CUSTOM;
-                }else{
-                    thisType=StatMultiAccount.AccountType.GUEST_MODE;
-                }
-                StatMultiAccount account = new StatMultiAccount(
-                        thisType, v);
-                long time = System.currentTimeMillis() / 1000;
-                // 登陆时间，单秒为秒
-                account.setLastTimeSec(time);
-                StatService.reportMultiAccount(context, account);
-            }
-        });
-
         Intent intent=getIntent();
         String appkey=intent.getStringExtra("appkey");
         if(!TextUtils.isEmpty(appkey)){

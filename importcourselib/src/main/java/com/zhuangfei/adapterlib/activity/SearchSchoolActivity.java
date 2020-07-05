@@ -756,6 +756,7 @@ public class SearchSchoolActivity extends AppCompatActivity implements OnCommonF
         }
         if(key.equals("scan_import")){
             StatManager.sendKVEvent(getContext(),"pf_smdr",null);
+            Toast.makeText(getContext(),"暂未开放",Toast.LENGTH_SHORT).show();
         }
         if(key.equals("feedback")){
             StatManager.sendKVEvent(getContext(),"pf_wtfk",null);

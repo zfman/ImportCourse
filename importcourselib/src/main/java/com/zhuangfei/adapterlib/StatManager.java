@@ -1,6 +1,7 @@
 package com.zhuangfei.adapterlib;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,13 +16,17 @@ public class StatManager {
 
     public static void sendKVEvent(Context context, String eventId, Map<String,String> params){
         try{
+            String stat=AdapterLibManager.getStat();
+            if(TextUtils.isEmpty(stat)){
+                stat="default";
+            }
             if(statSendCallback!=null){
                 if(params==null){
                     Map<String,String> newParams=new HashMap<>();
-                    newParams.put("from",AdapterLibManager.getStat());
+                    newParams.put("from",stat);
                     statSendCallback.sendKVEvent(context,eventId,newParams);
                 }else{
-                    params.put("from",AdapterLibManager.getStat());
+                    params.put("from",stat);
                     statSendCallback.sendKVEvent(context,eventId,params);
                 }
             }

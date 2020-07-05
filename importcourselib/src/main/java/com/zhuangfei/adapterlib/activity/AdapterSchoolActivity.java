@@ -1,13 +1,17 @@
 package com.zhuangfei.adapterlib.activity;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.http.SslError;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.ContentLoadingProgressBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -30,18 +34,16 @@ import com.zhuangfei.adapterlib.ParseManager;
 import com.zhuangfei.adapterlib.R;
 import com.zhuangfei.adapterlib.ShareManager;
 import com.zhuangfei.adapterlib.StatManager;
+import com.zhuangfei.adapterlib.activity.scan.ScanImportActivity;
 import com.zhuangfei.adapterlib.apis.model.ValuePair;
 import com.zhuangfei.adapterlib.callback.IAdapterOperator;
 import com.zhuangfei.adapterlib.callback.OnValueCallback;
-import com.zhuangfei.adapterlib.utils.GsonUtils;
 import com.zhuangfei.adapterlib.utils.ViewUtils;
 import com.zhuangfei.adapterlib.core.IArea;
 import com.zhuangfei.adapterlib.core.JsSupport;
 import com.zhuangfei.adapterlib.core.ParseResult;
 import com.zhuangfei.adapterlib.core.SpecialArea;
-import com.zhuangfei.toolkit.tools.ToastTools;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -85,8 +87,6 @@ public class AdapterSchoolActivity extends AppCompatActivity {
     public int nowIndex=0;
     TextView tv;
 
-    private IAdapterOperator operator;
-
     public static String htmlCode=null;
 
     @Override
@@ -117,7 +117,6 @@ public class AdapterSchoolActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        operator= (IAdapterOperator) getIntent().getSerializableExtra("operator");
         webView=findViewById(R.id.id_webview);
         titleTextView=findViewById(R.id.id_web_title);
         popmenuImageView=findViewById(R.id.id_webview_help);
@@ -183,12 +182,37 @@ public class AdapterSchoolActivity extends AppCompatActivity {
                     .setPositiveButton("扫码", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            if(operator!=null){
-                                operator.toScan(AdapterSchoolActivity.this);
-                            }
+                            checkReadPermission();
                         }
                     }).setNegativeButton("取消",null);
             builder.create().show();
+        }
+    }
+
+    private void checkReadPermission() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED&&
+                ContextCompat.checkSelfPermission(this,
+                Manifest.permission.VIBRATE) == PackageManager.PERMISSION_GRANTED) {
+            Intent intent=new Intent(getContext(), ScanImportActivity.class);
+            startActivity(intent);
+        } else {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA,Manifest.permission.VIBRATE},
+                    10);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case 10:
+                if (permissions.length != 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(this, "请允许相机权限后再试", Toast.LENGTH_SHORT).show();
+                } else {
+                    Intent intent=new Intent(getContext(), ScanImportActivity.class);
+                    startActivity(intent);
+                }
+                break;
         }
     }
 
@@ -291,8 +315,7 @@ public class AdapterSchoolActivity extends AppCompatActivity {
         @Override
         public void onNotFindResult() {
             onError("未发现匹配");
-            noMatchesLayout.setVisibility(View.VISIBLE);
-            btnGroupLayout.setVisibility(View.GONE);
+            finish();
         }
 
         @Override
