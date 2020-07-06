@@ -9,6 +9,15 @@ public class AdapterResultV2 {
     private List<TemplateModel> template;
     private String base;
     private List<School> schoolList;
+    private int templateVersion = 0;
+
+    public void setTemplateVersion(int templateVersion) {
+        this.templateVersion = templateVersion;
+    }
+
+    public int getTemplateVersion() {
+        return templateVersion;
+    }
 
     public List<TemplateModel> getTemplate() {
         return template;

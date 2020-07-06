@@ -6,6 +6,10 @@ import android.widget.Toast;
 
 import com.zhuangfei.adapterlib.AdapterLibManager;
 import com.zhuangfei.adapterlib.R;
+import com.zhuangfei.adapterlib.apis.model.GreenFruitCourse;
+import com.zhuangfei.adapterlib.apis.model.GreenFruitProfile;
+import com.zhuangfei.adapterlib.apis.model.GreenFruitTerm;
+import com.zhuangfei.adapterlib.apis.model.ParseJsModel;
 import com.zhuangfei.adapterlib.apis.model.School;
 import com.zhuangfei.adapterlib.apis.model.StationModel;
 import com.zhuangfei.adapterlib.apis.model.AdapterInfo;
@@ -17,9 +21,12 @@ import com.zhuangfei.adapterlib.apis.model.HtmlSummary;
 import com.zhuangfei.adapterlib.apis.model.ListResult;
 import com.zhuangfei.adapterlib.apis.model.ObjResult;
 import com.zhuangfei.adapterlib.apis.model.StationSpaceModel;
+import com.zhuangfei.adapterlib.apis.model.TemplateJsV2;
 import com.zhuangfei.adapterlib.apis.model.UserDebugModel;
 import com.zhuangfei.adapterlib.apis.model.ValuePair;
 import com.zhuangfei.adapterlib.apis.model.WxPayResult;
+import com.zhuangfei.adapterlib.qingguo.ParamsManager;
+import com.zhuangfei.adapterlib.qingguo.utils.GreenFruitParams;
 import com.zhuangfei.adapterlib.station.TinyUserManager;
 import com.zhuangfei.adapterlib.station.model.TinyConfig;
 import com.zhuangfei.adapterlib.station.model.TinyUserInfo;
@@ -194,6 +201,45 @@ public class TimetableRequest {
                 .create(SchoolService.class);
         String token= TinyUserManager.get(context).getToken();
         Call<ObjResult<WxPayResult>> call=service.getWxPayOrder(token,goodName);
+        call.enqueue(callback);
+    }
+
+    public static void getTemplateJs(Context context,Callback<ObjResult<TemplateJsV2>> callback) {
+        SchoolService schoolService=ApiUtils.getRetrofitForSchool(context).create(SchoolService.class);
+        Call<ObjResult<TemplateJsV2>> call=schoolService.getTemplateJs("");
+        call.enqueue(callback);
+    }
+
+    public static void getAdapterParseJs(Context context,int aid,Callback<ObjResult<ParseJsModel>> callback) {
+        SchoolService schoolService=ApiUtils.getRetrofitForSchool(context).create(SchoolService.class);
+        Call<ObjResult<ParseJsModel>> call=schoolService.getAdapterParsejs(""+aid);
+        call.enqueue(callback);
+    }
+
+    public static void getSearchFixTopConifg(Context context,Callback<ObjResult<TemplateJsV2>> callback) {
+        SchoolService schoolService=ApiUtils.getRetrofitForSchool(context).create(SchoolService.class);
+        Call<ObjResult<TemplateJsV2>> call=schoolService.getTemplateJs("");
+        call.enqueue(callback);
+    }
+
+    public static void loginGreenFruit(Context context,String schoolId,String loginId,String password,Callback<GreenFruitProfile> callback) {
+        TimetableService service=ApiUtils.getRetrofitForGreenFruit(context).create(TimetableService.class);
+        GreenFruitParams params= ParamsManager.get(context).getLoginParams(schoolId,loginId,password);
+        Call<GreenFruitProfile> call=service.loginGreenFruit(params.getParam(),params.getParam2(),params.getToken(),params.getAppinfo());
+        call.enqueue(callback);
+    }
+
+    public static void getGreenFruitCourse(Context context,String loginId,String userType,String termId,String week,String token,Callback<GreenFruitCourse> callback) {
+        TimetableService service=ApiUtils.getRetrofitForGreenFruit(context).create(TimetableService.class);
+        GreenFruitParams params= ParamsManager.get(context).getCourseParams(loginId,userType,termId,week,token);
+        Call<GreenFruitCourse> call=service.getGreenFruitCourse(params.getParam(),params.getParam2(),params.getToken(),params.getAppinfo());
+        call.enqueue(callback);
+    }
+
+    public static void getGreenFruitTerm(Context context,String userId,String userType,String token,Callback<GreenFruitTerm> callback) {
+        TimetableService service=ApiUtils.getRetrofitForGreenFruit(context).create(TimetableService.class);
+        GreenFruitParams params= ParamsManager.get(context).getTermParams(userId,userType,token);
+        Call<GreenFruitTerm> call=service.getGreenFruitTerm(params.getParam(),params.getParam2(),params.getToken(),params.getAppinfo());
         call.enqueue(callback);
     }
 }

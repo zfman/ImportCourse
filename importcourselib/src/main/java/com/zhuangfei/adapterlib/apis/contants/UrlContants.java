@@ -10,27 +10,15 @@ public class UrlContants {
 
     public final static String URL_TINY_BASE="http://www.liuzhuangfei.com/apis/area/station/";
 
+    //青果URL
+    public final static String URL_QINGGUO="wap/wapController.jsp";
+    public final static String URL_BASE_QINGGUO="http://www.xiqueer.com:8080/manager/";
+
     //保存数据
     public final static String URL_PUT_VALUE="index.php?c=Timetable&a=putValue";
 
     //获取数据
     public final static String URL_GET_VALUE="index.php?c=Timetable&a=getValue";
-
-    //根据专业获取课程
-    public final static String URL_GET_BY_MAJOR="index.php?c=Timetable&a=getByMajor";
-
-    //根据专业名称模糊搜索
-    public final static String URL_FIND_MAJOR="index.php?c=Timetable&a=findMajor";
-
-    //通过课程名搜索
-    public final static String URL_GET_BY_NAME="index.php?c=Timetable&a=getByName";
-
-    public final static String URL_ISSUES="https://github.com/zfman/HpuTimetableClient/issues";
-
-    //获取已适配学校列表
-    public final static String URL_GET_ADAPTER_SCHOOLS="index.php?c=Adapter&a=getAdapterList";
-
-    public final static String URL_GET_ADAPTER_SCHOOLS_V2="index.php?c=Adapter&a=getAdapterListV2";
 
     public final static String URL_BASE_SCHOOLS="http://www.liuzhuangfei.com/apis/area/";
 
@@ -66,5 +54,15 @@ public class UrlContants {
     public final static String URL_RECORD_USER_EVENT="index.php?c=Adapter&a=recordUserEvent";
 
     public final static String URL_GET_PAY_ORDER="index.php?c=Adapter&a=getPayOrder";
+
+    public final static String URL_GET_SEARCH_FIX_TOP_CONFIG="searchFixTop.json";
+
+
+    //新的接口
+    public final static String URL_GET_ADAPTER_SCHOOLS_V2="index.php?c=AdapterV2&a=getAdapterListV2";
+    public final static String URL_GET_TEMPLATE_JS="index.php?c=AdapterV2&a=getTemplateJs";
+    public final static String URL_GET_ADAPTER_PARSE_JS="index.php?c=AdapterV2&a=getAdapterParseJs";
+    public final static String URL_GET_ADAPTER_APPS_INFO="index.php?c=AdapterV2&a=getAdapterAppsInfo";
+    public final static String URL_NOTIFY_ADAPTER_RESULT="index.php?c=AdapterV2&a=notifyAdapterResult";
 
 }

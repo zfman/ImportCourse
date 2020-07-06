@@ -9,6 +9,15 @@ public class TemplateModel implements Serializable{
     private String templateName;
     private String templateTag;
     private String templateJs;
+    private String stat;
+
+    public void setStat(String stat) {
+        this.stat = stat;
+    }
+
+    public String getStat() {
+        return stat;
+    }
 
     public String getTemplateName() {
         return templateName;

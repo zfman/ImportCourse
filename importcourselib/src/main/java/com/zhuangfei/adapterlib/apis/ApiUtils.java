@@ -6,6 +6,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.zhuangfei.adapterlib.apis.contants.UrlContants;
 
+import java.util.concurrent.TimeUnit;
+
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -54,6 +56,21 @@ public class ApiUtils {
         Retrofit retrofit = new Retrofit.Builder()
                 .client(builder)
                 .baseUrl(UrlContants.URL_TINY_BASE)
+                .addConverterFactory(GsonConverterFactory.create(getGson()))
+                .build();
+        return retrofit;
+    }
+
+    public static Retrofit getRetrofitForGreenFruit(Context context) {
+        OkHttpClient builder = new OkHttpClient.Builder()
+                .connectTimeout(1, TimeUnit.MINUTES)
+                .readTimeout(2, TimeUnit.MINUTES)
+                .writeTimeout(2, TimeUnit.MINUTES)
+                .build();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .client(builder)
+                .baseUrl(UrlContants.URL_BASE_QINGGUO)
                 .addConverterFactory(GsonConverterFactory.create(getGson()))
                 .build();
         return retrofit;

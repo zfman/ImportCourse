@@ -1,5 +1,6 @@
 package com.zhuangfei.adapterlib.activity;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -28,6 +29,10 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.zhuangfei.adapterlib.AdapterLibManager;
 import com.zhuangfei.adapterlib.RecordEventManager;
+import com.zhuangfei.adapterlib.StatManager;
+import com.zhuangfei.adapterlib.activity.qingguo.XiquerLoginActivity;
+import com.zhuangfei.adapterlib.apis.model.ParseJsModel;
+import com.zhuangfei.adapterlib.apis.model.TemplateJsV2;
 import com.zhuangfei.adapterlib.callback.DefaultAdapterOperator;
 import com.zhuangfei.adapterlib.callback.IAdapterOperator;
 import com.zhuangfei.adapterlib.callback.OnVersionFindCallback;
@@ -36,7 +41,6 @@ import com.zhuangfei.adapterlib.R;
 import com.zhuangfei.adapterlib.apis.model.SearchResultModel;
 import com.zhuangfei.adapterlib.activity.adapter.SearchSchoolAdapter;
 import com.zhuangfei.adapterlib.core.AssetTools;
-import com.zhuangfei.adapterlib.recodeevent.MessageRecordData;
 import com.zhuangfei.adapterlib.station.IStationOperator;
 import com.zhuangfei.adapterlib.station.IStationSearchOperator;
 import com.zhuangfei.adapterlib.station.StationManager;
@@ -55,15 +59,21 @@ import com.zhuangfei.adapterlib.apis.model.ObjResult;
 import com.zhuangfei.adapterlib.apis.model.School;
 import com.zhuangfei.adapterlib.apis.model.StationModel;
 import com.zhuangfei.adapterlib.apis.model.TemplateModel;
+import com.zhuangfei.toolkit.model.BundleModel;
+import com.zhuangfei.toolkit.tools.ActivityTools;
+import com.zhuangfei.toolkit.tools.ShareTools;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public abstract class SearchSchoolActivity extends AppCompatActivity {
+public class SearchSchoolActivity extends AppCompatActivity implements OnCommonFunctionClickListener {
 
     private static final String TAG = "SearchSchoolActivity";
     protected Activity context;
@@ -90,6 +100,10 @@ public abstract class SearchSchoolActivity extends AppCompatActivity {
     List<GreenFruitSchool> allSchool;
     IAdapterOperator adapterOperator;
 
+    TemplateJsV2 localTemplateJsV2;
+    ParseJsModel parseJsModel;
+    int nowTemplateVersion=0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,6 +112,8 @@ public abstract class SearchSchoolActivity extends AppCompatActivity {
         initView();
         inits();
         loadSchools();
+        StatManager.sendKVEvent(this,"pf_search_enter",null);
+
     }
 
     protected StationSdk getStationSdk(){
@@ -119,6 +135,7 @@ public abstract class SearchSchoolActivity extends AppCompatActivity {
         }).start();
     }
 
+    @SuppressLint("HandlerLeak")
     Handler handler=new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -158,10 +175,18 @@ public abstract class SearchSchoolActivity extends AppCompatActivity {
     private void inits() {
         context = this;
         ParseManager.clearCache();
+        String localJson=sp.getString("TemplateJsV2",null);
+        if(!TextUtils.isEmpty(localJson)){
+            localTemplateJsV2=GsonUtils.getGson().fromJson(localJson,TemplateJsV2.class);
+            if(localTemplateJsV2!=null){
+                templateModels=localTemplateJsV2.getTemplate();
+                baseJs=localTemplateJsV2.getBase();
+            }
+        }
 
         models = new ArrayList<>();
         allDatas=new ArrayList<>();
-        searchAdapter = new SearchSchoolAdapter(this, allDatas,models);
+        searchAdapter = new SearchSchoolAdapter(this, allDatas,models,this);
         searchListView.setAdapter(searchAdapter);
         searchEditText.addTextChangedListener(textWatcher);
 
@@ -195,7 +220,12 @@ public abstract class SearchSchoolActivity extends AppCompatActivity {
         if(!TextUtils.isEmpty(searchKey)){
             search("recommend://"+searchKey);
         }else{
-            search("recommend://");
+            searchKey=ShareTools.getString(this,"lastCLicked",null);
+            if(!TextUtils.isEmpty(searchKey)){
+                search("recommend://"+searchKey);
+            }else{
+                search("recommend://");
+            }
         }
 
         adapterOperator= getAdapterOperator();
@@ -223,113 +253,119 @@ public abstract class SearchSchoolActivity extends AppCompatActivity {
         });
     }
 
-    public abstract void onTagItemClick(String templateTag);
-
     public void onItemClicked(int i) {
-        SearchResultModel model=models.get(i);
+        final SearchResultModel model=models.get(i);
         if(model==null) return;
-        //通用算法解析
-        if(model.getType()==SearchResultModel.TYPE_COMMON){
-            Object templateObject=model.getObject();
-            if(templateObject instanceof List){
-                final List<TemplateModel> templateModels= (List<TemplateModel>) templateObject;
-                if(templateModels!=null){
-                    String[] items=new String[templateModels.size()];
-                    for(int r=0;r<items.length;r++){
-                        items[r]=templateModels.get(r).getTemplateName();
-                    }
-                    SoftInputUtils.hideInput(getContext());
-                    AlertDialog.Builder builder=new AlertDialog.Builder(this)
-                            .setTitle("选择通用模板")
-                            .setItems(items, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    TemplateModel templateModel = (TemplateModel) templateModels.get(i);
-                                    if (templateModel!=null){
-                                        if(baseJs==null){
-                                            Toast.makeText(getContext(),"基础函数库发生异常，请联系qq:1193600556",Toast.LENGTH_SHORT).show();
-                                        }else if(templateModel.getTemplateTag().startsWith("custom/")){
-                                            if(templateModel.getTemplateTag().equals("custom/feedback")){
-                                                onTagItemClick(templateModel.getTemplateTag());
-                                            }else{
-                                                Intent intent=new Intent(getContext(),AdapterTipActivity.class);
-                                                startActivity(intent);
-                                            }
-                                        }
-                                        else {
-                                            toAdapterSameTypeActivity(templateModel.getTemplateName(),baseJs+templateModel.getTemplateJs());
-                                        }
-                                    }
-                                }
-                            });
-                    builder.create().show();
-                }
-            }else{
-                TemplateModel templateModel = (TemplateModel) model.getObject();
-                if(baseJs==null){
-                    Toast.makeText(this,"基础函数库发生异常，请联系qq:1193600556",Toast.LENGTH_SHORT).show();
-                }else if(templateModel.getTemplateTag().startsWith("custom/")){
-                    if(templateModel.getTemplateTag().equals("custom/feedback")){
-                        onTagItemClick(templateModel.getTemplateTag());
-                    }else{
-                        Intent intent=new Intent(this,AdapterTipActivity.class);
-                        startActivity(intent);
-                    }
-                }else{
-                    Toast.makeText(this,"TemplateModel:"+templateModel.getTemplateTag(),Toast.LENGTH_SHORT).show();
-                }
-            }
-
-        }
         //学校教务导入
-        else if(model.getType()==SearchResultModel.TYPE_SCHOOL){
-            School school = (School) model.getObject();
-            if(school!=null){
-                if(school.getParsejs()!=null&&school.getParsejs().startsWith("template/")){
-                    TemplateModel searchModel=searchInTemplate(templateModels,school.getParsejs());
-                    if(baseJs==null){
-                        Toast.makeText(this,"基础函数库发生异常，请联系qq:1193600556",Toast.LENGTH_SHORT).show();
-                        return;
+        if(model.getType()==SearchResultModel.TYPE_SCHOOL){
+            if(!checkTemplateJs()){
+                requestTemplateJs(new OnDoActionListener() {
+                    @Override
+                    public void doActionAfter() {
+                        handleItemClickedForSchool(model);
                     }
-                    if(searchModel!=null){
-                        toAdapterSchoolActivity(school.getSchoolName(),
-                                school.getUrl(),
-                                school.getType(),
-                                searchModel.getTemplateJs()+baseJs);
-                    }else {
-                        Toast.makeText(this,"通用解析模板发生异常，请联系qq:1193600556",Toast.LENGTH_SHORT).show();
-                    }
-                }else{
-                    toAdapterSchoolActivity(school.getSchoolName(),school.getUrl(),school.getType(),school.getParsejs());
-                }
+                });
+            }else{
+                handleItemClickedForSchool(model);
             }
         }
         else if(model.getType()==SearchResultModel.TYPE_XIQUER){
-            GreenFruitSchool school = (GreenFruitSchool) model.getObject();
-            onXuqerItemClicked(school);
-//            GreenFruitSchool school = (GreenFruitSchool) model.getObject();
-//            ActivityTools.toActivityWithout(this, LoginActivity.class,
-//                    new BundleModel()
-//                            .put("selectSchool",school));
+            onXuqerItemClicked(model);
         }
-        //服务站
-        else{
-            StationModel stationModel=(StationModel) model.getObject();
-            if(stationModel!=null){
-                RecordEventManager.recordUserEvent(getContext(),RecordEventManager.TYPE_IMPORT,
-                        "goto tinyApp:"+stationModel.getName(),new MessageRecordData()
-                        .put("name",stationModel.getName()));
+    }
+
+    private void handleCommonParse(final List<TemplateModel> templateModels){
+        if(templateModels!=null){
+            String[] items=new String[templateModels.size()];
+            for(int r=0;r<items.length;r++){
+                items[r]=templateModels.get(r).getTemplateName();
             }
-            getStationConfig((StationModel) model.getObject());
+            SoftInputUtils.hideInput(getContext());
+            AlertDialog.Builder builder=new AlertDialog.Builder(this)
+                    .setTitle("选择通用模板")
+                    .setItems(items, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            TemplateModel templateModel = (TemplateModel) templateModels.get(i);
+                            if (templateModel!=null){
+                                handleCustomTemplate(templateModel);
+                            }
+                        }
+                    });
+            builder.create().show();
         }
+    }
+
+    private void handleCustomTemplate(TemplateModel templateModel){
+        if(baseJs==null){
+            Toast.makeText(getContext(),"基础函数库发生异常，请联系qq:1193600556",Toast.LENGTH_SHORT).show();
+        }
+        else {
+            if(templateModel.getStat() != null){
+                StatManager.sendKVEvent(getContext(),templateModel.getStat(),null);
+            }
+            toAdapterSameTypeActivity(templateModel.getTemplateName(),baseJs+templateModel.getTemplateJs());
+        }
+    }
+
+    private void handleItemClickedForSchool(final SearchResultModel model){
+        if(parseJsModel==null||parseJsModel.getParsejs()==null){
+            School school = (School) model.getObject();
+            if(school!=null){
+                requestParseJs(school.getAid(), new OnDoActionListener() {
+                    @Override
+                    public void doActionAfter() {
+                        realHandleItemClickedForSchool(model);
+                    }
+                });
+            }
+        }else{
+            realHandleItemClickedForSchool(model);
+        }
+    }
+
+    private void realHandleItemClickedForSchool(SearchResultModel model){
+        School school = (School) model.getObject();
+        if(school!=null&&parseJsModel!=null){
+            ShareTools.putString(this,"lastCLicked",school.getSchoolName());
+
+            Map<String,String> params=new HashMap<>();
+            params.put("school",school.getSchoolName());
+            StatManager.sendKVEvent(getContext(),"pf_jwdr",null);
+            if(parseJsModel.getParsejs().startsWith("template/")){
+                TemplateModel searchModel=searchInTemplate(templateModels,parseJsModel.getParsejs());
+                if(baseJs==null){
+                    Toast.makeText(this,"基础函数库发生异常，请联系qq:1193600556",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if(searchModel!=null){
+                    toAdapterSchoolActivity(school.getSchoolName(),
+                            school.getUrl(),
+                            school.getType(),
+                            searchModel.getTemplateJs()+baseJs);
+                }else {
+                    Toast.makeText(this,"通用解析模板发生异常，请联系qq:1193600556",Toast.LENGTH_SHORT).show();
+                }
+            }else{
+                toAdapterSchoolActivity(school.getSchoolName(),school.getUrl(),school.getType(),parseJsModel.getParsejs());
+            }
+        }
+    }
+
+    private void handleItemClickedForStation(SearchResultModel model){
+        StationModel stationModel=(StationModel) model.getObject();
+        getStationConfig((StationModel) model.getObject());
     }
 
     protected IAdapterOperator getAdapterOperator(){
-        return new DefaultAdapterOperator(getContext());
+        return new DefaultAdapterOperator();
     }
 
-    public void onXuqerItemClicked(GreenFruitSchool school){
-        Toast.makeText(getContext(),"请子类重写该方法",Toast.LENGTH_SHORT).show();
+    public void onXuqerItemClicked(SearchResultModel model){
+
+        ActivityTools.toActivityWithout(this, XiquerLoginActivity.class,
+                new BundleModel()
+                        .put("selectSchool",model.getObject()));
     }
 
     public void getStationConfig(final StationModel stationModel){
@@ -446,6 +482,10 @@ public abstract class SearchSchoolActivity extends AppCompatActivity {
             return;
         }
 
+        Map<String,String> statMap=new HashMap<>();
+        statMap.put("key",key);
+        StatManager.sendKVEvent(getContext(),"pf_ssxx",statMap);
+
         models.clear();
         allDatas.clear();
 
@@ -460,12 +500,12 @@ public abstract class SearchSchoolActivity extends AppCompatActivity {
             return;
         }
 
-        searchStation(key);
+//        searchStation(key);
         if (!TextUtils.isEmpty(key)) {
-            RecordEventManager.recordUserEvent(this,RecordEventManager.TYPE_SEARCH,"search key:"+key,
-                    new MessageRecordData()
-            .put("key",key));
             setLoadLayout(true);
+            Map<String,String> params=new HashMap<>();
+            params.put("key",key);
+            StatManager.sendKVEvent(this,"pf_search_key",params);
             TimetableRequest.getAdapterSchoolsV2(this, key,packageMd5,appkey, time,sign,new Callback<ObjResult<AdapterResultV2>>() {
                 @Override
                 public void onResponse(Call<ObjResult<AdapterResultV2>> call, Response<ObjResult<AdapterResultV2>> response) {
@@ -488,10 +528,6 @@ public abstract class SearchSchoolActivity extends AppCompatActivity {
                 @Override
                 public void onFailure(Call<ObjResult<AdapterResultV2>> call, Throwable t) {
                     setLoadLayout(false);
-                    RecordEventManager.recordUserEvent(getContext(),RecordEventManager.TYPE_EXCEPTION,
-                            "search key:"+key,new MessageRecordData()
-                    .put("exception",t.getMessage())
-                    .put("when","search school key:"+key));
                 }
             });
         }
@@ -589,46 +625,41 @@ public abstract class SearchSchoolActivity extends AppCompatActivity {
             }
         }
         if(result==null) return;
-        baseJs=result.getBase();
-        templateModels=result.getTemplate();
+
+        Map<String,String> params=new HashMap<>();
+        params.put("oldv",""+nowTemplateVersion);
+        params.put("nowv",""+result.getTemplateVersion());
+        StatManager.sendKVEvent(getContext(),"pf_tyjx_qq",params);
+
+        nowTemplateVersion=result.getTemplateVersion();
         List<School> list=result.getSchoolList();
         if (list == null) {
             return;
         }
 
-        if(templateModels!=null){
-            SearchResultModel searchResultModel = new SearchResultModel();
-            searchResultModel.setType(SearchResultModel.TYPE_COMMON);
-            searchResultModel.setObject(templateModels);
-            List<TemplateModel> findModels=new ArrayList<>();
-            for (TemplateModel model : templateModels) {
-                if(firstStatus||(model.getTemplateName()!=null&&model.getTemplateName().toUpperCase().indexOf(key.toUpperCase())!=-1)){
-                    findModels.add(model);
-                }
-            }
-            if(!findModels.isEmpty()){
-                addModelToList(searchResultModel);
-            }
-        }
+        SearchResultModel searchResultModel = new SearchResultModel();
+        searchResultModel.setType(SearchResultModel.TYPE_COMMON);
+        addModelToList(searchResultModel);
 
         if(allSchool!=null){
             for (GreenFruitSchool schoolBean : allSchool) {
                 if (schoolBean.getXxmc() != null && schoolBean.getXxmc().indexOf(key) != -1) {
-                    SearchResultModel searchResultModel = new SearchResultModel();
-                    searchResultModel.setType(SearchResultModel.TYPE_XIQUER);
-                    searchResultModel.setObject(schoolBean);
-                    addModelToList(searchResultModel);
+                    SearchResultModel searchResultModel2 = new SearchResultModel();
+                    searchResultModel2.setType(SearchResultModel.TYPE_XIQUER);
+                    searchResultModel2.setObject(schoolBean);
+                    addModelToList(searchResultModel2);
                 }
             }
         }
 
         for (School schoolBean : list) {
-            SearchResultModel searchResultModel = new SearchResultModel();
-            searchResultModel.setType(SearchResultModel.TYPE_SCHOOL);
-            searchResultModel.setObject(schoolBean);
-            addModelToList(searchResultModel);
+            SearchResultModel searchResultModel3 = new SearchResultModel();
+            searchResultModel3.setType(SearchResultModel.TYPE_SCHOOL);
+            searchResultModel3.setObject(schoolBean);
+            addModelToList(searchResultModel3);
         }
 
+        /*
         SearchResultModel searchResultModel = new SearchResultModel();
         searchResultModel.setType(SearchResultModel.TYPE_COMMON);
         TemplateModel addAdapterModel=new TemplateModel();
@@ -647,9 +678,30 @@ public abstract class SearchSchoolActivity extends AppCompatActivity {
         feedModel.setTemplateTag("custom/feedback");
         feedResultModel.setObject(feedModel);
 
+        SearchResultModel searchResultModel2 = new SearchResultModel();
+        searchResultModel2.setType(SearchResultModel.TYPE_COMMON);
+        TemplateModel hezuoModel=new TemplateModel();
+        hezuoModel.setTemplateName("商务合作");
+        hezuoModel.setTemplateTag("custom/hezuo");
+        searchResultModel2.setObject(hezuoModel);
+
+        SearchResultModel searchResultModel3 = new SearchResultModel();
+        searchResultModel3.setType(SearchResultModel.TYPE_COMMON);
+        TemplateModel noResultTipModel=new TemplateModel();
+        noResultTipModel.setTemplateName("未搜到你的学校? 查看解决方案");
+        noResultTipModel.setTemplateTag("custom/guide");
+        searchResultModel3.setObject(noResultTipModel);
+
         if(firstStatus||addAdapterModel.getTemplateName().indexOf(key)!=-1||result.getSchoolList().size()==0){
             addModelToList(feedResultModel);
         }
+        if(firstStatus||hezuoModel.getTemplateName().indexOf(key)!=-1||result.getSchoolList().size()==0){
+            addModelToList(searchResultModel2);
+        }
+        if(firstStatus||noResultTipModel.getTemplateName().indexOf(key)!=-1||result.getSchoolList().size()==0){
+            addModelToList(searchResultModel3);
+        }
+        */
 
         sortResult();
         searchAdapter.notifyDataSetChanged();
@@ -677,6 +729,119 @@ public abstract class SearchSchoolActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        StatManager.sendKVEvent(getContext(),"pf_jwdr_fh",null);
         finish();
+    }
+
+    @Override
+    public void onCommonFunctionClicked(String key) {
+        if(TextUtils.isEmpty(key)){
+            return;
+        }
+        if(key.equals("common_import")){
+            StatManager.sendKVEvent(getContext(),"pf_tyjx",null);
+            if(!checkTemplateJs()){
+                requestTemplateJs(new OnDoActionListener() {
+                    @Override
+                    public void doActionAfter() {
+                        handleCommonParse(templateModels);
+                    }
+                });
+            }else{
+                handleCommonParse(templateModels);
+            }
+        }
+        if(key.equals("camera_import")){
+
+        }
+        if(key.equals("scan_import")){
+            StatManager.sendKVEvent(getContext(),"pf_smdr",null);
+            Toast.makeText(getContext(),"暂未开放",Toast.LENGTH_SHORT).show();
+        }
+        if(key.equals("feedback")){
+            StatManager.sendKVEvent(getContext(),"pf_wtfk",null);
+            Intent intent= new Intent();
+            intent.setAction("android.intent.action.VIEW");
+            Uri content_url = Uri.parse("https://support.qq.com/product/162820");
+            intent.setData(content_url);
+            startActivity(intent);
+        }
+        if(key.equals("upload")){
+            StatManager.sendKVEvent(getContext(),"pf_sqsp",null);
+            Intent intent=new Intent(getContext(),AdapterTipActivity.class);
+            startActivity(intent);
+        }
+    }
+
+    public boolean checkTemplateJs(){
+        if(localTemplateJsV2==null) return false;
+        if(localTemplateJsV2.getTemplateVersion()<nowTemplateVersion){
+            return false;
+        }
+        if(localTemplateJsV2.getTemplate()==null||localTemplateJsV2.getTemplate().size()==0){
+            return false;
+        }
+        return true;
+    }
+
+    public void requestTemplateJs(final OnDoActionListener doActionListener){
+        TimetableRequest.getTemplateJs(this, new Callback<ObjResult<TemplateJsV2>>() {
+            @Override
+            public void onResponse(Call<ObjResult<TemplateJsV2>> call, Response<ObjResult<TemplateJsV2>> response) {
+                ObjResult<TemplateJsV2> objResult=response.body();
+                if(objResult!=null){
+                    if (objResult.getCode() == 200) {
+                        TemplateJsV2 templateJsV2=objResult.getData();
+                        if(templateJsV2!=null){
+                            baseJs=templateJsV2.getBase();
+                            templateModels=templateJsV2.getTemplate();
+                            String json=GsonUtils.getGson().toJson(templateJsV2);
+                            editor.putString("TemplateJsV2",json);
+                            editor.commit();
+                            if(doActionListener!=null){
+                                doActionListener.doActionAfter();
+                            }
+                        }
+                    } else {
+                        Toast.makeText(SearchSchoolActivity.this, objResult.getMsg(), Toast.LENGTH_SHORT).show();
+                    }
+                }else{
+                    Toast.makeText(SearchSchoolActivity.this, "templatejs response is null!", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ObjResult<TemplateJsV2>> call, Throwable t) {
+                Toast.makeText(getContext(),"Fail:"+t.getMessage(),Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    public void requestParseJs(int aid,final OnDoActionListener doActionListener){
+        TimetableRequest.getAdapterParseJs(this,aid, new Callback<ObjResult<ParseJsModel>>() {
+            @Override
+            public void onResponse(Call<ObjResult<ParseJsModel>> call, Response<ObjResult<ParseJsModel>> response) {
+                ObjResult<ParseJsModel> objResult=response.body();
+                if(objResult!=null){
+                    if (objResult.getCode() == 200) {
+                        parseJsModel=objResult.getData();
+                        if(parseJsModel!=null){
+                            if(doActionListener!=null){
+                                doActionListener.doActionAfter();
+                            }
+                        }
+                    } else {
+                        Toast.makeText(SearchSchoolActivity.this, objResult.getMsg(), Toast.LENGTH_SHORT).show();
+                    }
+                }else{
+                    Toast.makeText(SearchSchoolActivity.this, "templatejs response is null!", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ObjResult<ParseJsModel>> call, Throwable t) {
+                Toast.makeText(getContext(),"Fail:"+t.getMessage(),Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
