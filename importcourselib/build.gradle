@@ -49,6 +49,5 @@ dependencies {
     api 'com.squareup.retrofit2:retrofit:2.0.2'
     api 'com.squareup.retrofit2:converter-gson:2.0.2'
     implementation project(':toolkit')
-    implementation files('/Users/zhuangfei/workspace/android/project/hputimetable/hputimetable/app/libs/open_sdk_r2973327_lite.jar')
     compile 'cn.yipianfengye.android:zxing-library:2.2'
 }
