@@ -27,6 +27,8 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.tencent.smtt.export.external.TbsCoreSettings;
+import com.tencent.smtt.sdk.QbSdk;
 import com.zhuangfei.adapterlib.AdapterLibManager;
 import com.zhuangfei.adapterlib.RecordEventManager;
 import com.zhuangfei.adapterlib.StatManager;
@@ -113,7 +115,6 @@ public class SearchSchoolActivity extends AppCompatActivity implements OnCommonF
         inits();
         loadSchools();
         StatManager.sendKVEvent(this,"pf_search_enter",null);
-
     }
 
     protected StationSdk getStationSdk(){
@@ -173,6 +174,11 @@ public class SearchSchoolActivity extends AppCompatActivity implements OnCommonF
     }
 
     private void inits() {
+        HashMap map = new HashMap();
+        map.put(TbsCoreSettings.TBS_SETTINGS_USE_SPEEDY_CLASSLOADER, true);
+        map.put(TbsCoreSettings.TBS_SETTINGS_USE_DEXLOADER_SERVICE, true);
+        QbSdk.initTbsSettings(map);
+
         context = this;
         ParseManager.clearCache();
         String localJson=sp.getString("TemplateJsV2",null);

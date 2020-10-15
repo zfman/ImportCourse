@@ -3,7 +3,8 @@ package com.zhuangfei.adapterlib.station;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.os.Build;
-import android.webkit.WebView;
+
+import com.tencent.smtt.sdk.WebView;
 
 /**
  * Created by Liu ZhuangFei on 2019/2/11.

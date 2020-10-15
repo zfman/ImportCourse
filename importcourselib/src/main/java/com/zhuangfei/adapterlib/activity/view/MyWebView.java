@@ -3,7 +3,9 @@ package com.zhuangfei.adapterlib.activity.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.webkit.WebView;
+
+import com.tencent.smtt.sdk.WebView;
+
 public class MyWebView extends WebView {
     private onScrollChangeCallback callback;
 
