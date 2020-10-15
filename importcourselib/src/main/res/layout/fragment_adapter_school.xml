@@ -93,7 +93,7 @@
             </ScrollView>
         </LinearLayout>
 
-        <android.support.v4.widget.ContentLoadingProgressBar
+        <androidx.core.widget.ContentLoadingProgressBar
             android:id="@+id/id_loadingbar"
             style="?android:attr/android:progressBarStyleHorizontal"
             android:layout_width="match_parent"

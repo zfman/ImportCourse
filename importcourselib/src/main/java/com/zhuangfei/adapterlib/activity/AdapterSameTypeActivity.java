@@ -1,10 +1,9 @@
 package com.zhuangfei.adapterlib.activity;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
+
+import androidx.appcompat.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
@@ -16,9 +15,6 @@ import com.zhuangfei.adapterlib.ParseManager;
 import com.zhuangfei.adapterlib.R;
 import com.zhuangfei.adapterlib.StatManager;
 import com.zhuangfei.adapterlib.utils.ViewUtils;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class AdapterSameTypeActivity extends AppCompatActivity {
 

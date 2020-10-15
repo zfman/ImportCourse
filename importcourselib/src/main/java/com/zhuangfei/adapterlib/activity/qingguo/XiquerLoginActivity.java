@@ -2,7 +2,7 @@ package com.zhuangfei.adapterlib.activity.qingguo;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -15,7 +15,6 @@ import android.widget.TextView;
 
 import com.zhuangfei.adapterlib.ParseManager;
 import com.zhuangfei.adapterlib.R;
-import com.zhuangfei.adapterlib.RecordEventManager;
 import com.zhuangfei.adapterlib.StatManager;
 import com.zhuangfei.adapterlib.apis.TimetableRequest;
 import com.zhuangfei.adapterlib.apis.model.GreenFruitCourse;

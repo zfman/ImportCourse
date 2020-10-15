@@ -1,6 +1,6 @@
 package com.zhuangfei.adapterlib.apis.model;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * Created by Liu ZhuangFei on 2019/2/8.

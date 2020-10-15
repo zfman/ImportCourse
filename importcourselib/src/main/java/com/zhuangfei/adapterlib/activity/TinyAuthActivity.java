@@ -1,49 +1,24 @@
 package com.zhuangfei.adapterlib.activity;
 
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.support.v7.app.AppCompatActivity;
+
+import androidx.appcompat.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.tencent.connect.UserInfo;
-import com.tencent.connect.auth.AuthAgent;
-import com.tencent.connect.common.Constants;
-import com.tencent.tauth.IUiListener;
-import com.tencent.tauth.Tencent;
-import com.tencent.tauth.UiError;
 import com.zhuangfei.adapterlib.R;
-import com.zhuangfei.adapterlib.RecordEventManager;
 import com.zhuangfei.adapterlib.apis.TimetableRequest;
 import com.zhuangfei.adapterlib.apis.model.BaseResult;
 import com.zhuangfei.adapterlib.apis.model.ObjResult;
 import com.zhuangfei.adapterlib.station.TinyUserManager;
-import com.zhuangfei.adapterlib.station.UserManager;
 import com.zhuangfei.adapterlib.station.model.TinyUserInfo;
-import com.zhuangfei.adapterlib.thirdlogin.ThirdLoginContants;
-import com.zhuangfei.adapterlib.uikit.NetworkUtil;
-import com.zhuangfei.adapterlib.utils.GsonUtils;
 import com.zhuangfei.adapterlib.utils.ViewUtils;
-import com.zhuangfei.toolkit.tools.ToastTools;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.UnsupportedEncodingException;
-import java.lang.ref.WeakReference;
 
 import retrofit2.Call;
 import retrofit2.Callback;
