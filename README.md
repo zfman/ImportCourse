@@ -29,7 +29,7 @@ Step 2. Add the dependency
 
 ```gradle
 	dependencies {
-	        implementation 'com.github.zfman:ImportCourse:v2.0.0'
+	        implementation 'com.github.zfman:ImportCourse:v2.1.2'
 	}
 ```
 
@@ -41,50 +41,7 @@ Step 2. Add the dependency
 		@Override
 		public void onCreate() {
 			super.onCreate();
-			AdapterLibManager.init("申请的appkey","埋点前缀");
-      
-      StatService.registerActivityLifecycleCallbacks(this);
-        StatManager.register(new IStatSendCallback() {
-            @Override
-            public void sendKVEvent(Context context, String eventId, Map<String, String> params) {
-                Properties properties=new Properties();
-                if(params!=null){
-                    for(Map.Entry<String,String> entry:params.entrySet()){
-                        if(entry!=null){
-                            if(entry.getKey()==null||entry.getValue()==null){
-                                Log.d(TAG, "sendKVEvent: key="+entry.getKey()+"; v="+entry.getValue()+";id="+eventId);
-                            }else{
-                                properties.setProperty(entry.getKey(),entry.getValue());
-                            }
-                        }
-                    }
-                }
-                StatService.trackCustomKVEvent(getApplicationContext(),eventId,properties);
-            }
-
-            @Override
-            public void reportMultiAccount(Context context, StatManager.AccountType type, String v) {
-                StatMultiAccount.AccountType thisType=null;
-                if(type==StatManager.AccountType.OPEN_QQ){
-                    thisType=StatMultiAccount.AccountType.OPEN_QQ;
-                }else if(type==StatManager.AccountType.OPEN_WEIXIN){
-                    thisType=StatMultiAccount.AccountType.OPEN_WEIXIN;
-                }else if(type==StatManager.AccountType.GUEST_MODE){
-                    thisType=StatMultiAccount.AccountType.GUEST_MODE;
-                }else if(type==StatManager.AccountType.CUSTOM){
-                    thisType=StatMultiAccount.AccountType.CUSTOM;
-                }else{
-                    thisType=StatMultiAccount.AccountType.GUEST_MODE;
-                }
-                StatMultiAccount account = new StatMultiAccount(
-                        thisType, v);
-                long time = System.currentTimeMillis() / 1000;
-                // 登陆时间，单秒为秒
-                account.setLastTimeSec(time);
-                StatService.reportMultiAccount(context, account);
-            }
-        });
-    }
+			AdapterLibManager.init("申请的appkey","埋点前缀，可省略");
 		}
 	}
 ```
@@ -103,26 +60,11 @@ Step 2. Add the dependency
 </manifest>
 ```
 
-### 搜索页面
-
-搜索页面是课程适配的入口，只要前往搜索页，然后在本页面接收返回的数据即可
+### 教务导入页面
 
 ```java
-    public static final int REQUEST_CODE=1;
-```
-
-```java
-    Intent intent=new Intent(this, SearchSchoolActivity.class);
-    startActivityForResult(intent,REQUEST_CODE);
-```
-
-
-默认情况下进入搜索页面是空的，当然也可以设置一个默认的关键字，进入搜索页面后立即请求，示例如下:
-
-```java
-	Intent intent=new Intent(MainActivity.this, SearchSchoolActivity.class);
-	intent.putExtra(SearchSchoolActivity.EXTRA_SEARCH_KEY,"河南理工大学");
-	startActivityForResult(intent,REQUEST_CODE);
+    Intent intent=new Intent(MainActivity.this, AutoImportActivity.class);
+    startActivityForResult(intent,1);
 ```
 
 **接收解析的结果**
@@ -136,7 +78,7 @@ Step 2. Add the dependency
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode==REQUEST_CODE&&resultCode==SearchSchoolActivity.RESULT_CODE){
+        if(requestCode==1&&resultCode==AutoImportActivity.RESULT_CODE){
             if(ParseManager.isSuccess()&&ParseManager.getData()!=null){
                 List<ParseResult> result=ParseManager.getData();
                 String str="";
