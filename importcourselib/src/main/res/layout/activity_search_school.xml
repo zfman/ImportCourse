@@ -30,7 +30,7 @@
             android:layout_marginLeft="5dp"
             android:layout_weight="1"
             android:background="@null"
-            android:hint="搜索学校以导入"
+            android:hint="搜索学校以选择"
             android:imeOptions="actionSearch"
             android:singleLine="true"
             android:textSize="16sp" />
@@ -45,20 +45,36 @@
             android:textSize="15sp" />
     </LinearLayout>
 
-    <TextView
-        android:visibility="gone"
-        android:id="@+id/id_version_display"
+    <LinearLayout
+        android:id="@+id/ll_shipei"
         android:layout_width="match_parent"
-        android:layout_height="30dp"
-        android:text="发现新版本"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:singleLine="true"
-        android:ellipsize="end"
+        android:layout_height="45dp"
+        android:background="@drawable/layout_ripple"
         android:gravity="center_vertical"
-        android:background="@color/app_textview_border1"
-        android:textColor="@color/app_white"
-        android:textSize="14sp" />
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:layout_height="35dp"
+            android:layout_marginLeft="15dp"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:text="搜不到学校请点击此处申请适配"
+            android:textColor="@color/app_blue2"
+            android:textSize="15sp" />
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginRight="15dp"
+            android:src="@drawable/icon_right_pointer"/>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_marginLeft="15dp"
+        android:background="@color/app_line"/>
 
     <LinearLayout
         android:id="@+id/id_loadlayout"

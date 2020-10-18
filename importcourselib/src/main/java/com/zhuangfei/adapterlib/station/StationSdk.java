@@ -3,17 +3,11 @@ package com.zhuangfei.adapterlib.station;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.support.v7.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
 import android.util.Log;
 import android.webkit.JavascriptInterface;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.zhuangfei.adapterlib.station.model.ClipBoardModel;
-
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Liu ZhuangFei on 2019/2/6.

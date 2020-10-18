@@ -44,6 +44,7 @@
             android:textSize="17sp" />
 
         <LinearLayout
+            android:visibility="gone"
             android:id="@+id/id_scan_local"
             android:layout_width="60dp"
             android:layout_height="match_parent"
@@ -62,12 +63,22 @@
     </RelativeLayout>
 
     <TextView
-        android:text="扫描超表课程码或者怪兽码"
+        android:text="扫描源码生成的二维码"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:textSize="17sp"
-        android:textColor="@color/app_blue1"
+        android:textSize="18sp"
+        android:textColor="@color/app_white"
         android:layout_marginTop="350dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="14sp"
+        android:layout_marginTop="380dp"
+        android:textColor="@color/app_white_slight"
+        android:text="在电脑打开网址 http://www.liuzhuangfei.com"/>
+
 </FrameLayout>
 

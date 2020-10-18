@@ -10,6 +10,7 @@ import com.zhuangfei.adapterlib.apis.model.HtmlSummary;
 import com.zhuangfei.adapterlib.apis.model.ListResult;
 import com.zhuangfei.adapterlib.apis.model.ObjResult;
 import com.zhuangfei.adapterlib.apis.model.ParseJsModel;
+import com.zhuangfei.adapterlib.apis.model.QuestionModel;
 import com.zhuangfei.adapterlib.apis.model.StationModel;
 import com.zhuangfei.adapterlib.apis.model.StationSpaceModel;
 import com.zhuangfei.adapterlib.apis.model.TemplateJsV2;
@@ -133,11 +134,25 @@ public interface SchoolService {
 
     @POST(UrlContants.URL_GET_TEMPLATE_JS)
     @FormUrlEncoded
-    Call<ObjResult<TemplateJsV2>> getTemplateJs(@Field("token") String token);
+    Call<ObjResult<TemplateJsV2>> getTemplateJs(@Field("token") String token,
+                                                @Field("appkey") String appkey,
+                                                @Field("time") String time,
+                                                @Field("sign") String sign);
 
     @POST(UrlContants.URL_GET_ADAPTER_PARSE_JS)
     @FormUrlEncoded
-    Call<ObjResult<ParseJsModel>> getAdapterParsejs(@Field("aid") String aid);
+    Call<ObjResult<ParseJsModel>> getAdapterParsejs(@Field("aid") String aid,
+                                                    @Field("libVersion") String libVersion,
+                                                    @Field("appkey") String appkey,
+                                                    @Field("time") String time,
+                                                    @Field("sign") String sign);
+
+    @POST(UrlContants.URL_GET_QUESTIONS)
+    @FormUrlEncoded
+    Call<ListResult<QuestionModel>> getQuestions(@Field("libVersion") String libVersion,
+                                                @Field("appkey") String appkey,
+                                                @Field("time") String time,
+                                                @Field("sign") String sign);
 
     @GET(UrlContants.URL_GET_SEARCH_FIX_TOP_CONFIG)
     Call<TinyConfig> getSearchFixTopConfig(@Field("v") String v);

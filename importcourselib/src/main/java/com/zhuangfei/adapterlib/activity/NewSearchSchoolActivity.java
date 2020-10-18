@@ -10,8 +10,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -19,30 +19,25 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.zhuangfei.adapterlib.AdapterLibManager;
-import com.zhuangfei.adapterlib.RecordEventManager;
 import com.zhuangfei.adapterlib.StatManager;
 import com.zhuangfei.adapterlib.activity.qingguo.XiquerLoginActivity;
 import com.zhuangfei.adapterlib.apis.model.ParseJsModel;
 import com.zhuangfei.adapterlib.apis.model.TemplateJsV2;
 import com.zhuangfei.adapterlib.callback.DefaultAdapterOperator;
 import com.zhuangfei.adapterlib.callback.IAdapterOperator;
-import com.zhuangfei.adapterlib.callback.OnVersionFindCallback;
 import com.zhuangfei.adapterlib.ParseManager;
 import com.zhuangfei.adapterlib.R;
 import com.zhuangfei.adapterlib.apis.model.SearchResultModel;
 import com.zhuangfei.adapterlib.activity.adapter.SearchSchoolAdapter;
 import com.zhuangfei.adapterlib.core.AssetTools;
 import com.zhuangfei.adapterlib.station.IStationOperator;
-import com.zhuangfei.adapterlib.station.IStationSearchOperator;
 import com.zhuangfei.adapterlib.station.StationManager;
 import com.zhuangfei.adapterlib.station.StationSdk;
 import com.zhuangfei.adapterlib.station.model.GreenFruitSchool;
@@ -50,6 +45,7 @@ import com.zhuangfei.adapterlib.station.model.TinyConfig;
 import com.zhuangfei.adapterlib.utils.GsonUtils;
 import com.zhuangfei.adapterlib.utils.Md5Security;
 import com.zhuangfei.adapterlib.utils.PackageUtils;
+import com.zhuangfei.adapterlib.utils.SchoolDaoUtils;
 import com.zhuangfei.adapterlib.utils.SoftInputUtils;
 import com.zhuangfei.adapterlib.utils.ViewUtils;
 import com.zhuangfei.adapterlib.apis.TimetableRequest;
@@ -73,9 +69,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class SearchSchoolActivity extends AppCompatActivity implements OnCommonFunctionClickListener {
+public class NewSearchSchoolActivity extends AppCompatActivity implements OnCommonFunctionClickListener {
 
-    private static final String TAG = "SearchSchoolActivity";
+    private static final String TAG = "NewSearchSchoolActivity";
     protected Activity context;
 
     ListView searchListView;
@@ -87,18 +83,14 @@ public class SearchSchoolActivity extends AppCompatActivity implements OnCommonF
 
     EditText searchEditText;
     LinearLayout loadLayout;
-    TextView versionDisplayTextView;
 
     boolean firstStatus=true;
-    public static final int RESULT_CODE=10;
     public static final String EXTRA_SEARCH_KEY="key";
-    public static final String EXTRA_STATION_OPERATOR="operator";
 
     SharedPreferences sp;
     SharedPreferences.Editor editor;
     IStationOperator operator;
     List<GreenFruitSchool> allSchool;
-    IAdapterOperator adapterOperator;
 
     TemplateJsV2 localTemplateJsV2;
     ParseJsModel parseJsModel;
@@ -111,9 +103,8 @@ public class SearchSchoolActivity extends AppCompatActivity implements OnCommonF
         ViewUtils.setStatusTextGrayColor(this);
         initView();
         inits();
-        loadSchools();
+//        loadSchools();
         StatManager.sendKVEvent(this,"pf_search_enter",null);
-
     }
 
     protected StationSdk getStationSdk(){
@@ -149,10 +140,6 @@ public class SearchSchoolActivity extends AppCompatActivity implements OnCommonF
     @Override
     protected void onResume() {
         super.onResume();
-        if(ParseManager.isSuccess()){
-            setResult(RESULT_CODE);
-            finish();
-        }
     }
 
     private void initView() {
@@ -161,7 +148,6 @@ public class SearchSchoolActivity extends AppCompatActivity implements OnCommonF
         searchListView=findViewById(R.id.id_search_listview);
         searchEditText=findViewById(R.id.id_search_edittext);
         loadLayout=findViewById(R.id.id_loadlayout);
-        versionDisplayTextView=findViewById(R.id.id_version_display);
     }
 
     public void setLoadLayout(boolean isShow) {
@@ -219,36 +205,13 @@ public class SearchSchoolActivity extends AppCompatActivity implements OnCommonF
         String searchKey=getIntent().getStringExtra(EXTRA_SEARCH_KEY);
         if(!TextUtils.isEmpty(searchKey)){
             search("recommend://"+searchKey);
-        }else{
-            searchKey=ShareTools.getString(this,"lastCLicked",null);
-            if(!TextUtils.isEmpty(searchKey)){
-                search("recommend://"+searchKey);
-            }else{
-                search("recommend://");
-            }
         }
 
-        adapterOperator= getAdapterOperator();
-
-        operator= (IStationOperator) getIntent().getSerializableExtra(EXTRA_STATION_OPERATOR);
-        versionDisplayTextView.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.ll_shipei).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                try{
-                    Intent intent = new Intent();
-                    intent.setAction("android.intent.action.VIEW");
-                    intent.setData(Uri.parse("https://github.com/zfman/CourseAdapter/wiki/%E7%89%88%E6%9C%AC%E5%8F%98%E6%9B%B4"));
-                    context.startActivity(intent);
-                }catch (Exception e){}
-            }
-        });
-
-        String updateId="9f37c8171f4100a7ac585dcb702c7f64";
-        AdapterLibManager.checkUpdate(context,updateId, new OnVersionFindCallback() {
-            @Override
-            public void onNewVersionFind(int newNumber, String newVersionName, String newVersionDesc) {
-                versionDisplayTextView.setVisibility(View.VISIBLE);
-                versionDisplayTextView.setText("发现新版本lib-v"+newVersionName+" "+newVersionDesc);
+                Intent intent=new Intent(getContext(),AdapterTipActivity.class);
+                startActivity(intent);
             }
         });
     }
@@ -258,16 +221,9 @@ public class SearchSchoolActivity extends AppCompatActivity implements OnCommonF
         if(model==null) return;
         //学校教务导入
         if(model.getType()==SearchResultModel.TYPE_SCHOOL){
-            if(!checkTemplateJs()){
-                requestTemplateJs(new OnDoActionListener() {
-                    @Override
-                    public void doActionAfter() {
-                        handleItemClickedForSchool(model);
-                    }
-                });
-            }else{
-                handleItemClickedForSchool(model);
-            }
+            School school = (School) model.getObject();
+            SchoolDaoUtils.saveSchool(context,school);
+            finish();
         }
         else if(model.getType()==SearchResultModel.TYPE_XIQUER){
             onXuqerItemClicked(model);
@@ -357,10 +313,6 @@ public class SearchSchoolActivity extends AppCompatActivity implements OnCommonF
         getStationConfig((StationModel) model.getObject());
     }
 
-    protected IAdapterOperator getAdapterOperator(){
-        return new DefaultAdapterOperator();
-    }
-
     public void onXuqerItemClicked(SearchResultModel model){
 
         ActivityTools.toActivityWithout(this, XiquerLoginActivity.class,
@@ -426,7 +378,6 @@ public class SearchSchoolActivity extends AppCompatActivity implements OnCommonF
         intent.putExtra(AdapterSchoolActivity.EXTRA_SCHOOL,school);
         intent.putExtra(AdapterSchoolActivity.EXTRA_TYPE,type);
         intent.putExtra(AdapterSchoolActivity.EXTRA_PARSEJS,js);
-        intent.putExtra("operator",adapterOperator);
         startActivity(intent);
     }
 
@@ -517,10 +468,10 @@ public class SearchSchoolActivity extends AppCompatActivity implements OnCommonF
                             showDialog(result.getMsg());
                         }
                         else {
-                            Toast.makeText(SearchSchoolActivity.this, result.getMsg(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(NewSearchSchoolActivity.this, result.getMsg(), Toast.LENGTH_SHORT).show();
                         }
                     } else {
-                        Toast.makeText(SearchSchoolActivity.this, "school response is null!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(NewSearchSchoolActivity.this, "school response is null!", Toast.LENGTH_SHORT).show();
                     }
                     setLoadLayout(false);
                 }
@@ -562,10 +513,10 @@ public class SearchSchoolActivity extends AppCompatActivity implements OnCommonF
                         if (result.getCode() == 200) {
                             showStationResult(result.getData(),key);
                         } else {
-                            Toast.makeText(SearchSchoolActivity.this, result.getMsg(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(NewSearchSchoolActivity.this, result.getMsg(), Toast.LENGTH_SHORT).show();
                         }
                     } else {
-                        Toast.makeText(SearchSchoolActivity.this, "school response is null!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(NewSearchSchoolActivity.this, "school response is null!", Toast.LENGTH_SHORT).show();
                     }
                     setLoadLayout(false);
                 }
@@ -636,21 +587,16 @@ public class SearchSchoolActivity extends AppCompatActivity implements OnCommonF
         if (list == null) {
             return;
         }
-
-        SearchResultModel searchResultModel = new SearchResultModel();
-        searchResultModel.setType(SearchResultModel.TYPE_COMMON);
-        addModelToList(searchResultModel);
-
-        if(allSchool!=null){
-            for (GreenFruitSchool schoolBean : allSchool) {
-                if (schoolBean.getXxmc() != null && schoolBean.getXxmc().indexOf(key) != -1) {
-                    SearchResultModel searchResultModel2 = new SearchResultModel();
-                    searchResultModel2.setType(SearchResultModel.TYPE_XIQUER);
-                    searchResultModel2.setObject(schoolBean);
-                    addModelToList(searchResultModel2);
-                }
-            }
-        }
+//        if(allSchool!=null){
+//            for (GreenFruitSchool schoolBean : allSchool) {
+//                if (schoolBean.getXxmc() != null && schoolBean.getXxmc().indexOf(key) != -1) {
+//                    SearchResultModel searchResultModel2 = new SearchResultModel();
+//                    searchResultModel2.setType(SearchResultModel.TYPE_XIQUER);
+//                    searchResultModel2.setObject(schoolBean);
+//                    addModelToList(searchResultModel2);
+//                }
+//            }
+//        }
 
         for (School schoolBean : list) {
             SearchResultModel searchResultModel3 = new SearchResultModel();
@@ -658,51 +604,6 @@ public class SearchSchoolActivity extends AppCompatActivity implements OnCommonF
             searchResultModel3.setObject(schoolBean);
             addModelToList(searchResultModel3);
         }
-
-        /*
-        SearchResultModel searchResultModel = new SearchResultModel();
-        searchResultModel.setType(SearchResultModel.TYPE_COMMON);
-        TemplateModel addAdapterModel=new TemplateModel();
-        addAdapterModel.setTemplateName("申请学校适配");
-        addAdapterModel.setTemplateTag("custom/upload");
-        searchResultModel.setObject(addAdapterModel);
-
-        if(firstStatus||addAdapterModel.getTemplateName().indexOf(key)!=-1||result.getSchoolList().size()==0){
-            addModelToList(searchResultModel);
-        }
-
-        SearchResultModel feedResultModel = new SearchResultModel();
-        feedResultModel.setType(SearchResultModel.TYPE_COMMON);
-        TemplateModel feedModel=new TemplateModel();
-        feedModel.setTemplateName("申请学校适配");
-        feedModel.setTemplateTag("custom/feedback");
-        feedResultModel.setObject(feedModel);
-
-        SearchResultModel searchResultModel2 = new SearchResultModel();
-        searchResultModel2.setType(SearchResultModel.TYPE_COMMON);
-        TemplateModel hezuoModel=new TemplateModel();
-        hezuoModel.setTemplateName("商务合作");
-        hezuoModel.setTemplateTag("custom/hezuo");
-        searchResultModel2.setObject(hezuoModel);
-
-        SearchResultModel searchResultModel3 = new SearchResultModel();
-        searchResultModel3.setType(SearchResultModel.TYPE_COMMON);
-        TemplateModel noResultTipModel=new TemplateModel();
-        noResultTipModel.setTemplateName("未搜到你的学校? 查看解决方案");
-        noResultTipModel.setTemplateTag("custom/guide");
-        searchResultModel3.setObject(noResultTipModel);
-
-        if(firstStatus||addAdapterModel.getTemplateName().indexOf(key)!=-1||result.getSchoolList().size()==0){
-            addModelToList(feedResultModel);
-        }
-        if(firstStatus||hezuoModel.getTemplateName().indexOf(key)!=-1||result.getSchoolList().size()==0){
-            addModelToList(searchResultModel2);
-        }
-        if(firstStatus||noResultTipModel.getTemplateName().indexOf(key)!=-1||result.getSchoolList().size()==0){
-            addModelToList(searchResultModel3);
-        }
-        */
-
         sortResult();
         searchAdapter.notifyDataSetChanged();
     }
@@ -803,10 +704,10 @@ public class SearchSchoolActivity extends AppCompatActivity implements OnCommonF
                             }
                         }
                     } else {
-                        Toast.makeText(SearchSchoolActivity.this, objResult.getMsg(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(NewSearchSchoolActivity.this, objResult.getMsg(), Toast.LENGTH_SHORT).show();
                     }
                 }else{
-                    Toast.makeText(SearchSchoolActivity.this, "templatejs response is null!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(NewSearchSchoolActivity.this, "templatejs response is null!", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -831,10 +732,10 @@ public class SearchSchoolActivity extends AppCompatActivity implements OnCommonF
                             }
                         }
                     } else {
-                        Toast.makeText(SearchSchoolActivity.this, objResult.getMsg(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(NewSearchSchoolActivity.this, objResult.getMsg(), Toast.LENGTH_SHORT).show();
                     }
                 }else{
-                    Toast.makeText(SearchSchoolActivity.this, "templatejs response is null!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(NewSearchSchoolActivity.this, "templatejs response is null!", Toast.LENGTH_SHORT).show();
                 }
             }
 

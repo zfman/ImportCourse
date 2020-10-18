@@ -6,37 +6,37 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.http.SslError;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.ContentLoadingProgressBar;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.PopupMenu;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.widget.ContentLoadingProgressBar;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.PopupMenu;
 import android.text.TextUtils;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.webkit.CookieManager;
-import android.webkit.CookieSyncManager;
-import android.webkit.SslErrorHandler;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.tencent.smtt.export.external.interfaces.SslError;
+import com.tencent.smtt.export.external.interfaces.SslErrorHandler;
+import com.tencent.smtt.sdk.CookieManager;
+import com.tencent.smtt.sdk.CookieSyncManager;
+import com.tencent.smtt.sdk.WebView;
+import com.tencent.smtt.sdk.WebViewClient;
 import com.zhuangfei.adapterlib.ParseManager;
 import com.zhuangfei.adapterlib.R;
 import com.zhuangfei.adapterlib.ShareManager;
 import com.zhuangfei.adapterlib.StatManager;
 import com.zhuangfei.adapterlib.activity.scan.ScanImportActivity;
 import com.zhuangfei.adapterlib.apis.model.ValuePair;
-import com.zhuangfei.adapterlib.callback.IAdapterOperator;
 import com.zhuangfei.adapterlib.callback.OnValueCallback;
 import com.zhuangfei.adapterlib.utils.ViewUtils;
 import com.zhuangfei.adapterlib.core.IArea;
@@ -74,6 +74,7 @@ public class AdapterSchoolActivity extends AppCompatActivity {
     SpecialArea specialArea;
     String html = "";
     String url, school, js, type;
+    boolean openScan = false;
 
     //标记按钮是否已经被点击过
     //解析按钮如果点击一次，就不需要再去获取html了，直接解析
@@ -83,6 +84,7 @@ public class AdapterSchoolActivity extends AppCompatActivity {
     public static final String EXTRA_SCHOOL="school";
     public static final String EXTRA_PARSEJS="parsejs";
     public static final String EXTRA_TYPE="type";
+    public static final String EXTRA_OPEN_SCAN="openScan";
 
     public int nowIndex=0;
     TextView tv;
@@ -154,6 +156,7 @@ public class AdapterSchoolActivity extends AppCompatActivity {
         school = getIntent().getStringExtra(EXTRA_SCHOOL);
         js = getIntent().getStringExtra(EXTRA_PARSEJS);
         type = getIntent().getStringExtra(EXTRA_TYPE);
+        openScan = getIntent().getBooleanExtra(EXTRA_OPEN_SCAN,false);
 
         if(TextUtils.isEmpty(url)){
             url="http://www.liuzhuangfei.com";
@@ -174,19 +177,23 @@ public class AdapterSchoolActivity extends AppCompatActivity {
         }
 
 
-        if(school.equals("河南理工大学")){
-            AlertDialog.Builder builder=new AlertDialog.Builder(this)
-                    .setTitle("Html导入")
-                    .setCancelable(false)
-                    .setMessage("由于河南理工大学新教务系统需要使用有内核的浏览器才可以登陆，所以需要配合电脑导入，使用电脑打开以下网址：\n http://liuzhuangfei.com/import.html\n然后点击扫码按钮进行导入")
-                    .setPositiveButton("扫码", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            checkReadPermission();
-                        }
-                    }).setNegativeButton("取消",null);
-            builder.create().show();
+        if(school.equals("河南理工大学") || openScan){
+            displayScanImport();
         }
+    }
+
+    private void displayScanImport(){
+        AlertDialog.Builder builder=new AlertDialog.Builder(this)
+                .setTitle("扫码导入")
+                .setCancelable(false)
+                .setMessage("部分教务系统在手机上无法登录，可以配合电脑扫码导入，使用电脑打开以下网址：\n http://liuzhuangfei.com/import.html\n然后点击扫码按钮进行导入")
+                .setPositiveButton("扫码", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        checkReadPermission();
+                    }
+                }).setNegativeButton("取消",null);
+        builder.create().show();
     }
 
     private void checkReadPermission() {
@@ -475,18 +482,8 @@ public class AdapterSchoolActivity extends AppCompatActivity {
     public void onBtnClicked() {
         StatManager.sendKVEvent(getContext(),"pf_jwdr_jxkc",null);
         if(!isButtonClicked){
-            AlertDialog.Builder builder = new AlertDialog.Builder(this)
-                    .setTitle("重要内容!")
-                    .setMessage("1.请在你看到课表后再点击此按钮\n\n2.URP教务登陆后可能会出现点击无反应的问题，在右上角选择URP-兼容模式\n\n3.解析失败请加qq群反馈:684993074")
-                    .setPositiveButton("解析课表", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            isButtonClicked=true;
-                            jsSupport.getPageHtml("sa");
-                        }
-                    })
-                    .setNegativeButton("稍后解析", null);
-            builder.create().show();
+            isButtonClicked=true;
+            jsSupport.getPageHtml("sa");
         }else{
 
             jsSupport.parseHtml(context(),js);
@@ -521,6 +518,14 @@ public class AdapterSchoolActivity extends AppCompatActivity {
                 }
                 if(item.getItemId()==R.id.id_menu6){
                     StatManager.sendKVEvent(getContext(),"pf_jwdr_fk",null);
+                    Intent intent= new Intent();
+                    intent.setAction("android.intent.action.VIEW");
+                    Uri content_url = Uri.parse("https://support.qq.com/product/162820");
+                    intent.setData(content_url);
+                    startActivity(intent);
+                }
+                if(item.getItemId()==R.id.id_menu7){
+                    displayScanImport();
                 }
                 return false;
             }

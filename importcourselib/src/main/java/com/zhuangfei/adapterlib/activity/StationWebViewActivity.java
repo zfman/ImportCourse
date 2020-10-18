@@ -8,22 +8,14 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
-import android.net.http.SslError;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.DownloadListener;
-import android.webkit.SslErrorHandler;
-import android.webkit.WebChromeClient;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -32,13 +24,18 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.tencent.smtt.export.external.interfaces.SslErrorHandler;
+import com.tencent.smtt.sdk.DownloadListener;
+import com.tencent.smtt.sdk.WebChromeClient;
+import com.tencent.smtt.sdk.WebSettings;
+import com.tencent.smtt.sdk.WebView;
+import com.tencent.smtt.sdk.WebViewClient;
 import com.zhuangfei.adapterlib.activity.custom.CustomPopWindow;
 import com.zhuangfei.adapterlib.R;
 import com.zhuangfei.adapterlib.activity.view.MyWebView;
 import com.zhuangfei.adapterlib.apis.model.BaseResult;
 import com.zhuangfei.adapterlib.apis.model.ObjResult;
 import com.zhuangfei.adapterlib.apis.model.StationSpaceModel;
-import com.zhuangfei.adapterlib.core.JsSupport;
 import com.zhuangfei.adapterlib.station.DefaultStationOperator;
 import com.zhuangfei.adapterlib.station.IStationOperator;
 import com.zhuangfei.adapterlib.station.IStationView;
@@ -57,11 +54,9 @@ import com.zhuangfei.adapterlib.apis.model.ListResult;
 import com.zhuangfei.adapterlib.apis.model.StationModel;
 import com.zhuangfei.adapterlib.station.StationSdk;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -171,7 +166,7 @@ public class StationWebViewActivity extends AppCompatActivity implements IStatio
         loadingTipView3 = findViewById(R.id.id_loading_tip3);
         loadingViewLayout=findViewById(R.id.id_loadingview_layout);
 
-        stationOperator= (IStationOperator) getIntent().getSerializableExtra(SearchSchoolActivity.EXTRA_STATION_OPERATOR);
+//        stationOperator= (IStationOperator) getIntent().getSerializableExtra(NewSearchSchoolActivity.EXTRA_STATION_OPERATOR);
         if(stationOperator==null){
             stationOperator=new DefaultStationOperator();
         }
@@ -516,8 +511,8 @@ public class StationWebViewActivity extends AppCompatActivity implements IStatio
             }
 
             @Override
-            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-                handler.proceed();
+            public void onReceivedSslError(WebView webView, SslErrorHandler sslErrorHandler, com.tencent.smtt.export.external.interfaces.SslError sslError) {
+                sslErrorHandler.proceed();
             }
         });
 

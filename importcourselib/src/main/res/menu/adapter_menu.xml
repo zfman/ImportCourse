@@ -8,5 +8,7 @@
         android:title="PC UA"/>
     <item android:id="@+id/id_menu4"
         android:title="Mobile UA"/>
+    <item android:id="@+id/id_menu7"
+        android:title="扫码导入"/>
 
 </menu>

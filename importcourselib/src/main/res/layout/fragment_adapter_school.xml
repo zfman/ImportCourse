@@ -93,15 +93,14 @@
             </ScrollView>
         </LinearLayout>
 
-        <android.support.v4.widget.ContentLoadingProgressBar
+        <androidx.core.widget.ContentLoadingProgressBar
             android:id="@+id/id_loadingbar"
-            style="?android:attr/android:progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="4dp"
             android:max="100"
             android:progress="0" />
 
-        <WebView
+        <com.tencent.smtt.sdk.WebView
             android:id="@+id/id_webview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

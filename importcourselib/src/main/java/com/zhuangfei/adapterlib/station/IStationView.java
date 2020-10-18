@@ -2,8 +2,8 @@ package com.zhuangfei.adapterlib.station;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.webkit.WebView;
 
+import com.tencent.smtt.sdk.WebView;
 import com.zhuangfei.adapterlib.core.JsSupport;
 
 /**

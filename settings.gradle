@@ -1,1 +1,1 @@
-include ':app', ':importcourselib', ':toolkit'
+include ':app', ':importcourselib', ':toolkit', ':smartalert'

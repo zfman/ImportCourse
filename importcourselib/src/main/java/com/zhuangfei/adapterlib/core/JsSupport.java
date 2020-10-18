@@ -6,21 +6,20 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.net.http.SslError;
 import android.os.Build;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.text.TextUtils;
-import android.webkit.CookieManager;
-import android.webkit.CookieSyncManager;
-import android.webkit.DownloadListener;
-import android.webkit.JsResult;
-import android.webkit.SslErrorHandler;
-import android.webkit.WebChromeClient;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.widget.Toast;
 
+import com.tencent.smtt.export.external.interfaces.JsResult;
+import com.tencent.smtt.export.external.interfaces.SslError;
+import com.tencent.smtt.export.external.interfaces.SslErrorHandler;
+import com.tencent.smtt.sdk.CookieManager;
+import com.tencent.smtt.sdk.CookieSyncManager;
+import com.tencent.smtt.sdk.DownloadListener;
+import com.tencent.smtt.sdk.WebChromeClient;
+import com.tencent.smtt.sdk.WebSettings;
+import com.tencent.smtt.sdk.WebView;
+import com.tencent.smtt.sdk.WebViewClient;
 import com.zhuangfei.toolkit.tools.ToastTools;
 
 import java.io.BufferedReader;
@@ -106,7 +105,7 @@ public class JsSupport {
                 }
 
                 //调用解析函数
-                if (newProgress > 60 && isParse) {
+                if (newProgress ==100 && isParse) {
                     callJs("getTagList()");
                     stopParse();
                 }
@@ -270,8 +269,8 @@ public class JsSupport {
     }
 
     public void clearCookies(){
-        CookieManager manager=CookieManager.getInstance();
-        CookieSyncManager cookieSyncManager=CookieSyncManager.createInstance(webView.getContext());
+        CookieManager manager= CookieManager.getInstance();
+        CookieSyncManager cookieSyncManager= CookieSyncManager.createInstance(webView.getContext());
         manager.setAcceptCookie(true);
         manager.removeSessionCookie();
         manager.removeAllCookie();

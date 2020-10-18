@@ -64,5 +64,6 @@ public class UrlContants {
     public final static String URL_GET_ADAPTER_PARSE_JS="index.php?c=AdapterV2&a=getAdapterParseJs";
     public final static String URL_GET_ADAPTER_APPS_INFO="index.php?c=AdapterV2&a=getAdapterAppsInfo";
     public final static String URL_NOTIFY_ADAPTER_RESULT="index.php?c=AdapterV2&a=notifyAdapterResult";
+    public final static String URL_GET_QUESTIONS="index.php?c=AdapterV2&a=getQuestions";
 
 }

@@ -10,6 +10,7 @@ import com.zhuangfei.adapterlib.apis.model.GreenFruitCourse;
 import com.zhuangfei.adapterlib.apis.model.GreenFruitProfile;
 import com.zhuangfei.adapterlib.apis.model.GreenFruitTerm;
 import com.zhuangfei.adapterlib.apis.model.ParseJsModel;
+import com.zhuangfei.adapterlib.apis.model.QuestionModel;
 import com.zhuangfei.adapterlib.apis.model.School;
 import com.zhuangfei.adapterlib.apis.model.StationModel;
 import com.zhuangfei.adapterlib.apis.model.AdapterInfo;
@@ -206,21 +207,44 @@ public class TimetableRequest {
 
     public static void getTemplateJs(Context context,Callback<ObjResult<TemplateJsV2>> callback) {
         SchoolService schoolService=ApiUtils.getRetrofitForSchool(context).create(SchoolService.class);
-        Call<ObjResult<TemplateJsV2>> call=schoolService.getTemplateJs("");
+        String appkey= AdapterLibManager.getAppKey();
+        StringBuffer sb=new StringBuffer();
+        String time=System.currentTimeMillis()+"";
+        sb.append("appkey="+appkey+"&time="+time);
+        String sign= Md5Security.encrypBy(sb.toString()+context.getResources().getString(R.string.md5_sign_key));
+        Call<ObjResult<TemplateJsV2>> call=schoolService.getTemplateJs("",appkey,time,sign);
         call.enqueue(callback);
     }
 
     public static void getAdapterParseJs(Context context,int aid,Callback<ObjResult<ParseJsModel>> callback) {
         SchoolService schoolService=ApiUtils.getRetrofitForSchool(context).create(SchoolService.class);
-        Call<ObjResult<ParseJsModel>> call=schoolService.getAdapterParsejs(""+aid);
+        int libVersion = AdapterLibManager.getLibVersionNumber();
+        String appkey= AdapterLibManager.getAppKey();
+        StringBuffer sb=new StringBuffer();
+        String time=System.currentTimeMillis()+"";
+        sb.append("appkey="+appkey+"&time="+time);
+        String sign= Md5Security.encrypBy(sb.toString()+context.getResources().getString(R.string.md5_sign_key));
+        Call<ObjResult<ParseJsModel>> call=schoolService.getAdapterParsejs(""+aid,""+libVersion,appkey,time,sign);
         call.enqueue(callback);
     }
 
-    public static void getSearchFixTopConifg(Context context,Callback<ObjResult<TemplateJsV2>> callback) {
+    public static void getQuestions(Context context,Callback<ListResult<QuestionModel>> callback) {
         SchoolService schoolService=ApiUtils.getRetrofitForSchool(context).create(SchoolService.class);
-        Call<ObjResult<TemplateJsV2>> call=schoolService.getTemplateJs("");
+        int libVersion = AdapterLibManager.getLibVersionNumber();
+        String appkey= AdapterLibManager.getAppKey();
+        StringBuffer sb=new StringBuffer();
+        String time=System.currentTimeMillis()+"";
+        sb.append("appkey="+appkey+"&time="+time);
+        String sign= Md5Security.encrypBy(sb.toString()+context.getResources().getString(R.string.md5_sign_key));
+        Call<ListResult<QuestionModel>> call=schoolService.getQuestions(""+libVersion,appkey,time,sign);
         call.enqueue(callback);
     }
+
+//    public static void getSearchFixTopConifg(Context context,Callback<ObjResult<TemplateJsV2>> callback) {
+//        SchoolService schoolService=ApiUtils.getRetrofitForSchool(context).create(SchoolService.class);
+//        Call<ObjResult<TemplateJsV2>> call=schoolService.getTemplateJs("");
+//        call.enqueue(callback);
+//    }
 
     public static void loginGreenFruit(Context context,String schoolId,String loginId,String password,Callback<GreenFruitProfile> callback) {
         TimetableService service=ApiUtils.getRetrofitForGreenFruit(context).create(TimetableService.class);
