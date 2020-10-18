@@ -65,16 +65,13 @@ public class QuestionAdapter extends BaseAdapter {
         ViewHolder holder = null;
         if (convertView == null) {
             holder = new ViewHolder();
-            convertView = mInflater.inflate(R.layout.item_search_school, null);
+            convertView = mInflater.inflate(R.layout.item_questions, null);
             holder.layout = convertView.findViewById(R.id.id_search_school_layout);
             holder.title = convertView.findViewById(R.id.item_school_val);
-            holder.tips = convertView.findViewById(R.id.id_search_school_type);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-        holder.tips.setVisibility(View.GONE);
-
         final QuestionModel model = list.get(position);
         if(model!=null){
             holder.title.setText(model.getTitle());
@@ -95,7 +92,6 @@ public class QuestionAdapter extends BaseAdapter {
     //ViewHolder静态类
     static class ViewHolder {
         public TextView title;
-        public TextView tips;
         public LinearLayout layout;
     }
 }
