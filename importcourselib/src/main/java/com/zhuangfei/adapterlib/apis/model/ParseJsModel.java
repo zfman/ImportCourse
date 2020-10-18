@@ -5,6 +5,25 @@ package com.zhuangfei.adapterlib.apis.model;
  */
 public class ParseJsModel {
     private String parsejs;
+    private String url;
+    private int enable = 1;
+
+    public void setEnable(int enable) {
+        this.enable = enable;
+    }
+
+    public int getEnable() {
+        return enable;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
     public String getParsejs() {
         return parsejs;
     }

@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/app_white"
+    android:paddingLeft="15dp"
+    android:paddingRight="15dp"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/search_normal_style"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginLeft="10dp"
+            android:src="@drawable/ic_search2" />
+
+        <EditText
+            android:id="@+id/id_search_edittext"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:layout_marginLeft="5dp"
+            android:layout_weight="1"
+            android:background="@null"
+            android:hint="搜索学校以导入"
+            android:imeOptions="actionSearch"
+            android:singleLine="true"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/id_search_search"
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="查找"
+            android:textColor="@color/app_blue2"
+            android:textSize="15sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_search"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/drawable_import_panel"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+
+        <TextView
+            android:id="@+id/tv_school_name"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:textSize="17sp"
+            android:text="河南理工大学"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:layout_marginLeft="10dp"/>
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
+
+            android:src="@drawable/icon_change"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:layout_marginTop="15dp"
+        android:orientation="horizontal">
+
+        <RelativeLayout
+            android:id="@+id/rl_jw_import"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:background="@drawable/drawable_import_panel"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/iv_img0"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_margin="10dp"
+                android:layout_alignParentLeft="true"
+                android:src="@drawable/icon_camera_import"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginLeft="10dp"
+                android:layout_marginBottom="10dp"
+                android:textSize="15sp"
+                android:text="教务导入"/>
+            <ImageView
+                android:id="@+id/iv_more0"
+                android:layout_width="15dp"
+                android:layout_marginRight="10dp"
+                android:layout_height="15dp"
+                android:layout_marginBottom="12dp"
+                android:src="@drawable/icon_right_pointer"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"/>
+
+            <View
+                android:layout_width="55dp"
+                android:layout_height="55dp"
+                android:background="@drawable/drawable_scan_import_panel"
+                android:layout_alignParentRight="true"/>
+
+            <LinearLayout
+                android:id="@+id/ll_scan_import"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_alignParentRight="true"
+                android:gravity="center"
+                android:background="@drawable/drawable_scan_import_panel2"
+                android:orientation="vertical">
+                <ImageView
+                    android:id="@+id/iv_img3"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/icon_scan_import"/>
+            </LinearLayout>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rl_common_import"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:padding="10dp"
+            android:layout_marginLeft="10dp"
+            android:background="@drawable/drawable_import_panel"
+            android:layout_height="match_parent">
+            <ImageView
+                android:id="@+id/iv_img1"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/icon_common_import"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentLeft="true"
+                android:textSize="15sp"
+                android:text="通用解析"/>
+            <ImageView
+                android:id="@+id/iv_more1"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_marginBottom="2dp"
+                android:src="@drawable/icon_right_pointer"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"/>
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_marginLeft="10dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/ll_camera_import"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:background="@drawable/drawable_import_panel"
+                android:layout_weight="1">
+
+                <ImageView
+                    android:id="@+id/iv_img2"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/icon_camera_import"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:textSize="15sp"
+                    android:text="拍照导入"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_xiquer_import"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:gravity="center_vertical"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:background="@drawable/drawable_import_panel"
+                android:layout_weight="1">
+                <ImageView
+                    android:id="@+id/iv_img4"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/icon_xiquer2"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:textSize="15sp"
+                    android:text="青果导入"/>
+            </LinearLayout>
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:textSize="17sp"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/app_black"
+        android:gravity="center_vertical"
+        android:text="常见问题"/>
+    <view
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/app_line"/>
+    <ListView
+        android:id="@+id/listview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+</LinearLayout>

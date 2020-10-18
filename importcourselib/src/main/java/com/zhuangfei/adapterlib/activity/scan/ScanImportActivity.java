@@ -14,6 +14,7 @@ import com.uuzuche.lib_zxing.activity.CaptureFragment;
 import com.uuzuche.lib_zxing.activity.CodeUtils;
 import com.zhuangfei.adapterlib.R;
 import com.zhuangfei.adapterlib.activity.AdapterSchoolActivity;
+import com.zhuangfei.adapterlib.utils.ViewUtils;
 
 public class ScanImportActivity extends AppCompatActivity {
 

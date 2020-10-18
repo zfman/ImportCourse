@@ -1,7 +1,10 @@
 package com.zhuangfei.adapterlib.activity.qingguo;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -385,6 +388,19 @@ public class XiquerLoginActivity extends AppCompatActivity implements View.OnCli
     }
 
     public void onSelectSchoolClicked(){
-        ActivityTools.toActivityWithout(this,ChooseSchoolActivity.class);
+        Intent intent=new Intent(this,ChooseSchoolActivity.class);
+        startActivityForResult(intent,100);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode==100 && resultCode==200){
+            if(data!=null && data.getSerializableExtra("model")!=null){
+                GreenFruitSchool school = (GreenFruitSchool) data.getSerializableExtra("model");
+                selectSchool=school;
+                userSchool.setText(selectSchool.getXxmc());
+            }
+        }
     }
 }

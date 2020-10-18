@@ -3,6 +3,7 @@ package com.zhuangfei.importcourse;
 import android.app.Application;
 import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.tencent.stat.StatMultiAccount;
 import com.tencent.stat.StatService;
@@ -14,6 +15,7 @@ import java.util.Properties;
 
 public class App extends Application {
     private static final String TAG = "App";
+    public static boolean enter = false;
     @Override
     public void onCreate() {
         super.onCreate();
@@ -59,5 +61,10 @@ public class App extends Application {
                 StatService.reportMultiAccount(context, account);
             }
         });
+    }
+
+    @Override
+    public String getPackageName() {
+        return super.getPackageName();
     }
 }

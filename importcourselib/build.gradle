@@ -4,12 +4,11 @@ android {
     compileSdkVersion 29
 
 
-
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 26
-        versionCode 20
-        versionName "2.0.0-beta1"
+        versionCode 21
+        versionName "2.1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -49,6 +48,7 @@ dependencies {
     api 'com.squareup.retrofit2:retrofit:2.0.2'
     api 'com.squareup.retrofit2:converter-gson:2.0.2'
     implementation project(':toolkit')
-    compile 'cn.yipianfengye.android:zxing-library:2.2'
+    implementation 'cn.yipianfengye.android:zxing-library:2.2'
     api 'com.tencent.tbs.tbssdk:sdk:43939'
+    implementation project(path: ':smartalert')
 }

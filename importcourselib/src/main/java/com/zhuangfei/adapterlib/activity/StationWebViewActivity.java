@@ -166,7 +166,7 @@ public class StationWebViewActivity extends AppCompatActivity implements IStatio
         loadingTipView3 = findViewById(R.id.id_loading_tip3);
         loadingViewLayout=findViewById(R.id.id_loadingview_layout);
 
-        stationOperator= (IStationOperator) getIntent().getSerializableExtra(SearchSchoolActivity.EXTRA_STATION_OPERATOR);
+//        stationOperator= (IStationOperator) getIntent().getSerializableExtra(NewSearchSchoolActivity.EXTRA_STATION_OPERATOR);
         if(stationOperator==null){
             stationOperator=new DefaultStationOperator();
         }

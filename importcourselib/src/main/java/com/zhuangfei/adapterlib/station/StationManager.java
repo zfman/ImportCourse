@@ -7,13 +7,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.zhuangfei.adapterlib.R;
-import com.zhuangfei.adapterlib.activity.SearchSchoolActivity;
+import com.zhuangfei.adapterlib.activity.NewSearchSchoolActivity;
 import com.zhuangfei.adapterlib.apis.TimetableRequest;
 import com.zhuangfei.adapterlib.apis.model.StationModel;
 import com.zhuangfei.adapterlib.activity.StationWebViewActivity;
@@ -21,7 +20,6 @@ import com.zhuangfei.adapterlib.station.model.ClipBoardModel;
 import com.zhuangfei.adapterlib.station.model.TinyConfig;
 import com.zhuangfei.adapterlib.utils.GsonUtils;
 
-import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -50,7 +48,7 @@ public class StationManager {
         Intent intent=new Intent(context, StationWebViewActivity.class);
         intent.putExtra(StationWebViewActivity.EXTRAS_STATION_MODEL,stationModel);
         intent.putExtra(StationWebViewActivity.EXTRAS_STATION_CONFIG,config);
-        intent.putExtra(SearchSchoolActivity.EXTRA_STATION_OPERATOR, operator);
+//        intent.putExtra(NewSearchSchoolActivity.EXTRA_STATION_OPERATOR, operator);
         context.startActivity(intent);
         context.overridePendingTransition(R.anim.anim_station_open_activity,R.anim.anim_station_static);//动画
     }
@@ -60,7 +58,7 @@ public class StationManager {
         Intent intent=new Intent(context, StationWebViewActivity.class);
         intent.putExtra(StationWebViewActivity.EXTRAS_STATION_MODEL,stationModel);
         intent.putExtra(StationWebViewActivity.EXTRAS_STATION_CONFIG,config);
-        intent.putExtra(SearchSchoolActivity.EXTRA_STATION_OPERATOR, operator);
+//        intent.putExtra(NewSearchSchoolActivity.EXTRA_STATION_OPERATOR, operator);
         intent.putExtra(StationWebViewActivity.EXTRAS_STATION_SDK, sdk);
         context.startActivity(intent);
         context.overridePendingTransition(R.anim.anim_station_open_activity,R.anim.anim_station_static);//动画
@@ -72,7 +70,7 @@ public class StationManager {
         intent.putExtra(StationWebViewActivity.EXTRAS_STATION_MODEL,stationModel);
         intent.putExtra(StationWebViewActivity.EXTRAS_STATION_CONFIG,config);
         intent.putExtra(StationWebViewActivity.EXTRAS_STATION_IS_JUMP,true);
-        intent.putExtra(SearchSchoolActivity.EXTRA_STATION_OPERATOR, operator);
+//        intent.putExtra(NewSearchSchoolActivity.EXTRA_STATION_OPERATOR, operator);
         context.startActivity(intent);
     }
 

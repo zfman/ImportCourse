@@ -1,6 +1,7 @@
 package com.zhuangfei.adapterlib.activity.qingguo;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -42,7 +43,10 @@ public class ChooseSchoolActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 GreenFruitSchool school=findSchool(list.get(i));
                 if(school!=null){
-
+                    Intent data = new Intent();
+                    data.putExtra("model",school);
+                    setResult(200,data);
+                    finish();
                 }
             }
         });

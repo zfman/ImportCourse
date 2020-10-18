@@ -26,6 +26,10 @@ import com.zhuangfei.adapterlib.apis.TimetableRequest;
 import com.zhuangfei.adapterlib.apis.model.BaseResult;
 import com.zhuangfei.adapterlib.core.IArea;
 import com.zhuangfei.adapterlib.core.JsSupport;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -58,11 +62,14 @@ public class UploadHtmlActivity extends AppCompatActivity {
     TextView displayTextView;
     public int nowIndex=0;
 
+    Map<String, String> extraHeaders = new HashMap<String, String>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload_html);
         ViewUtils.setStatusTextGrayColor(this);
+        extraHeaders.put("X-Requested-With", "");
         initView();
         initUrl();
         loadWebView();
@@ -110,24 +117,6 @@ public class UploadHtmlActivity extends AppCompatActivity {
      * 显示弹出菜单
      */
     public void showPopmenu() {
-        PopupMenu popup = new PopupMenu(this, helpView);
-        popup.getMenuInflater().inflate(R.menu.menu_webview, popup.getMenu());
-        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            public boolean onMenuItemClick(MenuItem item) {
-                if(item.getItemId()==R.id.top1){
-                    String now=webView.getUrl();
-                    if(now.indexOf("/")!=-1){
-                        int index=now.lastIndexOf("/");
-                        webView.loadUrl(now.substring(0,index)+"/xkAction.do?actionType=6");
-                    }else{
-                        webView.loadUrl(now+"/xkAction.do?actionType=6");
-                    }
-                }
-                return true;
-            }
-        });
-
-        popup.show();
     }
 
 
@@ -141,6 +130,7 @@ public class UploadHtmlActivity extends AppCompatActivity {
         ua=ua.replace("Android","ndroidA");
 
         webView.getSettings().setUserAgentString(ua);
+//        webView.getSettings().setUserAgentString("Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.80 Safari/537.36");
         webView.loadUrl(url);
     }
 
