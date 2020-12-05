@@ -22,7 +22,7 @@ public class AdapterLibManager {
     private static int libVersionNumber=21;
     private static String libVersionName="lib-2.1.0";
 
-    public static int appVersionNumber=1;
+    public static int appVersionNumber=64;
 
     //包名和appkey
     private static String appKey;

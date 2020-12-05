@@ -16,6 +16,7 @@ import com.zhuangfei.adapterlib.R;
 import com.zhuangfei.adapterlib.apis.TimetableRequest;
 import com.zhuangfei.adapterlib.apis.model.BaseResult;
 import com.zhuangfei.adapterlib.apis.model.ObjResult;
+import com.zhuangfei.adapterlib.callback.ILoginFinishListener;
 import com.zhuangfei.adapterlib.station.TinyUserManager;
 import com.zhuangfei.adapterlib.station.model.TinyUserInfo;
 import com.zhuangfei.adapterlib.utils.ViewUtils;
@@ -37,10 +38,8 @@ public class TinyAuthActivity extends AppCompatActivity implements View.OnClickL
     LinearLayout loadingLayout;
     LinearLayout passwordLayout2;
     EditText userPassword2;
-    LinearLayout qqLoginLayout;
-    LinearLayout wechatLoginLayout;
-    LinearLayout gsLoginLayout;
-    LinearLayout gsLoginContainer;
+
+    ILoginFinishListener loginFinishListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,29 +48,6 @@ public class TinyAuthActivity extends AppCompatActivity implements View.OnClickL
         setContentView(R.layout.activity_tiny_login);
         initView();
         initEvent();
-    }
-
-    private static String getcode (String str) {
-        String[] encodelist ={"GB2312","ISO-8859-1","UTF-8","GBK","Big5","UTF-16LE","Shift_JIS","EUC-JP"};
-        for(int i =0;i<encodelist.length;i++){
-            try {
-                if (str.equals(new String(str.getBytes(encodelist[i]),encodelist[i]))) {
-                    return encodelist[i];
-                }
-            } catch (Exception e) {
-
-            } finally{
-
-            }
-        } return "";
-    }
-
-    public void setLoadingViewVisible(boolean viewVisible){
-        if(!viewVisible){
-            loadingLayout.setVisibility(View.GONE);
-        }else{
-            loadingLayout.setVisibility(View.VISIBLE);
-        }
     }
 
     private void initEvent() {
@@ -89,13 +65,7 @@ public class TinyAuthActivity extends AppCompatActivity implements View.OnClickL
         loginButton.setOnClickListener(this);
         registerButton.setOnClickListener(this);
 
-        qqLoginLayout=findViewById(R.id.ll_qq_login);
-        wechatLoginLayout=findViewById(R.id.ll_wechat_login);
-        gsLoginLayout=findViewById(R.id.ll_gs_login);
-        gsLoginContainer=findViewById(R.id.ll_gs_container);
-        qqLoginLayout.setOnClickListener(this);
-        wechatLoginLayout.setOnClickListener(this);
-        gsLoginLayout.setOnClickListener(this);
+        loginFinishListener = (ILoginFinishListener) getIntent().getSerializableExtra("loginFinishListener");
     }
 
     @Override
@@ -109,8 +79,8 @@ public class TinyAuthActivity extends AppCompatActivity implements View.OnClickL
                 login(false);
             }
         }
-        if(arg0.getId()==R.id.ll_gs_login){
-            gsLoginContainer.setVisibility(View.VISIBLE);
+        if(arg0.getId()==R.id.login){
+            login(true);
         }
     }
 
@@ -163,9 +133,6 @@ public class TinyAuthActivity extends AppCompatActivity implements View.OnClickL
     public void login(String name,String pwd,String type){
         login(name,pwd,type,null,null,null,null,null,null);
     }
-    public void login(String name,String pwd,String type,String openid){
-        login(name,pwd,type,openid,null,null,null,null,null);
-    }
 
     public void login(String name,String pw,String type,String openid,String gender,String province,String city,String year,String figureUrl){
         TimetableRequest.loginUser(getContext(), name, pw, type,openid,gender,province,city,year,figureUrl,new Callback<ObjResult<TinyUserInfo>>() {
@@ -178,6 +145,9 @@ public class TinyAuthActivity extends AppCompatActivity implements View.OnClickL
                         Toast.makeText(getContext(),"登录成功",Toast.LENGTH_SHORT).show();
                         TinyUserManager.get(getContext()).saveUserInfo(result.getData());
                         finish();
+                        if(loginFinishListener!=null){
+                            loginFinishListener.onLoginSuccess(getContext());
+                        }
                     }else if(result.getCode()==338){
 
                     }else{
@@ -195,30 +165,6 @@ public class TinyAuthActivity extends AppCompatActivity implements View.OnClickL
             }
         });
     }
-
-//    public void sendCode(Context context) {
-//        RegisterPage page = new RegisterPage();
-//        //如果使用我们的ui，没有申请模板编号的情况下需传null
-//        page.setTempCode(null);
-//        page.setRegisterCallback(new EventHandler() {
-//            public void afterEvent(int event, int result, Object data) {
-//                if (result == SMSSDK.RESULT_COMPLETE) {
-//                    // 处理成功的结果
-//                    HashMap<String,Object> phoneMap = (HashMap<String, Object>) data;
-//                    // 国家代码，如“86”
-//                    String country = (String) phoneMap.get("country");
-//                    // 手机号码，如“13800138000”
-//                    String phone = (String) phoneMap.get("phone");
-//                    // TODO 利用国家代码和手机号码进行后续的操作
-//                    ToastTools.show(getContext(), GsonUtils.getGson().toJson(phoneMap));
-//                } else{
-//                    // TODO 处理错误的结果
-//                }
-//            }
-//        });
-//        page.show(context);
-//    }
-
     public void register(final String name, final String pw){
         TimetableRequest.registerUser(getContext(), name, pw, new Callback<BaseResult>() {
             @Override
@@ -244,18 +190,4 @@ public class TinyAuthActivity extends AppCompatActivity implements View.OnClickL
             }
         });
     }
-
-//    private void submitPrivacyGrantResult(boolean granted) {
-//        MobSDK.submitPolicyGrantResult(granted, new OperationCallback<Void>() {
-//            @Override
-//            public void onComplete(Void data) {
-//                sendCode(getContext());
-//            }
-//
-//            @Override
-//            public void onFailure(Throwable t) {
-//                ToastTools.show(getContext(),"error:"+t.getMessage());
-//            }
-//        });
-//    }
 }

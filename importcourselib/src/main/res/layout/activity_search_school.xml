@@ -46,35 +46,30 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/ll_shipei"
+        android:id="@+id/ll_empty"
+        android:visibility="gone"
         android:layout_width="match_parent"
-        android:layout_height="45dp"
+        android:layout_height="match_parent"
         android:background="@drawable/layout_ripple"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:gravity="center"
+        android:orientation="vertical">
         <TextView
             android:layout_width="wrap_content"
-            android:layout_weight="1"
-            android:layout_height="35dp"
+            android:layout_height="wrap_content"
             android:layout_marginLeft="15dp"
-            android:singleLine="true"
-            android:ellipsize="end"
-            android:gravity="center_vertical"
-            android:text="搜不到学校请点击此处申请适配"
-            android:textColor="@color/app_blue2"
-            android:textSize="15sp" />
-        <ImageView
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_marginRight="15dp"
-            android:src="@drawable/icon_right_pointer"/>
+            android:textSize="17sp"
+            android:text="未搜索到你的学校，选择以下解决方案："/>
+        <Button
+            android:id="@+id/btn_shenqing"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:text="申请适配"
+            android:layout_marginTop="15dp"
+            android:textColor="@color/app_white"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:background="@drawable/button_style"/>
     </LinearLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1px"
-        android:layout_marginLeft="15dp"
-        android:background="@color/app_line"/>
 
     <LinearLayout
         android:id="@+id/id_loadlayout"

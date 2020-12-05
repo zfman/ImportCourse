@@ -347,4 +347,10 @@ public class StationSdk implements Serializable{
     public void doAction(String action,String params,String tag){
 
     }
+
+    @JavascriptInterface
+    @SuppressLint("SetJavaScriptEnabled")
+    public void logout(){
+        TinyUserManager.get(stationView.getContext()).saveUserInfo(null);
+    }
 }

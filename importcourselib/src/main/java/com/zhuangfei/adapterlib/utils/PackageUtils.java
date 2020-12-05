@@ -37,4 +37,8 @@ public class PackageUtils {
         }
         return true;
     }
+
+    public static String getPackageSign(Context context){
+        return Md5Security.encrypBy(DeviceTools.getSHA1Signature(context));
+    }
 }

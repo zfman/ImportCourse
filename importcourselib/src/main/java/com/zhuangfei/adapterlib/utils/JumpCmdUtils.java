@@ -18,6 +18,7 @@ import com.zhuangfei.adapterlib.apis.model.ParseJsModel;
 import com.zhuangfei.adapterlib.apis.model.School;
 import com.zhuangfei.adapterlib.apis.model.TemplateJsV2;
 import com.zhuangfei.adapterlib.apis.model.TemplateModel;
+import com.zhuangfei.adapterlib.station.StationManager;
 import com.zhuangfei.smartalert.core.LoadAlert;
 import com.zhuangfei.toolkit.tools.ToastTools;
 
@@ -58,6 +59,10 @@ public class JumpCmdUtils {
                     if (objResult.getCode() == 200) {
                         ParseJsModel parseJsModel=objResult.getData();
                         if(parseJsModel!=null){
+                            if(parseJsModel.isNeedVip()){
+                                StationManager.openStationWithId((Activity) context,"vip",7,null);
+                                return;
+                            }
                             if(!TextUtils.isEmpty(parseJsModel.getUrl())){
                                 school.setUrl(parseJsModel.getUrl());
                                 SchoolDaoUtils.saveSchool(context,school);

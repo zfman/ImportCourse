@@ -7,6 +7,15 @@ public class ParseJsModel {
     private String parsejs;
     private String url;
     private int enable = 1;
+    private boolean needVip = false;
+
+    public void setNeedVip(boolean needVip) {
+        this.needVip = needVip;
+    }
+
+    public boolean isNeedVip() {
+        return needVip;
+    }
 
     public void setEnable(int enable) {
         this.enable = enable;

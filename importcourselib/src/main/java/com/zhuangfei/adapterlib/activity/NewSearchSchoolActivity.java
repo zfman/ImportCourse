@@ -96,6 +96,8 @@ public class NewSearchSchoolActivity extends AppCompatActivity implements OnComm
     ParseJsModel parseJsModel;
     int nowTemplateVersion=0;
 
+    LinearLayout emptyLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,7 +105,7 @@ public class NewSearchSchoolActivity extends AppCompatActivity implements OnComm
         ViewUtils.setStatusTextGrayColor(this);
         initView();
         inits();
-//        loadSchools();
+        loadSchools();
         StatManager.sendKVEvent(this,"pf_search_enter",null);
     }
 
@@ -148,6 +150,7 @@ public class NewSearchSchoolActivity extends AppCompatActivity implements OnComm
         searchListView=findViewById(R.id.id_search_listview);
         searchEditText=findViewById(R.id.id_search_edittext);
         loadLayout=findViewById(R.id.id_loadlayout);
+        emptyLayout = findViewById(R.id.ll_empty);
     }
 
     public void setLoadLayout(boolean isShow) {
@@ -207,7 +210,7 @@ public class NewSearchSchoolActivity extends AppCompatActivity implements OnComm
             search("recommend://"+searchKey);
         }
 
-        findViewById(R.id.ll_shipei).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.btn_shenqing).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent=new Intent(getContext(),AdapterTipActivity.class);
@@ -411,6 +414,7 @@ public class NewSearchSchoolActivity extends AppCompatActivity implements OnComm
                 models.clear();
                 allDatas.clear();
                 searchAdapter.notifyDataSetChanged();
+                emptyLayout.setVisibility(View.GONE);
                 search("recommend://");
             } else {
                 search(charSequence.toString());
@@ -429,6 +433,7 @@ public class NewSearchSchoolActivity extends AppCompatActivity implements OnComm
     }
 
     public void search(final String key) {
+        emptyLayout.setVisibility(View.GONE);
         if(TextUtils.isEmpty(key)) {
             return;
         }
@@ -587,16 +592,16 @@ public class NewSearchSchoolActivity extends AppCompatActivity implements OnComm
         if (list == null) {
             return;
         }
-//        if(allSchool!=null){
-//            for (GreenFruitSchool schoolBean : allSchool) {
-//                if (schoolBean.getXxmc() != null && schoolBean.getXxmc().indexOf(key) != -1) {
-//                    SearchResultModel searchResultModel2 = new SearchResultModel();
-//                    searchResultModel2.setType(SearchResultModel.TYPE_XIQUER);
-//                    searchResultModel2.setObject(schoolBean);
-//                    addModelToList(searchResultModel2);
-//                }
-//            }
-//        }
+        if(allSchool!=null){
+            for (GreenFruitSchool schoolBean : allSchool) {
+                if (schoolBean.getXxmc() != null && schoolBean.getXxmc().indexOf(key) != -1) {
+                    SearchResultModel searchResultModel2 = new SearchResultModel();
+                    searchResultModel2.setType(SearchResultModel.TYPE_XIQUER);
+                    searchResultModel2.setObject(schoolBean);
+                    addModelToList(searchResultModel2);
+                }
+            }
+        }
 
         for (School schoolBean : list) {
             SearchResultModel searchResultModel3 = new SearchResultModel();
@@ -605,6 +610,9 @@ public class NewSearchSchoolActivity extends AppCompatActivity implements OnComm
             addModelToList(searchResultModel3);
         }
         sortResult();
+        if(models.size()==0){
+            emptyLayout.setVisibility(View.VISIBLE);
+        }
         searchAdapter.notifyDataSetChanged();
     }
 

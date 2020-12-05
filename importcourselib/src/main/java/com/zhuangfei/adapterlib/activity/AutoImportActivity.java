@@ -29,6 +29,7 @@ import com.zhuangfei.adapterlib.apis.TimetableRequest;
 import com.zhuangfei.adapterlib.apis.model.ListResult;
 import com.zhuangfei.adapterlib.apis.model.QuestionModel;
 import com.zhuangfei.adapterlib.apis.model.School;
+import com.zhuangfei.adapterlib.station.TinyUserManager;
 import com.zhuangfei.adapterlib.utils.JumpCmdUtils;
 import com.zhuangfei.adapterlib.utils.SchoolDaoUtils;
 import com.zhuangfei.adapterlib.utils.ViewUtils;
@@ -51,7 +52,7 @@ public class AutoImportActivity extends AppCompatActivity implements View.OnClic
 
     RelativeLayout rlJwImport;
     RelativeLayout rlCommonImport;
-    LinearLayout llCameraImport;
+    LinearLayout lluser;
     LinearLayout llScanImport;
     LinearLayout llXiquerImport;
     LinearLayout llSearch;
@@ -82,7 +83,7 @@ public class AutoImportActivity extends AppCompatActivity implements View.OnClic
         imageView4 = findViewById(R.id.iv_img4);
         rlJwImport = findViewById(R.id.rl_jw_import);
         rlCommonImport = findViewById(R.id.rl_common_import);
-        llCameraImport = findViewById(R.id.ll_camera_import);
+        lluser = findViewById(R.id.ll_user);
         llScanImport = findViewById(R.id.ll_scan_import);
         llXiquerImport = findViewById(R.id.ll_xiquer_import);
         llSearch = findViewById(R.id.ll_search);
@@ -100,7 +101,7 @@ public class AutoImportActivity extends AppCompatActivity implements View.OnClic
         rlCommonImport.setOnClickListener(this);
         llXiquerImport.setOnClickListener(this);
         llScanImport.setOnClickListener(this);
-        llCameraImport.setOnClickListener(this);
+        lluser.setOnClickListener(this);
         updateSchoolText();
 
         listView = findViewById(R.id.listview);
@@ -169,7 +170,7 @@ public class AutoImportActivity extends AppCompatActivity implements View.OnClic
             }
         }
 
-        if(v.getId() == R.id.ll_camera_import){
+        if(v.getId() == R.id.ll_user){
             ToastTools.show(this,"暂未开放!");
         }
 

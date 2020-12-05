@@ -141,7 +141,7 @@ public class TimetableRequest {
         if(name==null) name="";
         if(password==null) password="";
         Call<ObjResult<TinyUserInfo>> call=service.loginUser(name,password,type,openid,
-                time,sign,packageName,appkey,AdapterLibManager.appVersionNumber,
+                time,sign,packageName,appkey,64,
                 gender,province,city,year,figureUrl);
         call.enqueue(callback);
     }
@@ -208,11 +208,17 @@ public class TimetableRequest {
     public static void getTemplateJs(Context context,Callback<ObjResult<TemplateJsV2>> callback) {
         SchoolService schoolService=ApiUtils.getRetrofitForSchool(context).create(SchoolService.class);
         String appkey= AdapterLibManager.getAppKey();
-        StringBuffer sb=new StringBuffer();
         String time=System.currentTimeMillis()+"";
-        sb.append("appkey="+appkey+"&time="+time);
-        String sign= Md5Security.encrypBy(sb.toString()+context.getResources().getString(R.string.md5_sign_key));
-        Call<ObjResult<TemplateJsV2>> call=schoolService.getTemplateJs("",appkey,time,sign);
+        int libVersion = AdapterLibManager.getLibVersionNumber();
+        String token= TinyUserManager.get(context).getToken();
+        String p = PackageUtils.getPackageName(context);
+        String s = PackageUtils.getPackageSign(context);
+
+        String originSign = String.format("token=%s&libVersion=%d&appKey=%s&time=%s&package=%s&appSign=%s",
+                token,libVersion,appkey,time,p,s);
+        String sign = Md5Security.encrypBy(originSign);
+
+        Call<ObjResult<TemplateJsV2>> call=schoolService.getTemplateJs(token,appkey,time,""+libVersion,p,s,sign);
         call.enqueue(callback);
     }
 
@@ -220,11 +226,17 @@ public class TimetableRequest {
         SchoolService schoolService=ApiUtils.getRetrofitForSchool(context).create(SchoolService.class);
         int libVersion = AdapterLibManager.getLibVersionNumber();
         String appkey= AdapterLibManager.getAppKey();
-        StringBuffer sb=new StringBuffer();
         String time=System.currentTimeMillis()+"";
-        sb.append("appkey="+appkey+"&time="+time);
-        String sign= Md5Security.encrypBy(sb.toString()+context.getResources().getString(R.string.md5_sign_key));
-        Call<ObjResult<ParseJsModel>> call=schoolService.getAdapterParsejs(""+aid,""+libVersion,appkey,time,sign);
+
+        String p = PackageUtils.getPackageName(context);
+        String s = PackageUtils.getPackageSign(context);
+
+        String token= TinyUserManager.get(context).getToken();
+
+        String originSign = String.format("token=%s&aid=%d&libVersion=%d&appKey=%s&time=%s&package=%s&appSign=%s",
+                token,aid,libVersion,appkey,time,p,s);
+        String sign = Md5Security.encrypBy(originSign);
+        Call<ObjResult<ParseJsModel>> call=schoolService.getAdapterParsejs(""+aid,""+libVersion,appkey,time,p,s,sign);
         call.enqueue(callback);
     }
 

@@ -8,7 +8,6 @@
     android:paddingLeft="15dp"
     android:paddingRight="15dp"
     android:orientation="vertical">
-
     <LinearLayout
         android:visibility="gone"
         android:layout_width="match_parent"
@@ -176,7 +175,7 @@
             android:orientation="vertical">
 
             <LinearLayout
-                android:id="@+id/ll_camera_import"
+                android:id="@+id/ll_user"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:gravity="center_vertical"
@@ -190,14 +189,14 @@
                     android:id="@+id/iv_img2"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:src="@drawable/icon_camera_import"/>
+                    android:src="@drawable/icon_user"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
                     android:textSize="15sp"
-                    android:text="拍照导入"/>
+                    android:text="登录账户"/>
             </LinearLayout>
 
             <LinearLayout
@@ -215,6 +214,7 @@
                     android:id="@+id/iv_img4"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
+                    android:layout_marginTop="3dp"
                     android:src="@drawable/icon_xiquer2"/>
                 <TextView
                     android:layout_width="wrap_content"
@@ -230,8 +230,9 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="35dp"
+        android:textStyle="bold"
         android:textSize="17sp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="15dp"
         android:textColor="@color/app_black"
         android:gravity="center_vertical"
         android:text="常见问题"/>

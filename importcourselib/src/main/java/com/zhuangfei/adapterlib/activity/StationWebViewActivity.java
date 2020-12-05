@@ -30,6 +30,7 @@ import com.tencent.smtt.sdk.WebChromeClient;
 import com.tencent.smtt.sdk.WebSettings;
 import com.tencent.smtt.sdk.WebView;
 import com.tencent.smtt.sdk.WebViewClient;
+import com.zhuangfei.adapterlib.AdapterLibManager;
 import com.zhuangfei.adapterlib.activity.custom.CustomPopWindow;
 import com.zhuangfei.adapterlib.R;
 import com.zhuangfei.adapterlib.activity.view.MyWebView;
@@ -53,12 +54,15 @@ import com.zhuangfei.adapterlib.apis.TimetableRequest;
 import com.zhuangfei.adapterlib.apis.model.ListResult;
 import com.zhuangfei.adapterlib.apis.model.StationModel;
 import com.zhuangfei.adapterlib.station.StationSdk;
+import com.zhuangfei.toolkit.tools.ToastTools;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -103,7 +107,7 @@ public class StationWebViewActivity extends AppCompatActivity implements IStatio
     LinearLayout buttonGroupLayout;
     View diverView;//分隔竖线
 
-    int needUpdate = 1;
+    int needUpdate = 0;
 
     View loadingTipView1;
     View loadingTipView2;
@@ -120,6 +124,7 @@ public class StationWebViewActivity extends AppCompatActivity implements IStatio
     LinearLayout floatActionBar;
     IStationOperator stationOperator;
 
+    final Map<String,String> extraHeaders = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,14 +141,20 @@ public class StationWebViewActivity extends AppCompatActivity implements IStatio
 
     public void jumpPage(String page) {
         StationModel newStationModel = stationModel.copyModel();
-        String newUrl = StationManager.getBaseUrl()+tinyConfig.getName()+"/" + page;
-        newStationModel.setUrl(newUrl);
+        if(page.startsWith("url: ")){
+            String jumpUrl = page.substring(5);
+            newStationModel.setUrl(jumpUrl);
+        }else{
+            String newUrl = StationManager.getBaseUrl()+tinyConfig.getName()+"/" + page;
+            newStationModel.setUrl(newUrl);
+        }
         StationManager.openStationOtherPage(this, tinyConfig, newStationModel,stationOperator);
     }
 
     private void initUrl() {
         url = StationManager.getRealUrl(stationModel.getUrl());
         title = stationModel.getName();
+        extraHeaders.put("Referer","http://www.liuzhuangfei.com");
     }
 
     private void initView() {
@@ -197,8 +208,11 @@ public class StationWebViewActivity extends AppCompatActivity implements IStatio
             backImageView2.setColorFilter(Color.parseColor(tinyConfig.getTheme().getActionTextColor()));
         }
 
-        titleTextView.setText(title);
-        titleTextView2.setText(title);
+        if(!TextUtils.isEmpty(title)){
+            titleTextView.setText(title);
+            titleTextView2.setText(title);
+        }
+
         try {
             actionbarLayout.setBackgroundColor(Color.parseColor(tinyConfig.getTheme().getActionColor()));
             floatActionBar.setBackgroundColor(Color.parseColor(tinyConfig.getTheme().getActionColor()));
@@ -470,7 +484,7 @@ public class StationWebViewActivity extends AppCompatActivity implements IStatio
             if (v.getId() == R.id.pop_to_home) {
                 webView.clearHistory();
                 startLoading();
-                webView.loadUrl(stationModel.getUrl());
+                webView.loadUrl(stationModel.getUrl(),extraHeaders);
             }
             popupWindow.dismiss();
         }
@@ -478,7 +492,7 @@ public class StationWebViewActivity extends AppCompatActivity implements IStatio
 
     @SuppressLint("SetJavaScriptEnabled")
     private void loadWebView() {
-        webView.loadUrl(url);
+        webView.loadUrl(url,extraHeaders);
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
         settings.setDefaultTextEncodingName("gb2312");
@@ -486,7 +500,7 @@ public class StationWebViewActivity extends AppCompatActivity implements IStatio
         settings.setDomStorageEnabled(true);
         String ua=webView.getSettings().getUserAgentString();
         if(ua!=null){
-            ua=ua+" stationSdk/"+StationSdk.SDK_VERSION+" token/"+ TinyUserManager.get(this).getToken();
+            ua=ua+" stationSdk/"+StationSdk.SDK_VERSION+" token/"+ TinyUserManager.get(this).getToken()+" appkey/"+ AdapterLibManager.getAppKey();
         }
         webView.getSettings().setUserAgentString(ua);
         webView.addJavascriptInterface(stationSdk, "sdk");
@@ -501,12 +515,18 @@ public class StationWebViewActivity extends AppCompatActivity implements IStatio
             }
         });
 
+
         webView.setWebViewClient(new WebViewClient() {
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 Log.d(TAG, "shouldOverrideUrlLoading: " + url);
-                webView.loadUrl(url);
+                Uri uri = Uri.parse(url);
+                if (uri.getScheme().equals("weixin")) {
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                }else{
+                    webView.loadUrl(url,extraHeaders);
+                }
                 return true;
             }
 

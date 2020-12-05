@@ -137,6 +137,9 @@ public interface SchoolService {
     Call<ObjResult<TemplateJsV2>> getTemplateJs(@Field("token") String token,
                                                 @Field("appkey") String appkey,
                                                 @Field("time") String time,
+                                                @Field("libVersion") String libVersion,
+                                                @Field("package") String packageName,
+                                                @Field("appSign") String appSign,
                                                 @Field("sign") String sign);
 
     @POST(UrlContants.URL_GET_ADAPTER_PARSE_JS)
@@ -145,6 +148,8 @@ public interface SchoolService {
                                                     @Field("libVersion") String libVersion,
                                                     @Field("appkey") String appkey,
                                                     @Field("time") String time,
+                                                    @Field("package") String packageName,
+                                                    @Field("appSign") String appSign,
                                                     @Field("sign") String sign);
 
     @POST(UrlContants.URL_GET_QUESTIONS)

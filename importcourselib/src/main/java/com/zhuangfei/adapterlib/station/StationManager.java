@@ -184,16 +184,20 @@ public class StationManager {
         stationModel.setUrl(getBaseUrl()+stationName);
         stationModel.setDisplayAfterRequest(true);
         String config=sp.getString("config_"+stationModel.getStationId(),null);
+        boolean handle = false;
         if(!TextUtils.isEmpty(config)){
             handleConfig(context,GsonUtils.getGson().fromJson(config,TinyConfig.class),stationModel,operator);
-            return;
+            handle = true;
         }
+        final boolean finalHandle = handle;
         TimetableRequest.getStationConfig(context, stationName, new Callback<TinyConfig>() {
             @Override
             public void onResponse(Call<TinyConfig> call, Response<TinyConfig> response) {
                 if(response!=null){
                     TinyConfig config=response.body();
-                    handleConfig(context,config,stationModel,operator);
+                    if(!finalHandle){
+                        handleConfig(context,config,stationModel,operator);
+                    }
                     if(config!=null){
                         editor.putString("config_"+stationModel.getStationId(), GsonUtils.getGson().toJson(config));
                         editor.commit();
@@ -205,7 +209,9 @@ public class StationManager {
 
             @Override
             public void onFailure(Call<TinyConfig> call, Throwable t) {
-                Toast.makeText(context,t.getMessage(),Toast.LENGTH_SHORT).show();
+                if(!finalHandle){
+                    Toast.makeText(context,t.getMessage(),Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
