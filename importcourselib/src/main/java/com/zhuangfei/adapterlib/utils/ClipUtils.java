@@ -32,4 +32,19 @@ public class ClipUtils {
             }
         }
     }
+
+    public static void copy(Context context, String content) {
+        if(content!=null){
+
+            //获取剪贴板管理器：
+            try{
+                ClipboardManager cm = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData mClipData = ClipData.newPlainText("Label", content);
+                cm.setPrimaryClip(mClipData);
+                Toast.makeText(context,"已复制到剪切板!",Toast.LENGTH_SHORT).show();
+            }catch (Exception e){
+                Toast.makeText(context,"Exception:"+e.getMessage(),Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
 }

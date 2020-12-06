@@ -33,6 +33,7 @@ import com.zhuangfei.adapterlib.apis.model.QuestionModel;
 import com.zhuangfei.adapterlib.apis.model.School;
 import com.zhuangfei.adapterlib.station.TinyUserManager;
 import com.zhuangfei.adapterlib.station.model.TinyUserInfo;
+import com.zhuangfei.adapterlib.utils.ClipUtils;
 import com.zhuangfei.adapterlib.utils.JumpCmdUtils;
 import com.zhuangfei.adapterlib.utils.PackageUtils;
 import com.zhuangfei.adapterlib.utils.SchoolDaoUtils;
@@ -61,6 +62,8 @@ public class AutoImportActivity extends AppCompatActivity implements View.OnClic
     LinearLayout llXiquerImport;
     LinearLayout llSearch;
     TextView usernameTextView;
+
+    TextView copyTextView;
 
     TextView schoolTextView;
     ListView listView;
@@ -100,6 +103,7 @@ public class AutoImportActivity extends AppCompatActivity implements View.OnClic
         llSearch = findViewById(R.id.ll_search);
         schoolTextView = findViewById(R.id.tv_school_name);
         usernameTextView = findViewById(R.id.tv_username);
+        copyTextView = findViewById(R.id.tv_copy);
 
         int color = Color.parseColor("#A561F7");
         imageView0.setColorFilter(color);
@@ -126,10 +130,19 @@ public class AutoImportActivity extends AppCompatActivity implements View.OnClic
             startActivity(intent);
             finish();
         }
-        TinyUserInfo userInfo = TinyUserManager.get(this).getUserInfo();
+        final TinyUserInfo userInfo = TinyUserManager.get(this).getUserInfo();
         if(userInfo!=null && userInfo.getName()!=null){
             usernameTextView.setText("账户名："+userInfo.getName());
         }
+
+        copyTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(userInfo.getName()!=null){
+                    ClipUtils.copy(AutoImportActivity.this,userInfo.getName());
+                }
+            }
+        });
     }
 
     private void request(){
