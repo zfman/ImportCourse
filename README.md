@@ -29,7 +29,7 @@ Step 2. Add the dependency
 
 ```gradle
 	dependencies {
-	        implementation 'com.github.zfman.ImportCourse:importcourselib:2.2.0'
+	        implementation 'com.github.zfman.ImportCourse:importcourselib:2.2.3'
 	}
 ```
 
