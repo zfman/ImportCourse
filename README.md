@@ -41,7 +41,7 @@ Step 2. Add the dependency
 		@Override
 		public void onCreate() {
 			super.onCreate();
-			AdapterLibManager.init("申请的appkey");
+			AdapterLibManager.register("申请的appkey");
 		}
 	}
 ```
