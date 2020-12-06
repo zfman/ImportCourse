@@ -35,9 +35,18 @@
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="50dp"
             android:layout_marginTop="50dp"
             android:src="@drawable/ic_launch" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="20dp"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:text="适配平台统一认证中心"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -222,6 +231,15 @@
             android:layout_marginRight="15dp"
             android:layout_marginTop="15dp"
             android:text="注册账户"
+            android:textSize="18sp" />
+        <Button
+            android:id="@+id/wangjimima"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="15dp"
+            android:text="忘记密码"
             android:textSize="18sp" />
     </LinearLayout>
 

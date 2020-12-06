@@ -196,7 +196,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
                     android:textSize="15sp"
-                    android:text="登录账户"/>
+                    android:text="退出账户"/>
             </LinearLayout>
 
             <LinearLayout
@@ -227,6 +227,34 @@
         </LinearLayout>
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/ll_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/drawable_import_panel"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/tv_username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:textColor="@color/theme_black"
+            android:text="账户名：正在获取..."/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:layout_marginTop="5dp"
+            android:textColor="@color/theme_black"
+            android:text="反馈问题时请提供账户名称，便于开发者分析问题，否则开发者将不予处理！"/>
+    </LinearLayout>
     <TextView
         android:layout_width="match_parent"
         android:layout_height="35dp"

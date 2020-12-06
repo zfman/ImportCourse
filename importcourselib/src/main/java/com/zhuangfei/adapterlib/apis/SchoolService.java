@@ -150,7 +150,8 @@ public interface SchoolService {
                                                     @Field("time") String time,
                                                     @Field("package") String packageName,
                                                     @Field("appSign") String appSign,
-                                                    @Field("sign") String sign);
+                                                    @Field("sign") String sign,
+                                                    @Field("token") String token);
 
     @POST(UrlContants.URL_GET_QUESTIONS)
     @FormUrlEncoded

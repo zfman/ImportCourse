@@ -15,7 +15,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
@@ -26,27 +25,22 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.zhuangfei.adapterlib.AdapterLibManager;
-import com.zhuangfei.adapterlib.StatManager;
+import com.zhuangfei.adapterlib.RecordEventManager;
 import com.zhuangfei.adapterlib.activity.qingguo.XiquerLoginActivity;
 import com.zhuangfei.adapterlib.apis.model.ParseJsModel;
 import com.zhuangfei.adapterlib.apis.model.TemplateJsV2;
-import com.zhuangfei.adapterlib.callback.DefaultAdapterOperator;
-import com.zhuangfei.adapterlib.callback.IAdapterOperator;
 import com.zhuangfei.adapterlib.ParseManager;
 import com.zhuangfei.adapterlib.R;
 import com.zhuangfei.adapterlib.apis.model.SearchResultModel;
 import com.zhuangfei.adapterlib.activity.adapter.SearchSchoolAdapter;
 import com.zhuangfei.adapterlib.core.AssetTools;
 import com.zhuangfei.adapterlib.station.IStationOperator;
-import com.zhuangfei.adapterlib.station.StationManager;
 import com.zhuangfei.adapterlib.station.StationSdk;
 import com.zhuangfei.adapterlib.station.model.GreenFruitSchool;
-import com.zhuangfei.adapterlib.station.model.TinyConfig;
 import com.zhuangfei.adapterlib.utils.GsonUtils;
 import com.zhuangfei.adapterlib.utils.Md5Security;
 import com.zhuangfei.adapterlib.utils.PackageUtils;
 import com.zhuangfei.adapterlib.utils.SchoolDaoUtils;
-import com.zhuangfei.adapterlib.utils.SoftInputUtils;
 import com.zhuangfei.adapterlib.utils.ViewUtils;
 import com.zhuangfei.adapterlib.apis.TimetableRequest;
 import com.zhuangfei.adapterlib.apis.model.AdapterResultV2;
@@ -57,13 +51,10 @@ import com.zhuangfei.adapterlib.apis.model.StationModel;
 import com.zhuangfei.adapterlib.apis.model.TemplateModel;
 import com.zhuangfei.toolkit.model.BundleModel;
 import com.zhuangfei.toolkit.tools.ActivityTools;
-import com.zhuangfei.toolkit.tools.ShareTools;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -106,7 +97,7 @@ public class NewSearchSchoolActivity extends AppCompatActivity implements OnComm
         initView();
         inits();
         loadSchools();
-        StatManager.sendKVEvent(this,"pf_search_enter",null);
+        RecordEventManager.recordDisplayEvent(getApplicationContext(),"xzxx");//选择学校
     }
 
     protected StationSdk getStationSdk(){
@@ -198,10 +189,10 @@ public class NewSearchSchoolActivity extends AppCompatActivity implements OnComm
                 try{
                     Intent intent = new Intent();
                     intent.setAction("android.intent.action.VIEW");
-                    intent.setData(Uri.parse("https://github.com/zfman/CourseAdapter"));
+                    intent.setData(Uri.parse("https://github.com/zfman/ImportCourse"));
                     context.startActivity(intent);
                 }catch (Exception e){
-                    Toast.makeText(context,"跳转失败 https://github.com/zfman/CourseAdapter",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context,"跳转失败 https://github.com/zfman/ImportCourse",Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -225,95 +216,14 @@ public class NewSearchSchoolActivity extends AppCompatActivity implements OnComm
         //学校教务导入
         if(model.getType()==SearchResultModel.TYPE_SCHOOL){
             School school = (School) model.getObject();
+            RecordEventManager.recordClickEvent(getApplicationContext(),"xzxx.xz","school=?",school.getSchoolName());//选中
             SchoolDaoUtils.saveSchool(context,school);
             finish();
         }
         else if(model.getType()==SearchResultModel.TYPE_XIQUER){
+            RecordEventManager.recordClickEvent(getApplicationContext(),"xzxx.xqedr");//喜鹊儿导入
             onXuqerItemClicked(model);
         }
-    }
-
-    private void handleCommonParse(final List<TemplateModel> templateModels){
-        if(templateModels!=null){
-            String[] items=new String[templateModels.size()];
-            for(int r=0;r<items.length;r++){
-                items[r]=templateModels.get(r).getTemplateName();
-            }
-            SoftInputUtils.hideInput(getContext());
-            AlertDialog.Builder builder=new AlertDialog.Builder(this)
-                    .setTitle("选择通用模板")
-                    .setItems(items, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            TemplateModel templateModel = (TemplateModel) templateModels.get(i);
-                            if (templateModel!=null){
-                                handleCustomTemplate(templateModel);
-                            }
-                        }
-                    });
-            builder.create().show();
-        }
-    }
-
-    private void handleCustomTemplate(TemplateModel templateModel){
-        if(baseJs==null){
-            Toast.makeText(getContext(),"基础函数库发生异常，请联系qq:1193600556",Toast.LENGTH_SHORT).show();
-        }
-        else {
-            if(templateModel.getStat() != null){
-                StatManager.sendKVEvent(getContext(),templateModel.getStat(),null);
-            }
-            toAdapterSameTypeActivity(templateModel.getTemplateName(),baseJs+templateModel.getTemplateJs());
-        }
-    }
-
-    private void handleItemClickedForSchool(final SearchResultModel model){
-        if(parseJsModel==null||parseJsModel.getParsejs()==null){
-            School school = (School) model.getObject();
-            if(school!=null){
-                requestParseJs(school.getAid(), new OnDoActionListener() {
-                    @Override
-                    public void doActionAfter() {
-                        realHandleItemClickedForSchool(model);
-                    }
-                });
-            }
-        }else{
-            realHandleItemClickedForSchool(model);
-        }
-    }
-
-    private void realHandleItemClickedForSchool(SearchResultModel model){
-        School school = (School) model.getObject();
-        if(school!=null&&parseJsModel!=null){
-            ShareTools.putString(this,"lastCLicked",school.getSchoolName());
-
-            Map<String,String> params=new HashMap<>();
-            params.put("school",school.getSchoolName());
-            StatManager.sendKVEvent(getContext(),"pf_jwdr",null);
-            if(parseJsModel.getParsejs().startsWith("template/")){
-                TemplateModel searchModel=searchInTemplate(templateModels,parseJsModel.getParsejs());
-                if(baseJs==null){
-                    Toast.makeText(this,"基础函数库发生异常，请联系qq:1193600556",Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if(searchModel!=null){
-                    toAdapterSchoolActivity(school.getSchoolName(),
-                            school.getUrl(),
-                            school.getType(),
-                            searchModel.getTemplateJs()+baseJs);
-                }else {
-                    Toast.makeText(this,"通用解析模板发生异常，请联系qq:1193600556",Toast.LENGTH_SHORT).show();
-                }
-            }else{
-                toAdapterSchoolActivity(school.getSchoolName(),school.getUrl(),school.getType(),parseJsModel.getParsejs());
-            }
-        }
-    }
-
-    private void handleItemClickedForStation(SearchResultModel model){
-        StationModel stationModel=(StationModel) model.getObject();
-        getStationConfig((StationModel) model.getObject());
     }
 
     public void onXuqerItemClicked(SearchResultModel model){
@@ -323,77 +233,11 @@ public class NewSearchSchoolActivity extends AppCompatActivity implements OnComm
                         .put("selectSchool",model.getObject()));
     }
 
-    public void getStationConfig(final StationModel stationModel){
-        String stationName=StationManager.getStationName(stationModel.getUrl());
-        Log.d(TAG, "getStationConfig: "+stationName);
-        if(TextUtils.isEmpty(stationName)) return;
-        String config=sp.getString("config_"+stationModel.getStationId(),null);
-        if(!TextUtils.isEmpty(config)){
-            handleConfig(GsonUtils.getGson().fromJson(config,TinyConfig.class),stationModel);
-            return;
-        }
-        setLoadLayout(true);
-        TimetableRequest.getStationConfig(getContext(), stationName, new Callback<TinyConfig>() {
-            @Override
-            public void onResponse(Call<TinyConfig> call, Response<TinyConfig> response) {
-                setLoadLayout(false);
-                if(response!=null){
-                    TinyConfig config=response.body();
-                    handleConfig(config,stationModel);
-                    if(config!=null){
-                        editor.putString("config_"+stationModel.getStationId(), GsonUtils.getGson().toJson(config));
-                        editor.commit();
-                    }
-                }else{
-                    Toast.makeText(getContext(),"Error:response is null",Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<TinyConfig> call, Throwable t) {
-                Toast.makeText(getContext(),t.getMessage(),Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void handleConfig(TinyConfig config,StationModel stationModel) {
-        if(config!=null){
-            if(config.getSupport()> StationSdk.SDK_VERSION){
-                Toast.makeText(getContext(),"版本太低，不支持本服务站，请升级新版本!",Toast.LENGTH_SHORT).show();
-            }else{
-                StationManager.openStationWithout(getContext(),config,stationModel,operator,getStationSdk());
-            }
-        }else{
-            Toast.makeText(getContext(),"Error:config is null",Toast.LENGTH_SHORT).show();
-        }
-    }
-
     public void toAdapterSameTypeActivity(String type,String js){
         Intent intent=new Intent(this,AdapterSameTypeActivity.class);
         intent.putExtra(AdapterSameTypeActivity.EXTRA_TYPE,type);
         intent.putExtra(AdapterSameTypeActivity.EXTRA_JS,js);
         startActivity(intent);
-    }
-
-    public void toAdapterSchoolActivity(String school,String url,String type,String js){
-        Intent intent=new Intent(this,AdapterSchoolActivity.class);
-        intent.putExtra(AdapterSchoolActivity.EXTRA_URL,url);
-        intent.putExtra(AdapterSchoolActivity.EXTRA_SCHOOL,school);
-        intent.putExtra(AdapterSchoolActivity.EXTRA_TYPE,type);
-        intent.putExtra(AdapterSchoolActivity.EXTRA_PARSEJS,js);
-        startActivity(intent);
-    }
-
-    public TemplateModel searchInTemplate(List<TemplateModel> models,String tag){
-        if(models==null||tag==null) return null;
-        for(TemplateModel model:models){
-            if(model!=null){
-                if(tag.equals(model.getTemplateTag())){
-                    return model;
-                }
-            }
-        }
-        return null;
     }
 
     public Activity getContext() {
@@ -433,14 +277,11 @@ public class NewSearchSchoolActivity extends AppCompatActivity implements OnComm
     }
 
     public void search(final String key) {
+        RecordEventManager.recordClickEvent(getApplicationContext(),"xzxx.ss","key=?",key);//搜索学校
         emptyLayout.setVisibility(View.GONE);
         if(TextUtils.isEmpty(key)) {
             return;
         }
-
-        Map<String,String> statMap=new HashMap<>();
-        statMap.put("key",key);
-        StatManager.sendKVEvent(getContext(),"pf_ssxx",statMap);
 
         models.clear();
         allDatas.clear();
@@ -459,9 +300,6 @@ public class NewSearchSchoolActivity extends AppCompatActivity implements OnComm
 //        searchStation(key);
         if (!TextUtils.isEmpty(key)) {
             setLoadLayout(true);
-            Map<String,String> params=new HashMap<>();
-            params.put("key",key);
-            StatManager.sendKVEvent(this,"pf_search_key",params);
             TimetableRequest.getAdapterSchoolsV2(this, key,packageMd5,appkey, time,sign,new Callback<ObjResult<AdapterResultV2>>() {
                 @Override
                 public void onResponse(Call<ObjResult<AdapterResultV2>> call, Response<ObjResult<AdapterResultV2>> response) {
@@ -582,15 +420,15 @@ public class NewSearchSchoolActivity extends AppCompatActivity implements OnComm
         }
         if(result==null) return;
 
-        Map<String,String> params=new HashMap<>();
-        params.put("oldv",""+nowTemplateVersion);
-        params.put("nowv",""+result.getTemplateVersion());
-        StatManager.sendKVEvent(getContext(),"pf_tyjx_qq",params);
-
         nowTemplateVersion=result.getTemplateVersion();
         List<School> list=result.getSchoolList();
         if (list == null) {
             return;
+        }
+        if(list.size()==0){
+            emptyLayout.setVisibility(View.VISIBLE);
+        }else{
+            emptyLayout.setVisibility(View.GONE);
         }
         if(allSchool!=null){
             for (GreenFruitSchool schoolBean : allSchool) {
@@ -610,9 +448,6 @@ public class NewSearchSchoolActivity extends AppCompatActivity implements OnComm
             addModelToList(searchResultModel3);
         }
         sortResult();
-        if(models.size()==0){
-            emptyLayout.setVisibility(View.VISIBLE);
-        }
         searchAdapter.notifyDataSetChanged();
     }
 
@@ -638,7 +473,7 @@ public class NewSearchSchoolActivity extends AppCompatActivity implements OnComm
 
     @Override
     public void onBackPressed() {
-        StatManager.sendKVEvent(getContext(),"pf_jwdr_fh",null);
+        RecordEventManager.recordClickEvent(getApplicationContext(),"xzxx.fh");//返回
         finish();
     }
 
@@ -647,110 +482,9 @@ public class NewSearchSchoolActivity extends AppCompatActivity implements OnComm
         if(TextUtils.isEmpty(key)){
             return;
         }
-        if(key.equals("common_import")){
-            StatManager.sendKVEvent(getContext(),"pf_tyjx",null);
-            if(!checkTemplateJs()){
-                requestTemplateJs(new OnDoActionListener() {
-                    @Override
-                    public void doActionAfter() {
-                        handleCommonParse(templateModels);
-                    }
-                });
-            }else{
-                handleCommonParse(templateModels);
-            }
-        }
-        if(key.equals("camera_import")){
-
-        }
-        if(key.equals("scan_import")){
-            StatManager.sendKVEvent(getContext(),"pf_smdr",null);
-            Toast.makeText(getContext(),"暂未开放",Toast.LENGTH_SHORT).show();
-        }
-        if(key.equals("feedback")){
-            StatManager.sendKVEvent(getContext(),"pf_wtfk",null);
-            Intent intent= new Intent();
-            intent.setAction("android.intent.action.VIEW");
-            Uri content_url = Uri.parse("https://support.qq.com/product/162820");
-            intent.setData(content_url);
-            startActivity(intent);
-        }
         if(key.equals("upload")){
-            StatManager.sendKVEvent(getContext(),"pf_sqsp",null);
             Intent intent=new Intent(getContext(),AdapterTipActivity.class);
             startActivity(intent);
         }
-    }
-
-    public boolean checkTemplateJs(){
-        if(localTemplateJsV2==null) return false;
-        if(localTemplateJsV2.getTemplateVersion()<nowTemplateVersion){
-            return false;
-        }
-        if(localTemplateJsV2.getTemplate()==null||localTemplateJsV2.getTemplate().size()==0){
-            return false;
-        }
-        return true;
-    }
-
-    public void requestTemplateJs(final OnDoActionListener doActionListener){
-        TimetableRequest.getTemplateJs(this, new Callback<ObjResult<TemplateJsV2>>() {
-            @Override
-            public void onResponse(Call<ObjResult<TemplateJsV2>> call, Response<ObjResult<TemplateJsV2>> response) {
-                ObjResult<TemplateJsV2> objResult=response.body();
-                if(objResult!=null){
-                    if (objResult.getCode() == 200) {
-                        TemplateJsV2 templateJsV2=objResult.getData();
-                        if(templateJsV2!=null){
-                            baseJs=templateJsV2.getBase();
-                            templateModels=templateJsV2.getTemplate();
-                            String json=GsonUtils.getGson().toJson(templateJsV2);
-                            editor.putString("TemplateJsV2",json);
-                            editor.commit();
-                            if(doActionListener!=null){
-                                doActionListener.doActionAfter();
-                            }
-                        }
-                    } else {
-                        Toast.makeText(NewSearchSchoolActivity.this, objResult.getMsg(), Toast.LENGTH_SHORT).show();
-                    }
-                }else{
-                    Toast.makeText(NewSearchSchoolActivity.this, "templatejs response is null!", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ObjResult<TemplateJsV2>> call, Throwable t) {
-                Toast.makeText(getContext(),"Fail:"+t.getMessage(),Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    public void requestParseJs(int aid,final OnDoActionListener doActionListener){
-        TimetableRequest.getAdapterParseJs(this,aid, new Callback<ObjResult<ParseJsModel>>() {
-            @Override
-            public void onResponse(Call<ObjResult<ParseJsModel>> call, Response<ObjResult<ParseJsModel>> response) {
-                ObjResult<ParseJsModel> objResult=response.body();
-                if(objResult!=null){
-                    if (objResult.getCode() == 200) {
-                        parseJsModel=objResult.getData();
-                        if(parseJsModel!=null){
-                            if(doActionListener!=null){
-                                doActionListener.doActionAfter();
-                            }
-                        }
-                    } else {
-                        Toast.makeText(NewSearchSchoolActivity.this, objResult.getMsg(), Toast.LENGTH_SHORT).show();
-                    }
-                }else{
-                    Toast.makeText(NewSearchSchoolActivity.this, "templatejs response is null!", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ObjResult<ParseJsModel>> call, Throwable t) {
-                Toast.makeText(getContext(),"Fail:"+t.getMessage(),Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 }

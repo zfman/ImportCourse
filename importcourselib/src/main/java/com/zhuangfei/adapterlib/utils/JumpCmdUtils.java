@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 
+import com.zhuangfei.adapterlib.RecordEventManager;
 import com.zhuangfei.adapterlib.activity.AdapterSameTypeActivity;
 import com.zhuangfei.adapterlib.activity.AdapterSchoolActivity;
 import com.zhuangfei.adapterlib.activity.OnDoActionListener;
@@ -142,6 +143,10 @@ public class JumpCmdUtils {
                     if (objResult.getCode() == 200) {
                         TemplateJsV2 templateJsV2=objResult.getData();
                         if(templateJsV2!=null){
+                            if(templateJsV2.isNeedVip()){
+                                StationManager.openStationWithId((Activity) context,"vip",7,null);
+                                return;
+                            }
                             baseJs=templateJsV2.getBase();
                             templateModels=templateJsV2.getTemplate();
                         }
@@ -191,6 +196,7 @@ public class JumpCmdUtils {
             Toast.makeText(context,"基础函数库发生异常，请联系qq:1193600556",Toast.LENGTH_SHORT).show();
         }
         else {
+            RecordEventManager.recordClickEvent(context.getApplicationContext(),"sy.tydr."+templateModel.getTemplateTag());
             Intent intent=new Intent(context, AdapterSameTypeActivity.class);
             intent.putExtra(AdapterSameTypeActivity.EXTRA_TYPE,templateModel.getTemplateName());
             intent.putExtra(AdapterSameTypeActivity.EXTRA_JS,baseJs+templateModel.getTemplateJs());

@@ -6,6 +6,8 @@ import androidx.annotation.NonNull;
 import android.text.TextUtils;
 import android.webkit.JavascriptInterface;
 
+import com.zhuangfei.adapterlib.RecordEventManager;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -127,6 +129,7 @@ public class SpecialArea {
         List<ParseResult> result=new ArrayList<>();
         if(data==null) return result;
 
+        RecordEventManager.recordDisplayEvent(activity,"jwdr.result","success=?,content=?","1",data);
         String[] items = data.trim().split("#");
 
         for (String item : items) {

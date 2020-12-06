@@ -13,7 +13,7 @@ import android.widget.Toast;
 
 import com.zhuangfei.adapterlib.ParseManager;
 import com.zhuangfei.adapterlib.R;
-import com.zhuangfei.adapterlib.StatManager;
+import com.zhuangfei.adapterlib.RecordEventManager;
 import com.zhuangfei.adapterlib.utils.ViewUtils;
 
 public class AdapterSameTypeActivity extends AppCompatActivity {
@@ -37,6 +37,7 @@ public class AdapterSameTypeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_adapter_same_type);
         ViewUtils.setStatusTextGrayColor(this);
         inits();
+        RecordEventManager.recordDisplayEvent(getApplicationContext(),"wzdhq");//网址导航器
     }
 
     @Override
@@ -70,7 +71,7 @@ public class AdapterSameTypeActivity extends AppCompatActivity {
         backImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                StatManager.sendKVEvent(AdapterSameTypeActivity.this,"pf_jwdr_wzdhq_fh",null);
+                RecordEventManager.recordDisplayEvent(getApplicationContext(),"wzdhq.fh");
                 finish();
             }
         });
@@ -82,12 +83,13 @@ public class AdapterSameTypeActivity extends AppCompatActivity {
         if (TextUtils.isEmpty(url)||(!url.startsWith("http")&&!url.startsWith("https"))) {
             Toast.makeText(this, "请输入有效的网址", Toast.LENGTH_SHORT).show();
         } else {
-            StatManager.sendKVEvent(this,"pf_jwdr_wzdhq_goto",null);
+            RecordEventManager.recordDisplayEvent(getApplicationContext(),"wzdhq.qwjwc");//网址导航器-前往教务处
             toAdapterActivity("自定义网址",url,js);
         }
     }
 
     public void toAdapterActivity(String school,String url,String js){
+        RecordEventManager.recordDisplayEvent(getApplicationContext(),"wzdhq.load","school=?,url=",school,url);//网址导航器
         Intent intent=new Intent(this,AdapterSchoolActivity.class);
         intent.putExtra(AdapterSchoolActivity.EXTRA_SCHOOL,school);
         intent.putExtra(AdapterSchoolActivity.EXTRA_URL,url);
@@ -100,7 +102,7 @@ public class AdapterSameTypeActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        StatManager.sendKVEvent(this,"pf_jwdr_wzdhq_fh",null);
+        RecordEventManager.recordDisplayEvent(getApplicationContext(),"wzdhq.fh");
         finish();
     }
 }

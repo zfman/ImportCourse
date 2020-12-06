@@ -1,8 +1,10 @@
 package com.zhuangfei.adapterlib.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
@@ -13,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.zhuangfei.adapterlib.R;
+import com.zhuangfei.adapterlib.RecordEventManager;
 import com.zhuangfei.adapterlib.apis.TimetableRequest;
 import com.zhuangfei.adapterlib.apis.model.BaseResult;
 import com.zhuangfei.adapterlib.apis.model.ObjResult;
@@ -39,8 +42,6 @@ public class TinyAuthActivity extends AppCompatActivity implements View.OnClickL
     LinearLayout passwordLayout2;
     EditText userPassword2;
 
-    ILoginFinishListener loginFinishListener;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +49,7 @@ public class TinyAuthActivity extends AppCompatActivity implements View.OnClickL
         setContentView(R.layout.activity_tiny_login);
         initView();
         initEvent();
+        RecordEventManager.recordDisplayEvent(getApplicationContext(),"dl");
     }
 
     private void initEvent() {
@@ -65,7 +67,17 @@ public class TinyAuthActivity extends AppCompatActivity implements View.OnClickL
         loginButton.setOnClickListener(this);
         registerButton.setOnClickListener(this);
 
-        loginFinishListener = (ILoginFinishListener) getIntent().getSerializableExtra("loginFinishListener");
+        findViewById(R.id.wangjimima).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                RecordEventManager.recordClickEvent(getApplicationContext(),"dl.wjmm");
+                AlertDialog.Builder builder = new AlertDialog.Builder(TinyAuthActivity.this)
+                        .setTitle("忘记密码")
+                        .setMessage("如果未充值会员，重新注册账户即可；如果已充值，请将支付记录、账户名发送至邮箱1193600556@qq.com申请重置密码")
+                        .setPositiveButton("确定",null);
+                builder.create().show();
+            }
+        });
     }
 
     @Override
@@ -131,6 +143,7 @@ public class TinyAuthActivity extends AppCompatActivity implements View.OnClickL
     }
 
     public void login(String name,String pwd,String type){
+        RecordEventManager.recordClickEvent(getApplicationContext(),"dl.dl","name=?",name);
         login(name,pwd,type,null,null,null,null,null,null);
     }
 
@@ -144,10 +157,9 @@ public class TinyAuthActivity extends AppCompatActivity implements View.OnClickL
                     if(result.getCode()==200){
                         Toast.makeText(getContext(),"登录成功",Toast.LENGTH_SHORT).show();
                         TinyUserManager.get(getContext()).saveUserInfo(result.getData());
+                        Intent intent = new Intent(TinyAuthActivity.this,AutoImportActivity.class);
+                        startActivity(intent);
                         finish();
-                        if(loginFinishListener!=null){
-                            loginFinishListener.onLoginSuccess(getContext());
-                        }
                     }else if(result.getCode()==338){
 
                     }else{
@@ -166,6 +178,7 @@ public class TinyAuthActivity extends AppCompatActivity implements View.OnClickL
         });
     }
     public void register(final String name, final String pw){
+        RecordEventManager.recordClickEvent(getApplicationContext(),"dl.zc","name=?",name);
         TimetableRequest.registerUser(getContext(), name, pw, new Callback<BaseResult>() {
             @Override
             public void onResponse(Call<BaseResult> call, Response<BaseResult> response) {

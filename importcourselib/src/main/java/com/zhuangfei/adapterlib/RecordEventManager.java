@@ -1,11 +1,15 @@
 package com.zhuangfei.adapterlib;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 import com.zhuangfei.adapterlib.apis.TimetableRequest;
 import com.zhuangfei.adapterlib.apis.model.BaseResult;
 import com.zhuangfei.adapterlib.utils.GsonUtils;
 import com.zhuangfei.toolkit.tools.ToastTools;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -15,23 +19,18 @@ import retrofit2.Response;
  * Created by Liu ZhuangFei on 2019/9/27.
  */
 public class RecordEventManager {
-    public static final String TYPE_ENTER_APP="event_enter_app";//启动app
-    public static final String TYPE_CHANGE_CONFIG="event_change_config";//修改设置
-    public static final String TYPE_USE_FUNCTION="event_use_function";//使用功能
-    public static final String TYPE_IMPORT="event_import";//导入课程
-    public static final String TYPE_SEARCH="event_search";
-    public static final String TYPE_EXCEPTION="event_exception";
+    public static final String TYPE_NORMAL="display";
+    public static final String TYPE_CLICK="click";
 
-    public static final String OP_GOTO_SEARCH="点击搜索框";
-    public static final String OP_SEARCH_KEY="";
-    public static final String OP_SUPER_CLASS="";
-
-    public static void recordUserEvent(Context context, String type,String operator, String data, String params, Callback<BaseResult> callback) {
-        TimetableRequest.recordUserEvent(context,operator,type,data,params,callback);
-    }
-
-    public static void recordUserEvent(Context context, String type) {
-        TimetableRequest.recordUserEvent(context, type, type, "", "", new Callback<BaseResult>() {
+    public static void recordUserEvent(Context context, String type,String operator,Map<String,String> map) {
+        String json = "";
+        if(map!=null){
+            json = GsonUtils.getGson().toJson(map);
+        }
+        if(TextUtils.isEmpty(AdapterLibManager.getAppKey())){
+            return;
+        }
+        TimetableRequest.recordUserEvent(context, operator, type, json, AdapterLibManager.getAppKey(), new Callback<BaseResult>() {
             @Override
             public void onResponse(Call<BaseResult> call, Response<BaseResult> response) {
 
@@ -44,52 +43,35 @@ public class RecordEventManager {
         });
     }
 
-    public static void recordUserEvent(Context context, String type,String operator) {
-        TimetableRequest.recordUserEvent(context, operator, type, "", "", new Callback<BaseResult>() {
-            @Override
-            public void onResponse(Call<BaseResult> call, Response<BaseResult> response) {
-
-            }
-
-            @Override
-            public void onFailure(Call<BaseResult> call, Throwable t) {
-
-            }
-        });
+    public static void recordDisplayEvent(Context context, String operator) {
+        recordUserEvent(context,TYPE_NORMAL,operator,null);
     }
 
-    public static void recordUserEvent(Context context, String type,String operator,Object event) {
-        String data="";
-        if(event!=null){
-            data= GsonUtils.getGson().toJson(event);
+    public static void recordDisplayEvent(Context context, String operator, String key,String...values) {
+        Map<String,String> map = new HashMap<>();
+        String[] keys = key.split(",");
+        if(values != null && keys.length == values.length){
+            for(int i=0;i<keys.length;i++){
+                String[] arr = keys[i].split("=");
+                map.put(arr[0],values[i]);
+            }
         }
-//        TimetableRequest.recordUserEvent(context, operator, type, "", "", new Callback<BaseResult>() {
-//            @Override
-//            public void onResponse(Call<BaseResult> call, Response<BaseResult> response) {
-//
-//            }
-//
-//            @Override
-//            public void onFailure(Call<BaseResult> call, Throwable t) {
-//
-//            }
-//        });
+        recordUserEvent(context,TYPE_NORMAL,operator,map);
     }
 
-    public static void recordUserEvent(final Context context, String type, Object event) {
-        String data="";
-        if(event!=null){
-            data= GsonUtils.getGson().toJson(event);
+    public static void recordClickEvent(Context context, String operator) {
+        recordUserEvent(context,TYPE_CLICK,operator,null);
+    }
+
+    public static void recordClickEvent(Context context, String operator, String key,String...values) {
+        Map<String,String> map = new HashMap<>();
+        String[] keys = key.split(",");
+        if(values != null && keys.length == values.length){
+            for(int i=0;i<keys.length;i++){
+                String[] arr = keys[i].split("=");
+                map.put(arr[0],values[i]);
+            }
         }
-//        TimetableRequest.recordUserEvent(context, type, type, data, "", new Callback<BaseResult>() {
-//            @Override
-//            public void onResponse(Call<BaseResult> call, Response<BaseResult> response) {
-//
-//            }
-//
-//            @Override
-//            public void onFailure(Call<BaseResult> call, Throwable t) {
-//            }
-//        });
+        recordUserEvent(context,TYPE_CLICK,operator,map);
     }
 }

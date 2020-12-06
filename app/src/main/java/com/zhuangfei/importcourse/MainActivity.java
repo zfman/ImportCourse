@@ -32,13 +32,7 @@ public class MainActivity extends Activity {
 
         // Example of a call to a native method
         Button btn = (Button) findViewById(R.id.btn_goto_searchschool);
-
-        Intent intent=getIntent();
-        String appkey=intent.getStringExtra("appkey");
-        if(!TextUtils.isEmpty(appkey)){
-            Toast.makeText(this,"appkey="+appkey,Toast.LENGTH_SHORT).show();
-        }
-        AdapterLibManager.register("1a0dd2a43b83597e93961e42ab0e57b2","gstest");
+        AdapterLibManager.register("1a0dd2a43b83597e93961e42ab0e57b2");
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -20,8 +20,10 @@ import android.widget.Toast;
 
 import com.tencent.smtt.sdk.WebView;
 import com.tencent.smtt.sdk.WebViewClient;
+import com.zhuangfei.adapterlib.AdapterLibManager;
 import com.zhuangfei.adapterlib.ParseManager;
 import com.zhuangfei.adapterlib.R;
+import com.zhuangfei.adapterlib.RecordEventManager;
 import com.zhuangfei.adapterlib.activity.adapter.QuestionAdapter;
 import com.zhuangfei.adapterlib.activity.qingguo.XiquerLoginActivity;
 import com.zhuangfei.adapterlib.activity.scan.ScanImportActivity;
@@ -30,7 +32,9 @@ import com.zhuangfei.adapterlib.apis.model.ListResult;
 import com.zhuangfei.adapterlib.apis.model.QuestionModel;
 import com.zhuangfei.adapterlib.apis.model.School;
 import com.zhuangfei.adapterlib.station.TinyUserManager;
+import com.zhuangfei.adapterlib.station.model.TinyUserInfo;
 import com.zhuangfei.adapterlib.utils.JumpCmdUtils;
+import com.zhuangfei.adapterlib.utils.PackageUtils;
 import com.zhuangfei.adapterlib.utils.SchoolDaoUtils;
 import com.zhuangfei.adapterlib.utils.ViewUtils;
 import com.zhuangfei.toolkit.tools.ToastTools;
@@ -56,6 +60,7 @@ public class AutoImportActivity extends AppCompatActivity implements View.OnClic
     LinearLayout llScanImport;
     LinearLayout llXiquerImport;
     LinearLayout llSearch;
+    TextView usernameTextView;
 
     TextView schoolTextView;
     ListView listView;
@@ -72,6 +77,12 @@ public class AutoImportActivity extends AppCompatActivity implements View.OnClic
         ViewUtils.setStatusTextGrayColor(this);
         inits();
         request();
+        RecordEventManager.recordDisplayEvent(getApplicationContext(),"sy");
+        RecordEventManager.recordDisplayEvent(getApplicationContext(),"sy.init",
+                "libVersionName=?,libVersionNumber=?,package=?,",
+                AdapterLibManager.getLibVersionName(),
+                AdapterLibManager.getLibVersionNumber()+"",
+                PackageUtils.getPackageName(this));
     }
 
     private void inits() {
@@ -88,6 +99,7 @@ public class AutoImportActivity extends AppCompatActivity implements View.OnClic
         llXiquerImport = findViewById(R.id.ll_xiquer_import);
         llSearch = findViewById(R.id.ll_search);
         schoolTextView = findViewById(R.id.tv_school_name);
+        usernameTextView = findViewById(R.id.tv_username);
 
         int color = Color.parseColor("#A561F7");
         imageView0.setColorFilter(color);
@@ -108,6 +120,16 @@ public class AutoImportActivity extends AppCompatActivity implements View.OnClic
         questionModels = new ArrayList<>();
         questionAdapter = new QuestionAdapter(this,questionModels);
         listView.setAdapter(questionAdapter);
+
+        if(!TinyUserManager.get(this).isLogin()){
+            Intent intent = new Intent(this,TinyAuthActivity.class);
+            startActivity(intent);
+            finish();
+        }
+        TinyUserInfo userInfo = TinyUserManager.get(this).getUserInfo();
+        if(userInfo!=null && userInfo.getName()!=null){
+            usernameTextView.setText("账户名："+userInfo.getName());
+        }
     }
 
     private void request(){
@@ -153,15 +175,18 @@ public class AutoImportActivity extends AppCompatActivity implements View.OnClic
     @Override
     public void onClick(View v) {
         if(v.getId() == R.id.ll_search){
+            RecordEventManager.recordClickEvent(getApplicationContext(),"sy.xzxx");//选择学校
             Intent intent = new Intent(this, NewSearchSchoolActivity.class);
             startActivityForResult(intent,100);
         }
         if(v.getId() == R.id.ll_xiquer_import){
+            RecordEventManager.recordClickEvent(getApplicationContext(),"sy.qgdr");//青果导入
             Intent intent=new Intent(this, XiquerLoginActivity.class);
             startActivity(intent);
         }
 
         if(v.getId() == R.id.ll_scan_import){
+            RecordEventManager.recordClickEvent(getApplicationContext(),"sy.smdr");//扫码导入
             School school = SchoolDaoUtils.getSchool(this);
             if(school!=null){
                 checkScanImportPermission();
@@ -171,14 +196,18 @@ public class AutoImportActivity extends AppCompatActivity implements View.OnClic
         }
 
         if(v.getId() == R.id.ll_user){
-            ToastTools.show(this,"暂未开放!");
+            RecordEventManager.recordClickEvent(getApplicationContext(),"sy.tczh");//用户管理
+            TinyUserManager.get(AutoImportActivity.this).saveUserInfo(null);
+            finish();
         }
 
         if(v.getId() == R.id.rl_common_import){
+            RecordEventManager.recordClickEvent(getApplicationContext(),"sy.tydr");//通用导入
             JumpCmdUtils.jumpCommonImportPage(this);
         }
 
         if(v.getId() == R.id.rl_jw_import){
+            RecordEventManager.recordClickEvent(getApplicationContext(),"sy.jwdr");//教务导入
             School school = SchoolDaoUtils.getSchool(this);
             if(school!=null){
                 JumpCmdUtils.jumpJwImportPage(this,school,false);

@@ -18,7 +18,7 @@ import android.widget.TextView;
 
 import com.zhuangfei.adapterlib.ParseManager;
 import com.zhuangfei.adapterlib.R;
-import com.zhuangfei.adapterlib.StatManager;
+import com.zhuangfei.adapterlib.RecordEventManager;
 import com.zhuangfei.adapterlib.apis.TimetableRequest;
 import com.zhuangfei.adapterlib.apis.model.GreenFruitCourse;
 import com.zhuangfei.adapterlib.apis.model.GreenFruitProfile;
@@ -28,7 +28,6 @@ import com.zhuangfei.adapterlib.station.model.GreenFruitSchool;
 import com.zhuangfei.adapterlib.utils.GsonUtils;
 import com.zhuangfei.adapterlib.utils.TimetableUtils;
 import com.zhuangfei.adapterlib.utils.ViewUtils;
-import com.zhuangfei.toolkit.tools.ActivityTools;
 import com.zhuangfei.toolkit.tools.BundleTools;
 import com.zhuangfei.toolkit.tools.ShareTools;
 import com.zhuangfei.toolkit.tools.ToastTools;
@@ -81,6 +80,7 @@ public class XiquerLoginActivity extends AppCompatActivity implements View.OnCli
         setContentView(R.layout.activity_xiquer_login);
         initView();
         initEvent();
+        RecordEventManager.recordDisplayEvent(getApplicationContext(),"qgdr");//qingguodaoru
     }
 
     private void initEvent() {
@@ -124,9 +124,6 @@ public class XiquerLoginActivity extends AppCompatActivity implements View.OnCli
         if(obj!=null&&obj instanceof GreenFruitSchool){
             selectSchool= (GreenFruitSchool) obj;
             userSchool.setText(selectSchool.getXxmc());
-            Map<String,String> params=new HashMap<>();
-            params.put("school",selectSchool.getXxmc());
-            StatManager.sendKVEvent(this,"pf_xiquer",params);
         }
     }
 
@@ -302,7 +299,6 @@ public class XiquerLoginActivity extends AppCompatActivity implements View.OnCli
         saveCourses(models,weekList7,7);
 
         if(models.size()>0){
-            StatManager.sendKVEvent(getContext(),"pf_xiquer_success",null);
             ParseManager.setSuccess(true);
             ParseManager.setTimestamp(System.currentTimeMillis());
             ParseManager.setData(models);
@@ -388,6 +384,7 @@ public class XiquerLoginActivity extends AppCompatActivity implements View.OnCli
     }
 
     public void onSelectSchoolClicked(){
+        RecordEventManager.recordClickEvent(getApplicationContext(),"qgdr.xzxx");//选择学校
         Intent intent=new Intent(this,ChooseSchoolActivity.class);
         startActivityForResult(intent,100);
     }
@@ -400,6 +397,7 @@ public class XiquerLoginActivity extends AppCompatActivity implements View.OnCli
                 GreenFruitSchool school = (GreenFruitSchool) data.getSerializableExtra("model");
                 selectSchool=school;
                 userSchool.setText(selectSchool.getXxmc());
+                RecordEventManager.recordDisplayEvent(getApplicationContext(),"qgdr.xzxx.result","school=?",selectSchool.getXxmc());//选择学校
             }
         }
     }

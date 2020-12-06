@@ -49,16 +49,24 @@
         android:id="@+id/ll_empty"
         android:visibility="gone"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:background="@drawable/layout_ripple"
-        android:gravity="center"
         android:orientation="vertical">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="15dp"
             android:textSize="17sp"
-            android:text="未搜索到你的学校，选择以下解决方案："/>
+            android:layout_marginTop="20dp"
+            android:text="未搜索到你学校相关的教务导入，你可以申请适配!"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:textSize="14sp"
+            android:layout_marginTop="10dp"
+            android:textStyle="bold"
+            android:text="注意：申请适配功能只是将用户数据上传至后台，以供开发者适配使用，申请适配后还需要开发者进行适配方可使用！"/>
         <Button
             android:id="@+id/btn_shenqing"
             android:layout_width="match_parent"
@@ -66,9 +74,15 @@
             android:text="申请适配"
             android:layout_marginTop="15dp"
             android:textColor="@color/app_white"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
             android:background="@drawable/button_style"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="15dp"
+            android:layout_marginTop="20dp"
+            android:background="@color/app_panel_bg"/>
     </LinearLayout>
 
     <LinearLayout

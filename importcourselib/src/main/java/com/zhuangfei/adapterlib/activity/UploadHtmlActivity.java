@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.tencent.smtt.sdk.WebView;
 import com.zhuangfei.adapterlib.R;
 import com.zhuangfei.adapterlib.AdapterLibManager;
+import com.zhuangfei.adapterlib.RecordEventManager;
 import com.zhuangfei.adapterlib.utils.PackageUtils;
 import com.zhuangfei.adapterlib.utils.ViewUtils;
 import com.zhuangfei.adapterlib.apis.TimetableRequest;
@@ -73,6 +74,7 @@ public class UploadHtmlActivity extends AppCompatActivity {
         initView();
         initUrl();
         loadWebView();
+        RecordEventManager.recordDisplayEvent(getApplicationContext(),"sqsp");//申请适配
     }
 
     private void initView() {
@@ -270,18 +272,9 @@ public class UploadHtmlActivity extends AppCompatActivity {
     }
 
     public void onBtnClicked() {
-        AlertDialog.Builder builder=new AlertDialog.Builder(this)
-                .setTitle("重要内容!")
-                .setMessage("1.请在你看到课表后再点击此按钮\n\n2.URP教务登陆后可能会出现点击无反应的问题，在右上角选择URP-兼容模式")
-                .setPositiveButton("上传课表", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        isNeedLoad = true;
-                        jsSupport.getPageHtml("source");
-                    }
-                })
-                .setNegativeButton("稍后上传", null);
-        builder.create().show();
+        isNeedLoad = true;
+        jsSupport.getPageHtml("source");
+        RecordEventManager.recordClickEvent(getApplicationContext(),"sqsp.scym");//上传源码
     }
 
     @Override

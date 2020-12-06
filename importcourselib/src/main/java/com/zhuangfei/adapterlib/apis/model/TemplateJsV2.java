@@ -9,6 +9,15 @@ public class TemplateJsV2 {
     private List<TemplateModel> template;
     private String base;
     private int templateVersion = 0;
+    private boolean needVip = false;
+
+    public void setNeedVip(boolean needVip) {
+        this.needVip = needVip;
+    }
+
+    public boolean isNeedVip() {
+        return needVip;
+    }
 
     public List<TemplateModel> getTemplate() {
         return template;

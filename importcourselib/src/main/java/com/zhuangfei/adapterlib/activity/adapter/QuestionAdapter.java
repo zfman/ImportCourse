@@ -17,6 +17,7 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.zhuangfei.adapterlib.R;
+import com.zhuangfei.adapterlib.RecordEventManager;
 import com.zhuangfei.adapterlib.activity.OnCommonFunctionClickListener;
 import com.zhuangfei.adapterlib.activity.custom.TokenImportPopWindow;
 import com.zhuangfei.adapterlib.apis.model.QuestionModel;
@@ -78,11 +79,17 @@ public class QuestionAdapter extends BaseAdapter {
             holder.layout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent= new Intent();
-                    intent.setAction("android.intent.action.VIEW");
-                    Uri content_url = Uri.parse(model.getUrl());
-                    intent.setData(content_url);
-                    context.startActivity(intent);
+                    RecordEventManager.recordClickEvent(context,"sy.cjwt."+position,
+                            "title=?,url=?",model.getTitle(),model.getUrl());//常见问题
+                    try {
+                        Intent intent= new Intent();
+                        intent.setAction("android.intent.action.VIEW");
+                        Uri content_url = Uri.parse(model.getUrl());
+                        intent.setData(content_url);
+                        context.startActivity(intent);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
                 }
             });
         }

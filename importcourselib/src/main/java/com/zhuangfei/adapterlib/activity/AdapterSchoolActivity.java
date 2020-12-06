@@ -33,8 +33,8 @@ import com.tencent.smtt.sdk.WebView;
 import com.tencent.smtt.sdk.WebViewClient;
 import com.zhuangfei.adapterlib.ParseManager;
 import com.zhuangfei.adapterlib.R;
+import com.zhuangfei.adapterlib.RecordEventManager;
 import com.zhuangfei.adapterlib.ShareManager;
-import com.zhuangfei.adapterlib.StatManager;
 import com.zhuangfei.adapterlib.activity.scan.ScanImportActivity;
 import com.zhuangfei.adapterlib.apis.model.ValuePair;
 import com.zhuangfei.adapterlib.callback.OnValueCallback;
@@ -44,9 +44,7 @@ import com.zhuangfei.adapterlib.core.JsSupport;
 import com.zhuangfei.adapterlib.core.ParseResult;
 import com.zhuangfei.adapterlib.core.SpecialArea;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 适配学校页面
@@ -100,6 +98,7 @@ public class AdapterSchoolActivity extends AppCompatActivity {
         initView();
         initUrl();
         loadWebView();
+        RecordEventManager.recordDisplayEvent(getApplicationContext(),"jwdr");//教务导入
     }
 
 
@@ -260,10 +259,7 @@ public class AdapterSchoolActivity extends AppCompatActivity {
 //        }
         webView.addJavascriptInterface(specialArea, "sa");
         webView.loadUrl(url);
-
-        Map<String,String> params=new HashMap<>();
-        params.put("url",url);
-        StatManager.sendKVEvent(getContext(),"pf_jwdr_jzwy",params);
+        RecordEventManager.recordDisplayEvent(getApplicationContext(),"jwdr.load","school=?,url=?",school,url);//加载
     }
 
     public Context getContext(){
@@ -297,14 +293,18 @@ public class AdapterSchoolActivity extends AppCompatActivity {
 
         @Override
         public void onNotFindTag() {
-            recordFailImport();
+            RecordEventManager.recordDisplayEvent(getApplicationContext(),"jwdr.result","success=?,progress=?,reason=?","0","ReqTag","NotFindTag");//导入结果
             onError("Tag标签未设置");
             finish();
         }
 
         @Override
         public void onFindTags(final String[] tags) {
-
+            StringBuilder s= new StringBuilder();
+            for(int r=0;r<tags.length;r++){
+                s.append(tags[r]);
+            }
+            RecordEventManager.recordDisplayEvent(getApplicationContext(),"jwdr.result","success=?,progress=?,tags=?","0","ReqTag",s.toString());//导入结果
             displayTextView.setText("预测:选择解析标签");
             AlertDialog.Builder builder = new AlertDialog.Builder(context());
             builder.setTitle("请选择解析标签");
@@ -312,6 +312,7 @@ public class AdapterSchoolActivity extends AppCompatActivity {
             builder.setItems(tags, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
+                    RecordEventManager.recordClickEvent(getApplicationContext(),"jwdr.result","success=?,progress=?,tag=?","0","ChoiseTag",tags[i]);
                     jsSupport.callJs("parse('" + tags[i] + "')");
                     displayTextView.setText("预测:解析 "+tags[i]);
                 }
@@ -321,6 +322,7 @@ public class AdapterSchoolActivity extends AppCompatActivity {
 
         @Override
         public void onNotFindResult() {
+            RecordEventManager.recordDisplayEvent(getApplicationContext(),"jwdr.result","success=?,progress=?,reason=?","0","Parse","NotFindResult");
             onError("未发现匹配");
             finish();
         }
@@ -357,6 +359,7 @@ public class AdapterSchoolActivity extends AppCompatActivity {
             }
             html = content;
             jsSupport.parseHtml(context(),js);
+            RecordEventManager.recordDisplayEvent(getApplicationContext(),"jwdr.jxkc.html","html=?",html);
         }
 
         @Override
@@ -452,17 +455,11 @@ public class AdapterSchoolActivity extends AppCompatActivity {
 
     public void saveSchedule(List<ParseResult> data) {
         if (data == null) {
-            recordFailImport();
             finish();
             return;
         }
-        Map<String,String> params=new HashMap<>();
-        params.put("size",""+data.size());
-        params.put("school",school);
-        params.put("success","1");
-        StatManager.sendKVEvent(getContext(),"pf_jwdr_success",params);
+        RecordEventManager.recordDisplayEvent(getApplicationContext(),"jwdr._result","success=?,size=?","1",String.valueOf(data.size()));
 
-        //todo save
         ParseManager.setSuccess(true);
         ParseManager.setTimestamp(System.currentTimeMillis());
         ParseManager.setData(data);
@@ -470,22 +467,14 @@ public class AdapterSchoolActivity extends AppCompatActivity {
     }
 
     private void recordFailImport(){
-        String yc=ycStringBuilder.toString();
-        Map<String,String> params=new HashMap<>();
-        params.put("size","0");
-        params.put("school",school);
-        params.put("success","0");
-        params.put("yc",yc);
-        StatManager.sendKVEvent(getContext(),"pf_jwdr_success",params);
     }
 
     public void onBtnClicked() {
-        StatManager.sendKVEvent(getContext(),"pf_jwdr_jxkc",null);
+        RecordEventManager.recordClickEvent(getApplicationContext(),"jwdr.jxkc");
         if(!isButtonClicked){
             isButtonClicked=true;
             jsSupport.getPageHtml("sa");
         }else{
-
             jsSupport.parseHtml(context(),js);
         }
     }
@@ -500,7 +489,7 @@ public class AdapterSchoolActivity extends AppCompatActivity {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 if(item.getItemId()==R.id.id_menu1){
-                    StatManager.sendKVEvent(getContext(),"pf_jwdr_wzdhq",null);
+                    RecordEventManager.recordClickEvent(getApplicationContext(),"jwdr.wzdhq");
                     Intent intent=new Intent(AdapterSchoolActivity.this,AdapterSameTypeActivity.class);
                     intent.putExtra(AdapterSameTypeActivity.EXTRA_TYPE,type);
                     intent.putExtra(AdapterSameTypeActivity.EXTRA_JS,js);
@@ -517,7 +506,7 @@ public class AdapterSchoolActivity extends AppCompatActivity {
                     webView.reload();
                 }
                 if(item.getItemId()==R.id.id_menu6){
-                    StatManager.sendKVEvent(getContext(),"pf_jwdr_fk",null);
+                    RecordEventManager.recordClickEvent(getApplicationContext(),"jwdr.wtfk");//问题反馈
                     Intent intent= new Intent();
                     intent.setAction("android.intent.action.VIEW");
                     Uri content_url = Uri.parse("https://support.qq.com/product/162820");
@@ -525,6 +514,7 @@ public class AdapterSchoolActivity extends AppCompatActivity {
                     startActivity(intent);
                 }
                 if(item.getItemId()==R.id.id_menu7){
+                    RecordEventManager.recordClickEvent(getApplicationContext(),"jwdr.smdr");//扫码导入
                     displayScanImport();
                 }
                 return false;
@@ -535,10 +525,8 @@ public class AdapterSchoolActivity extends AppCompatActivity {
 
     public void setUA(boolean mobile){
         if(mobile){
-            StatManager.sendKVEvent(getContext(),"pf_jwdr_mobileua",null);
             webView.getSettings().setUserAgentString("Mozilla/5.0 (Linux; Android 7.1.1; Mi Note 3 Build/NMF26X; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/61.0.3163.98 Mobile Safari/537.36");
         }else{
-            StatManager.sendKVEvent(getContext(),"pf_jwdr_pcua",null);
             webView.getSettings().setUserAgentString("Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.80 Safari/537.36");
         }
     }

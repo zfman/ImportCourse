@@ -213,9 +213,7 @@ public class TimetableRequest {
         String token= TinyUserManager.get(context).getToken();
         String p = PackageUtils.getPackageName(context);
         String s = PackageUtils.getPackageSign(context);
-
-        String originSign = String.format("token=%s&libVersion=%d&appKey=%s&time=%s&package=%s&appSign=%s",
-                token,libVersion,appkey,time,p,s);
+        String originSign = token+appkey+time+p;
         String sign = Md5Security.encrypBy(originSign);
 
         Call<ObjResult<TemplateJsV2>> call=schoolService.getTemplateJs(token,appkey,time,""+libVersion,p,s,sign);
@@ -233,10 +231,9 @@ public class TimetableRequest {
 
         String token= TinyUserManager.get(context).getToken();
 
-        String originSign = String.format("token=%s&aid=%d&libVersion=%d&appKey=%s&time=%s&package=%s&appSign=%s",
-                token,aid,libVersion,appkey,time,p,s);
+        String originSign = token+appkey+time+p;
         String sign = Md5Security.encrypBy(originSign);
-        Call<ObjResult<ParseJsModel>> call=schoolService.getAdapterParsejs(""+aid,""+libVersion,appkey,time,p,s,sign);
+        Call<ObjResult<ParseJsModel>> call=schoolService.getAdapterParsejs(""+aid,""+libVersion,appkey,time,p,s,sign,token);
         call.enqueue(callback);
     }
 

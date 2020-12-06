@@ -5,33 +5,20 @@ import android.content.Intent;
 import android.os.Bundle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import android.text.Editable;
+
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.zhuangfei.adapterlib.R;
-import com.zhuangfei.adapterlib.StatManager;
+import com.zhuangfei.adapterlib.RecordEventManager;
 import com.zhuangfei.adapterlib.utils.ViewUtils;
-import com.zhuangfei.adapterlib.apis.TimetableRequest;
-import com.zhuangfei.adapterlib.apis.model.CheckModel;
-import com.zhuangfei.adapterlib.apis.model.ObjResult;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class AdapterTipActivity extends AppCompatActivity {
 
     public EditText schoolEdit;
     public EditText urlEdit;
-    TextView nameText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,50 +26,23 @@ public class AdapterTipActivity extends AppCompatActivity {
         setContentView(R.layout.activity_adapter_tip);
         ViewUtils.setStatusTextGrayColor(this);
         inits();
-
+        RecordEventManager.recordDisplayEvent(getApplicationContext(),"sqsptip");//申请适配tip
     }
 
     private void inits() {
         schoolEdit=findViewById(R.id.id_school_edittext);
         urlEdit=findViewById(R.id.id_url_edittext);
-        nameText=findViewById(R.id.tv_name);
-
         findViewById(R.id.tv_to_adapter).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 onAdapterBtnClicked();
             }
         });
-        findViewById(R.id.tv_name).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onNameTextClicked();
-            }
-        });
         findViewById(R.id.ib_back).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                RecordEventManager.recordClickEvent(getApplicationContext(),"sqsptip.fh");
                 finish();
-            }
-        });
-        schoolEdit.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if(charSequence!=null&&charSequence.length()>=2){
-                    check(charSequence.toString());
-                }else{
-                    nameText.setVisibility(View.INVISIBLE);
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
             }
         });
     }
@@ -115,10 +75,7 @@ public class AdapterTipActivity extends AppCompatActivity {
     }
 
     public void toUploadHtmlActivity(String url,String school){
-        Map<String,String> params=new HashMap<>();
-        params.put("url",url);
-        params.put("school",school);
-        StatManager.sendKVEvent(this,"pf_sqsp_goto",params);
+        RecordEventManager.recordClickEvent(getApplicationContext(),"sqsptip.qwsp","school=?,url=",school,url);//前往适配
         Intent intent=new Intent(this,UploadHtmlActivity.class);
         intent.putExtra(UploadHtmlActivity.EXTRA_URL,url);
         intent.putExtra(UploadHtmlActivity.EXTRA_SCHOOL,school);
@@ -126,46 +83,9 @@ public class AdapterTipActivity extends AppCompatActivity {
         finish();
     }
 
-    public void check(String school) {
-        TimetableRequest.checkSchool(this, school, new Callback<ObjResult<CheckModel>>() {
-            @Override
-            public void onResponse(Call<ObjResult<CheckModel>> call, Response<ObjResult<CheckModel>> response) {
-                ObjResult<CheckModel> result=response.body();
-                if(result==null){
-                    Toast.makeText(AdapterTipActivity.this,"result is null",Toast.LENGTH_SHORT).show();
-                }else if(result.getCode()!=200){
-                    Toast.makeText(AdapterTipActivity.this,result.getMsg(),Toast.LENGTH_SHORT).show();
-                }else{
-                    CheckModel model=result.getData();
-                    if(model!=null){
-                        if(model.getHave()==1&&!TextUtils.isEmpty(model.getUrl())&&!TextUtils.isEmpty(model.getName())){
-                            urlEdit.setText(model.getUrl()==null?"":model.getUrl());
-                            nameText.setVisibility(View.VISIBLE);
-                            nameText.setText("推荐:"+model.getName());
-                        }else{
-                            nameText.setVisibility(View.INVISIBLE);
-                            urlEdit.setText("");
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ObjResult<CheckModel>> call, Throwable t) {
-            }
-        });
-    }
-
-    public void onNameTextClicked(){
-        String val=nameText.getText().toString();
-        if(val!=null&&val.length()>3){
-            val=val.substring(3);
-        }
-        if(!TextUtils.isEmpty(val)) schoolEdit.setText(val);
-    }
-
     @Override
     public void onBackPressed() {
+        RecordEventManager.recordClickEvent(getApplicationContext(),"sqsptip.fh");
         finish();
     }
 }
