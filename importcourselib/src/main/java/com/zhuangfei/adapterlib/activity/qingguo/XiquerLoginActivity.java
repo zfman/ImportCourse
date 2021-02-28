@@ -6,6 +6,8 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.os.Handler;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -304,6 +306,8 @@ public class XiquerLoginActivity extends AppCompatActivity implements View.OnCli
             ParseManager.setData(models);
         }
         finish();
+
+        Handler handler = new Handler();
     }
 
     private void saveCourses(List<ParseResult> models, List<GreenFruitCourse.WeekBean> weekList1,int day) {

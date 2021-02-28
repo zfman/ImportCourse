@@ -22,7 +22,7 @@ public class RecordEventManager {
     public static final String TYPE_NORMAL="display";
     public static final String TYPE_CLICK="click";
 
-    public static void recordUserEvent(Context context, String type,String operator,Map<String,String> map) {
+    private static void recordUserEvent(Context context, String type, String operator, Map<String, String> map) {
         String json = "";
         if(map!=null){
             json = GsonUtils.getGson().toJson(map);
@@ -44,6 +44,9 @@ public class RecordEventManager {
     }
 
     public static void recordDisplayEvent(Context context, String operator) {
+        if(true){
+            return;
+        }
         recordUserEvent(context,TYPE_NORMAL,operator,null);
     }
 
@@ -60,10 +63,16 @@ public class RecordEventManager {
     }
 
     public static void recordClickEvent(Context context, String operator) {
+        if(true){
+            return;
+        }
         recordUserEvent(context,TYPE_CLICK,operator,null);
     }
 
     public static void recordClickEvent(Context context, String operator, String key,String...values) {
+        if(true){
+            return;
+        }
         Map<String,String> map = new HashMap<>();
         String[] keys = key.split(",");
         if(values != null && keys.length == values.length){
