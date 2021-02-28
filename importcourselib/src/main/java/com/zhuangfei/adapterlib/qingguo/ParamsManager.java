@@ -54,7 +54,7 @@ public class ParamsManager {
         hashMap.put("os", "android");
         hashMap.put("xtbb", Build.VERSION.RELEASE);
         hashMap.put("loginmode", "");
-        hashMap.put("appver", "2.6.304");
+        hashMap.put("appver", "2.5.101");
         Map<String,String> resultMap= Api.encodeing(hashMap,false,"","","");
         return new GreenFruitParams(resultMap);
     }

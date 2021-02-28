@@ -8,15 +8,6 @@ public class ParseJsModel {
     private String url;
     private int enable = 1;
     private boolean needVip = false;
-    String time;
-
-    public void setTime(String time) {
-        this.time = time;
-    }
-
-    public String getTime() {
-        return time;
-    }
 
     public void setNeedVip(boolean needVip) {
         this.needVip = needVip;
