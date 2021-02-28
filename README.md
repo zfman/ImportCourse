@@ -29,7 +29,7 @@ Step 2. Add the dependency
 
 ```gradle
 	dependencies {
-	        implementation 'com.github.zfman.ImportCourse:importcourselib:2.2.0'
+	        implementation 'com.github.zfman.ImportCourse:importcourselib:2.2.3'
 	}
 ```
 
@@ -41,7 +41,7 @@ Step 2. Add the dependency
 		@Override
 		public void onCreate() {
 			super.onCreate();
-			AdapterLibManager.init("申请的appkey");
+			AdapterLibManager.register("申请的appkey");
 		}
 	}
 ```
