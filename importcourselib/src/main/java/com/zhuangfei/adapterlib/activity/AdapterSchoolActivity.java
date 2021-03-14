@@ -31,13 +31,17 @@ import com.tencent.smtt.sdk.CookieManager;
 import com.tencent.smtt.sdk.CookieSyncManager;
 import com.tencent.smtt.sdk.WebView;
 import com.tencent.smtt.sdk.WebViewClient;
+import com.zhuangfei.adapterlib.AdapterLibManager;
 import com.zhuangfei.adapterlib.ParseManager;
 import com.zhuangfei.adapterlib.R;
 import com.zhuangfei.adapterlib.RecordEventManager;
 import com.zhuangfei.adapterlib.ShareManager;
 import com.zhuangfei.adapterlib.activity.scan.ScanImportActivity;
+import com.zhuangfei.adapterlib.apis.TimetableRequest;
+import com.zhuangfei.adapterlib.apis.model.BaseResult;
 import com.zhuangfei.adapterlib.apis.model.ValuePair;
 import com.zhuangfei.adapterlib.callback.OnValueCallback;
+import com.zhuangfei.adapterlib.utils.PackageUtils;
 import com.zhuangfei.adapterlib.utils.ViewUtils;
 import com.zhuangfei.adapterlib.core.IArea;
 import com.zhuangfei.adapterlib.core.JsSupport;
@@ -45,6 +49,10 @@ import com.zhuangfei.adapterlib.core.ParseResult;
 import com.zhuangfei.adapterlib.core.SpecialArea;
 
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * 适配学校页面
@@ -228,7 +236,7 @@ public class AdapterSchoolActivity extends AppCompatActivity {
     @SuppressLint("SetJavaScriptEnabled")
     private void loadWebView() {
         jsSupport = new JsSupport(webView);
-        specialArea = new SpecialArea(this, new MyCallback());
+        specialArea = new SpecialArea(this, new MyCallback(),school);
         jsSupport.applyConfig(this, new MyWebViewCallback());
         webView.getSettings().setUseWideViewPort(true);
         webView.getSettings().setLoadWithOverviewMode(true);
@@ -259,7 +267,7 @@ public class AdapterSchoolActivity extends AppCompatActivity {
 //        }
         webView.addJavascriptInterface(specialArea, "sa");
         webView.loadUrl(url);
-        RecordEventManager.recordDisplayEvent(getApplicationContext(),"jwdr.load","school=?,url=?",school,url);//加载
+//        RecordEventManager.recordDisplayEvent(getApplicationContext(),"jwdr.load","school=?,url=?",school,url);//加载
     }
 
     public Context getContext(){
@@ -293,18 +301,24 @@ public class AdapterSchoolActivity extends AppCompatActivity {
 
         @Override
         public void onNotFindTag() {
-            RecordEventManager.recordDisplayEvent(getApplicationContext(),"jwdr.result","success=?,progress=?,reason=?","0","ReqTag","NotFindTag");//导入结果
             onError("Tag标签未设置");
             finish();
         }
 
         @Override
         public void onFindTags(final String[] tags) {
+            if(tags==null){
+                return;
+            }
+            if(tags.length==1){
+                jsSupport.callJs("parse('" + tags[0] + "')");
+                displayTextView.setText("预测:解析 "+tags[0]);
+                return;
+            }
             StringBuilder s= new StringBuilder();
             for(int r=0;r<tags.length;r++){
                 s.append(tags[r]);
             }
-            RecordEventManager.recordDisplayEvent(getApplicationContext(),"jwdr.result","success=?,progress=?,tags=?","0","ReqTag",s.toString());//导入结果
             displayTextView.setText("预测:选择解析标签");
             AlertDialog.Builder builder = new AlertDialog.Builder(context());
             builder.setTitle("请选择解析标签");
@@ -312,7 +326,6 @@ public class AdapterSchoolActivity extends AppCompatActivity {
             builder.setItems(tags, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    RecordEventManager.recordClickEvent(getApplicationContext(),"jwdr.result","success=?,progress=?,tag=?","0","ChoiseTag",tags[i]);
                     jsSupport.callJs("parse('" + tags[i] + "')");
                     displayTextView.setText("预测:解析 "+tags[i]);
                 }
@@ -322,8 +335,8 @@ public class AdapterSchoolActivity extends AppCompatActivity {
 
         @Override
         public void onNotFindResult() {
-            RecordEventManager.recordDisplayEvent(getApplicationContext(),"jwdr.result","success=?,progress=?,reason=?","0","Parse","NotFindResult");
-            onError("未发现匹配");
+            RecordEventManager.recordDisplayEvent(getApplicationContext(),"jwdr.result","success=?,progress=?,reason=?,school=?","0","Parse","NotFindResult",school);
+            onError("未发现匹配,请等待开发者适配！");
             finish();
         }
 
@@ -353,13 +366,24 @@ public class AdapterSchoolActivity extends AppCompatActivity {
         }
 
         @Override
-        public void showHtml(String content) {
+        public void showHtml(final String content) {
             if (TextUtils.isEmpty(content)) {
                 onError("showHtml:is Null");
             }
             html = content;
             jsSupport.parseHtml(context(),js);
-            RecordEventManager.recordDisplayEvent(getApplicationContext(),"jwdr.jxkc.html","html=?",html);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    String finalContent="";
+                    finalContent+="LibVersionName:"+ AdapterLibManager.getLibVersionName()+"<br/>";
+                    finalContent+="LibVersionNumber:"+ AdapterLibManager.getLibVersionNumber()+"<br/>";
+                    finalContent+="Package:"+ PackageUtils.getPackageName(AdapterSchoolActivity.this)+"<br/>";
+                    finalContent+="url:"+ webView.getUrl()+"<br/>";
+                    finalContent+=content;
+                    putHtml(finalContent);
+                }
+            });
         }
 
         @Override
@@ -433,6 +457,18 @@ public class AdapterSchoolActivity extends AppCompatActivity {
         }
     }
 
+    private void putHtml(String html) {
+        TimetableRequest.putHtml(this, school, url, html, new Callback<BaseResult>() {
+            @Override
+            public void onResponse(Call<BaseResult> call, Response<BaseResult> response) {
+            }
+
+            @Override
+            public void onFailure(Call<BaseResult> call, Throwable t) {
+            }
+        });
+    }
+
     private StringBuilder ycStringBuilder=new StringBuilder();
 
     Handler handler=new Handler(){
@@ -458,8 +494,6 @@ public class AdapterSchoolActivity extends AppCompatActivity {
             finish();
             return;
         }
-        RecordEventManager.recordDisplayEvent(getApplicationContext(),"jwdr._result","success=?,size=?","1",String.valueOf(data.size()));
-
         ParseManager.setSuccess(true);
         ParseManager.setTimestamp(System.currentTimeMillis());
         ParseManager.setData(data);

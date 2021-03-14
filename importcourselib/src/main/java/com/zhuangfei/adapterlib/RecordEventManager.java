@@ -43,6 +43,24 @@ public class RecordEventManager {
         });
     }
 
+    private static void recordUserEventForContent(Context context, String type, String operator, String content) {
+        String json = content;
+        if(TextUtils.isEmpty(AdapterLibManager.getAppKey())){
+            return;
+        }
+        TimetableRequest.recordUserEvent(context, operator, type, json, AdapterLibManager.getAppKey(), new Callback<BaseResult>() {
+            @Override
+            public void onResponse(Call<BaseResult> call, Response<BaseResult> response) {
+
+            }
+
+            @Override
+            public void onFailure(Call<BaseResult> call, Throwable t) {
+
+            }
+        });
+    }
+
     public static void recordDisplayEvent(Context context, String operator) {
         if(true){
             return;
@@ -52,6 +70,10 @@ public class RecordEventManager {
 
     public static void recordDisplayEvent(Context context, String operator, String key,String...values) {
         Map<String,String> map = new HashMap<>();
+        if(key==null){
+            recordUserEventForContent(context,TYPE_NORMAL,operator,values[0]);
+            return;
+        }
         String[] keys = key.split(",");
         if(values != null && keys.length == values.length){
             for(int i=0;i<keys.length;i++){

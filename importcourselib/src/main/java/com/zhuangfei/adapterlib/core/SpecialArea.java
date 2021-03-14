@@ -19,10 +19,12 @@ public class SpecialArea {
 
     Activity activity;
     IArea.Callback callback;
+    String school="";
     
-    public SpecialArea(@NonNull Activity activity,@NonNull IArea.Callback callback){
+    public SpecialArea(@NonNull Activity activity,@NonNull IArea.Callback callback,String school){
         this.callback=callback;
         this.activity=activity;
+        this.school=school;
     }
     
     @JavascriptInterface
@@ -129,7 +131,7 @@ public class SpecialArea {
         List<ParseResult> result=new ArrayList<>();
         if(data==null) return result;
 
-        RecordEventManager.recordDisplayEvent(activity,"jwdr.result","success=?,content=?","1",data);
+        RecordEventManager.recordDisplayEvent(activity,"jwdr.result","success=?,content=?,school=?","1",data,school);
         String[] items = data.trim().split("#");
 
         for (String item : items) {

@@ -31,6 +31,14 @@
     </LinearLayout>
 
     <EditText
+        android:id="@+id/id_school_name"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:hint="输入学校名称"/>
+    <EditText
         android:id="@+id/id_school_edittext"
         android:layout_width="match_parent"
         android:layout_height="45dp"

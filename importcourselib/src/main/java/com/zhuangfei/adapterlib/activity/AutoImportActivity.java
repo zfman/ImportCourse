@@ -80,12 +80,12 @@ public class AutoImportActivity extends AppCompatActivity implements View.OnClic
         ViewUtils.setStatusTextGrayColor(this);
         inits();
         request();
-        RecordEventManager.recordDisplayEvent(getApplicationContext(),"sy");
-        RecordEventManager.recordDisplayEvent(getApplicationContext(),"sy.init",
-                "libVersionName=?,libVersionNumber=?,package=?,",
-                AdapterLibManager.getLibVersionName(),
-                AdapterLibManager.getLibVersionNumber()+"",
-                PackageUtils.getPackageName(this));
+//        RecordEventManager.recordDisplayEvent(getApplicationContext(),"sy");
+//        RecordEventManager.recordDisplayEvent(getApplicationContext(),"sy.init",
+//                "libVersionName=?,libVersionNumber=?,package=?,",
+//                AdapterLibManager.getLibVersionName(),
+//                AdapterLibManager.getLibVersionNumber()+"",
+//                PackageUtils.getPackageName(this));
     }
 
     private void inits() {
@@ -268,6 +268,7 @@ public class AutoImportActivity extends AppCompatActivity implements View.OnClic
             setResult(RESULT_CODE);
             finish();
         }
+        updateSchoolText();
     }
 
     @Override

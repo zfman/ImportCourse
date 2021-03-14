@@ -24,6 +24,7 @@ public class AdapterSameTypeActivity extends AppCompatActivity {
     EditText nameEdit;
     TextView titleTextView;
     ImageView backImageView;
+    EditText schoolEdit;
 
     String js=null;
     int id = -1;
@@ -49,6 +50,7 @@ public class AdapterSameTypeActivity extends AppCompatActivity {
     }
 
     private void inits() {
+        schoolEdit = findViewById(R.id.id_school_name);
         nameEdit=findViewById(R.id.id_school_edittext);
         titleTextView=findViewById(R.id.id_title);
         findViewById(R.id.tv_other).setOnClickListener(new View.OnClickListener() {
@@ -80,16 +82,20 @@ public class AdapterSameTypeActivity extends AppCompatActivity {
 
     public void save() {
         final String url = nameEdit.getText().toString();
+        final String school = schoolEdit.getText().toString();
         if (TextUtils.isEmpty(url)||(!url.startsWith("http")&&!url.startsWith("https"))) {
             Toast.makeText(this, "请输入有效的网址", Toast.LENGTH_SHORT).show();
-        } else {
+        } if(TextUtils.isEmpty(school)){
+            Toast.makeText(this, "请输入学校名称", Toast.LENGTH_SHORT).show();
+        }
+        else {
             RecordEventManager.recordDisplayEvent(getApplicationContext(),"wzdhq.qwjwc");//网址导航器-前往教务处
-            toAdapterActivity("自定义网址",url,js);
+            toAdapterActivity(school,url,js);
         }
     }
 
     public void toAdapterActivity(String school,String url,String js){
-        RecordEventManager.recordDisplayEvent(getApplicationContext(),"wzdhq.load","school=?,url=",school,url);//网址导航器
+//        RecordEventManager.recordDisplayEvent(getApplicationContext(),"wzdhq.load","school=?,url=",school,url);//网址导航器
         Intent intent=new Intent(this,AdapterSchoolActivity.class);
         intent.putExtra(AdapterSchoolActivity.EXTRA_SCHOOL,school);
         intent.putExtra(AdapterSchoolActivity.EXTRA_URL,url);

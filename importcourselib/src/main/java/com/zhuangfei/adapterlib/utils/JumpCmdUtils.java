@@ -69,7 +69,11 @@ public class JumpCmdUtils {
                                 SchoolDaoUtils.saveSchool(context,school);
                             }
                             if(parseJsModel.getEnable()==0){
-                                ToastTools.show(context,"该学校解析已被管理员临时关闭，待修复！");
+                                AlertDialog.Builder builder=new AlertDialog.Builder(context);
+                                builder.setMessage("该学校解析已被管理员临时关闭，待管理员重新适配，可以联系邮箱1193600556@qq.com进行处理！");
+                                builder.setPositiveButton("知道了",null);
+                                builder.create().show();
+                                SchoolDaoUtils.saveSchool(context,null);
                                 return;
                             }
                             realHandleItemClickedForSchool(context,school,parseJsModel,openScan);
