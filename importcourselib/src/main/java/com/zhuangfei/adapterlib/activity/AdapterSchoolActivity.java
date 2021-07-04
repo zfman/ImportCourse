@@ -267,7 +267,7 @@ public class AdapterSchoolActivity extends AppCompatActivity {
 //        }
         webView.addJavascriptInterface(specialArea, "sa");
         webView.loadUrl(url);
-//        RecordEventManager.recordDisplayEvent(getApplicationContext(),"jwdr.load","school=?,url=?",school,url);//加载
+        RecordEventManager.recordDisplayEvent(getApplicationContext(),"jwdr.load","school=?,url=?",school,url);//加载
     }
 
     public Context getContext(){
@@ -311,6 +311,7 @@ public class AdapterSchoolActivity extends AppCompatActivity {
                 return;
             }
             if(tags.length==1){
+                RecordEventManager.recordDisplayEvent(getApplicationContext(),"jwdr.result","success=?,progress=?,tag=?,school=?","0","ChooseTag",tags[0],school);
                 jsSupport.callJs("parse('" + tags[0] + "')");
                 displayTextView.setText("预测:解析 "+tags[0]);
                 return;
@@ -326,6 +327,7 @@ public class AdapterSchoolActivity extends AppCompatActivity {
             builder.setItems(tags, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
+                    RecordEventManager.recordDisplayEvent(getApplicationContext(),"jwdr.result","success=?,progress=?,tag=?,school=?","0","ChooseTag",tags[i],school);
                     jsSupport.callJs("parse('" + tags[i] + "')");
                     displayTextView.setText("预测:解析 "+tags[i]);
                 }
@@ -504,7 +506,7 @@ public class AdapterSchoolActivity extends AppCompatActivity {
     }
 
     public void onBtnClicked() {
-        RecordEventManager.recordClickEvent(getApplicationContext(),"jwdr.jxkc");
+        RecordEventManager.recordDisplayEvent(getApplicationContext(),"jwdr.result","success=?,progress=?,school=?","0","Start",school);
         if(!isButtonClicked){
             isButtonClicked=true;
             jsSupport.getPageHtml("sa");

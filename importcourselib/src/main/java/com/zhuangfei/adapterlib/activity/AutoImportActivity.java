@@ -61,9 +61,6 @@ public class AutoImportActivity extends AppCompatActivity implements View.OnClic
     LinearLayout llScanImport;
     LinearLayout llXiquerImport;
     LinearLayout llSearch;
-    TextView usernameTextView;
-
-    TextView copyTextView;
 
     TextView schoolTextView;
     ListView listView;
@@ -80,12 +77,10 @@ public class AutoImportActivity extends AppCompatActivity implements View.OnClic
         ViewUtils.setStatusTextGrayColor(this);
         inits();
         request();
-//        RecordEventManager.recordDisplayEvent(getApplicationContext(),"sy");
-//        RecordEventManager.recordDisplayEvent(getApplicationContext(),"sy.init",
-//                "libVersionName=?,libVersionNumber=?,package=?,",
-//                AdapterLibManager.getLibVersionName(),
-//                AdapterLibManager.getLibVersionNumber()+"",
-//                PackageUtils.getPackageName(this));
+        RecordEventManager.recordDisplayEvent(getApplicationContext(),"sy.init",
+                "libVersionName=?,libVersionNumber=?,",
+                AdapterLibManager.getLibVersionName(),
+                AdapterLibManager.getLibVersionNumber()+"");
     }
 
     private void inits() {
@@ -102,8 +97,6 @@ public class AutoImportActivity extends AppCompatActivity implements View.OnClic
         llXiquerImport = findViewById(R.id.ll_xiquer_import);
         llSearch = findViewById(R.id.ll_search);
         schoolTextView = findViewById(R.id.tv_school_name);
-        usernameTextView = findViewById(R.id.tv_username);
-        copyTextView = findViewById(R.id.tv_copy);
 
         int color = Color.parseColor("#A561F7");
         imageView0.setColorFilter(color);
@@ -130,19 +123,6 @@ public class AutoImportActivity extends AppCompatActivity implements View.OnClic
             startActivity(intent);
             finish();
         }
-        final TinyUserInfo userInfo = TinyUserManager.get(this).getUserInfo();
-        if(userInfo!=null && userInfo.getName()!=null){
-            usernameTextView.setText("账户名："+userInfo.getName());
-        }
-
-        copyTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(userInfo.getName()!=null){
-                    ClipUtils.copy(AutoImportActivity.this,userInfo.getName());
-                }
-            }
-        });
     }
 
     private void request(){
@@ -275,5 +255,6 @@ public class AutoImportActivity extends AppCompatActivity implements View.OnClic
     protected void onDestroy() {
         super.onDestroy();
         JumpCmdUtils.clearCache();
+        RecordEventManager.upload(AdapterLibManager.applicationContext);
     }
 }

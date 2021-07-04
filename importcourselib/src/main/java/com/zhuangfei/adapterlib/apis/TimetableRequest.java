@@ -180,7 +180,7 @@ public class TimetableRequest {
         call.enqueue(callback);
     }
 
-    public static void recordUserEvent(Context context,String operator,String type,String data,String params,Callback<BaseResult> callback) {
+    public static void recordUserEvent(Context context,String data,String params,Callback<BaseResult> callback) {
         String token= TinyUserManager.get(context).getToken();
         if(TextUtils.isEmpty(token)){
             String t=ShareTools.getString(context,"tmp_token",null);
@@ -193,7 +193,7 @@ public class TimetableRequest {
             }
         }
         SchoolService schoolService=ApiUtils.getRetrofitForSchool(context).create(SchoolService.class);
-        Call<BaseResult> call=schoolService.recordUserEvent(token,operator,type,data,params);
+        Call<BaseResult> call=schoolService.recordUserEvent(token,data,params);
         call.enqueue(callback);
     }
 

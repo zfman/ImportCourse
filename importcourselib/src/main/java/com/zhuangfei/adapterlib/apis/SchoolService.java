@@ -122,8 +122,6 @@ public interface SchoolService {
     @POST(UrlContants.URL_RECORD_USER_EVENT)
     @FormUrlEncoded
     Call<BaseResult> recordUserEvent(@Field("token") String token,
-                                     @Field("operator") String operator,
-                                     @Field("type") String type,
                                      @Field("data") String data,
                                      @Field("params") String params);
 
