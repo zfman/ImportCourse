@@ -45,7 +45,7 @@ public class TinyUserManager {
     }
 
     public boolean isLogin(){
-        return getUserInfo()==null?false:true;
+        return getUserInfo() != null;
     }
 
     public void saveUserInfo(TinyUserInfo info){

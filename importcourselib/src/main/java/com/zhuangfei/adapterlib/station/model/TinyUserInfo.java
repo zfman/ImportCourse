@@ -9,7 +9,24 @@ public class TinyUserInfo implements Serializable{
     private String name;
     private String token;
     private String imgUrl;
+    private String type;
+    private String openid;
 
+    public void setOpenid(String openid) {
+        this.openid = openid;
+    }
+
+    public String getOpenid() {
+        return openid;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getType() {
+        return type;
+    }
 
     public void setImgUrl(String imgUrl) {
         this.imgUrl = imgUrl;

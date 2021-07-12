@@ -36,7 +36,18 @@ public class MainActivity extends Activity {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LoginUtils.checkLoginStatus(MainActivity.this, new ILoginFinishListener() {
+                //使用默认的适配联盟登录体系
+//                LoginUtils.checkLoginStatus(MainActivity.this, new ILoginFinishListener() {
+//                    @Override
+//                    public void onLoginSuccess(Context context) {
+//                        Intent intent=new Intent(getApplicationContext(), AutoImportActivity.class);
+//                        startActivityForResult(intent,1);
+//                    }
+//                });
+
+                //使用第三方账户进行登录，传入的参数openid为自己的登录体系中该用户的唯一标识符,最大32位
+                //每个用户必须不同
+                LoginUtils.checkLoginStatusByOpenid(MainActivity.this, "qwertyui12345", new ILoginFinishListener() {
                     @Override
                     public void onLoginSuccess(Context context) {
                         Intent intent=new Intent(getApplicationContext(), AutoImportActivity.class);
