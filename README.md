@@ -29,7 +29,7 @@ Step 2. Add the dependency
 
 ```gradle
 	dependencies {
-	        implementation 'com.github.zfman.ImportCourse:importcourselib:v4.0.0'
+	        implementation 'com.github.zfman.ImportCourse:importcourselib:v4.1.0'
 	}
 ```
 
@@ -60,11 +60,27 @@ Step 2. Add the dependency
 </manifest>
 ```
 
-### 教务导入页面
+### 跳转到自动导入页面
 
 ```java
-    Intent intent=new Intent(MainActivity.this, AutoImportActivity.class);
-    startActivityForResult(intent,100);
+    //方法一：使用默认的适配联盟登录体系
+    LoginUtils.checkLoginStatus(MainActivity.this, new ILoginFinishListener() {
+        @Override
+        public void onLoginSuccess(Context context) {
+            Intent intent=new Intent(getApplicationContext(), AutoImportActivity.class);
+            startActivityForResult(intent,100);
+        }
+    });
+
+    //方法二：使用第三方账户进行登录，传入的参数openid为自己的登录体系中该用户的唯一标识符,最大32位
+    //每个用户必须不同
+    LoginUtils.checkLoginStatusByOpenid(MainActivity.this, "qwertyui12345", new ILoginFinishListener() {
+        @Override
+        public void onLoginSuccess(Context context) {
+            Intent intent=new Intent(getApplicationContext(), AutoImportActivity.class);
+            startActivityForResult(intent,100);
+        }
+    });
 ```
 
 **接收解析的结果**
